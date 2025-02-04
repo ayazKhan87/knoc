@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knoc - Find Products Nearby</title>
+    
+    <!-- Rubik Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .placeholder-image {
+            background: linear-gradient(45deg, #f8fafc 25%, #f1f5f9 25%, #f1f5f9 50%, #f8fafc 50%, #f8fafc 75%, #f1f5f9 75%, #f1f5f9);
+            background-size: 20px 20px;
+        }
+
+        /* Improved floating cards for desktop */
+        @media (min-width: 769px) {
+            .floating-card {
+                position: absolute;
+                transition: all 0.3s ease;
+            }
+
+            .floating-card.right {
+                right: -12%;
+                top: 25%;
+                animation: float-right 3s ease-in-out infinite;
+            }
+
+            .floating-card.left {
+                left: -12%;
+                bottom: 25%;
+                animation: float-left 3s ease-in-out infinite;
+                animation-delay: 0.5s;
+            }
+
+            @keyframes float-right {
+                0%, 100% { transform: translateY(0) rotate(2deg); }
+                50% { transform: translateY(-15px) rotate(-1deg); }
+            }
+
+            @keyframes float-left {
+                0%, 100% { transform: translateY(0) rotate(-2deg); }
+                50% { transform: translateY(-15px) rotate(1deg); }
+            }
+
+            .image-container:hover .floating-card {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Mobile optimizations with animations */
+        @media (max-width: 768px) {
+            .floating-card {
+                position: absolute;
+                width: 75%;
+                min-width: 200px;
+                max-width: 280px;
+                animation: float-mobile 3s ease-in-out infinite;
+                z-index: 20;
+            }
+
+            .floating-card.right {
+                right: -20px;
+                top: -40px;
+            }
+
+            .floating-card.left {
+                left: -20px;
+                bottom: -40px;
+                animation-delay: 1.5s;
+            }
+
+            .floating-card p {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            @keyframes float-mobile {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+
+            .image-container {
+                margin: 3rem auto;
+                width: calc(100% - 2rem);
+                max-width: 500px;
+                padding: 1rem;
+                overflow: visible;
+                position: relative;
+            }
+
+            .placeholder-image {
+                aspect-ratio: 16/9;
+                width: 100%;
+                height: auto !important;
+                min-height: 160px;
+            }
+
+            .main-image-container {
+                margin-top: 2rem;
+                margin-bottom: 3rem;
+            }
+        }
+
+        /* Main image container animation for all devices */
+        .main-image-container {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .main-image-container:hover,
+        .main-image-container:active {
+            transform: translateY(-10px);
+        }
+
+        .main-image-rotate {
+            transform: rotate(6deg);
+            transition: transform 0.3s ease;
+        }
+
+        .main-image-container:hover .main-image-rotate,
+        .main-image-container:active .main-image-rotate {
+            transform: rotate(4deg);
+        }
+
+        /* Ensure animations work on touch devices */
+        @media (hover: none) {
+            .main-image-container:active {
+                transform: translateY(-5px);
+            }
+            
+            .main-image-container:active .main-image-rotate {
+                transform: rotate(4deg);
+            }
+        }
+
+        /* Improved card hover effects */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 769px) {
+            .feature-card:hover {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'bounce': 'bounce 1s infinite',
+                    },
+                    keyframes: {
+                        bounce: {
+                            '0%, 100%': {
+                                transform: 'translateY(-5%)',
+                                animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)'
+                            },
+                            '50%': {
+                                transform: 'translateY(0)',
+                                animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)'
+                            },
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const DualLanding = () => {
+            const [showBusiness, setShowBusiness] = React.useState(false);
+
+            const userFeatures = [
+                {
+                    title: "Instant Search",
+                    description: "Find any product in nearby stores with a single knoc"
+                },
+                {
+                    title: "Direct Communication",
+                    description: "Chat with store owners and share product images"
+                },
+                {
+                    title: "Location Based",
+                    description: "See exactly where products are available nearby"
+                }
+            ];
+
+            const businessFeatures = [
+                {
+                    title: "Access Local Demand",
+                    description: "Know exactly what your neighbors are looking for right now"
+                },
+                {
+                    title: "Instant Inquiries",
+                    description: "Receive real-time product inquiries from nearby customers"
+                },
+                {
+                    title: "Grow Your Business",
+                    description: "Convert local searches into sales opportunities"
+                }
+            ];
+
+            const FloatingCard = ({ position, icon, title, subtitle }) => (
+                <div className={`floating-card ${position}`}>
+                    <div className="bg-white/90 backdrop-blur-xl p-4 rounded-xl shadow-lg border border-red-100">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-500 rounded-lg flex items-center justify-center">
+                                <span className="text-white font-bold">{icon}</span>
+                            </div>
+                            <div>
+                                <p className="font-medium text-red-900">{title}</p>
+                                <p className="text-sm text-red-600">{subtitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 overflow-x-hidden">
+                    {/* Navbar */}
+                    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-red-100">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="flex items-center justify-between py-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center relative">
+                                        <div className="absolute inset-0 bg-red-500 rounded-xl animate-pulse opacity-50"></div>
+                                        <span className="text-white font-bold">K</span>
+                                    </div>
+                                    <span className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-500 text-transparent bg-clip-text">
+                                        Knoc
+                                    </span>
+                                </div>
+                                <button 
+                                    onClick={() => setShowBusiness(!showBusiness)}
+                                    className="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-2 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300 transform hover:scale-105"
+                                >
+                                    {showBusiness ? "For Users" : "For Shops"}
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section className="pt-32 pb-20">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                                {/* Left Content */}
+                                <div className="lg:w-1/2 space-y-8">
+                                    <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-red-900 leading-tight">
+                                        {showBusiness ? (
+                                            <>
+                                                Know What
+                                                <span className="block bg-gradient-to-r from-red-600 to-red-500 text-transparent bg-clip-text">
+                                                    Neighbors Need
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                Knoc on
+                                                <span className="block bg-gradient-to-r from-red-600 to-red-500 text-transparent bg-clip-text">
+                                                    Shop's Doors
+                                                </span>
+                                            </>
+                                        )}
+                                    </h1>
+                                    
+                                    <p className="text-lg sm:text-xl text-red-700/80 leading-relaxed">
+                                        {showBusiness ? 
+                                            "Grow your business by instantly connecting with local customers actively searching for your products. Respond to inquiries and turn neighbors into customers." :
+                                            "Get what you need instantly by connecting with nearby stores. Just knoc, and find everything you're looking for right in your neighborhood."
+                                        }
+                                    </p>
+
+                                    <div className="flex flex-col sm:flex-row gap-4">
+                                        <button className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300">
+                                            {showBusiness ? "Join as Shop" : "Download App"}
+                                        </button>
+                                        <button className="border-2 border-red-200 text-red-600 px-8 py-4 rounded-xl font-medium hover:bg-red-50 transition-all duration-300">
+                                            Learn More
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Right Content */}
+                                <div className="lg:w-1/2">
+                                    <div className="relative image-container main-image-container">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 opacity-10 rounded-3xl main-image-rotate"></div>
+                                        <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl">
+                                            <div className="placeholder-image w-full rounded-xl" style={{ aspectRatio: "16/9" }}></div>
+                                        </div>
+                                        
+                                        {/* Floating Cards */}
+                                        {showBusiness ? (
+                                            <>
+                                                <FloatingCard 
+                                                    position="right"
+                                                    icon="!"
+                                                    title="New Inquiry!"
+                                                    subtitle="iPhone Charger"
+                                                />
+                                                <FloatingCard 
+                                                    position="left"
+                                                    icon="U"
+                                                    title="12 Customers"
+                                                    subtitle="Searching Nearby"
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FloatingCard 
+                                                    position="right"
+                                                    icon="S"
+                                                    title="3 Stores Found"
+                                                    subtitle="Within 5km"
+                                                />
+                                                <FloatingCard 
+                                                    position="left"
+                                                    icon="M"
+                                                    title="Product Available"
+                                                    subtitle="Chat with Store"
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Features Section */}
+                    <section className="py-20 bg-white/50">
+                        <div className="max-w-6xl mx-auto px-4">
+                            <div className="text-center mb-16">
+                                <h2 className="text-3xl sm:text-4xl font-bold text-red-900 mb-4">
+                                    {showBusiness ? "Grow Your Business" : "How It Works"}
+                                </h2>
+                                <p className="text-lg sm:text-xl text-red-600">
+                                    {showBusiness ? 
+                                        "Turn local product searches into sales opportunities" :
+                                        "Find products from local stores in three simple steps"
+                                    }
+                                </p>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-8">
+                                {(showBusiness ? businessFeatures : userFeatures).map((feature, index) => (
+                                    <div key={feature.title} className="feature-card">
+                                        <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-lg border-2 border-red-100 hover:shadow-xl hover:border-red-200 transition-all duration-300">
+                                            <div className="w-14 h-14 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center mb-6">
+                                                <span className="text-white font-bold text-xl">
+                                                    {index + 1}
+                                                </span>
+                                            </div>
+                                            <h3 className="text-xl font-semibold text-red-900 mb-3">
+                                                {feature.title}
+                                            </h3>
+                                            <p className="text-red-600">
+                                                {feature.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* CTA Section */}
+                    <section className="py-20">
+                        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                            <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden">
+                                <div className="absolute inset-0 bg-black opacity-10 mix-blend-overlay"></div>
+                                <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 relative z-10">
+                                    {showBusiness ? "Ready to Grow?" : "Ready to Find?"}
+                                </h2>
+                                <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-red-100 relative z-10">
+                                    {showBusiness ? 
+                                        "Join local shops connecting with nearby customers" :
+                                        "Join others discovering products near them instantly"
+                                    }
+                                </p>
+                                <button className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10">
+                                    {showBusiness ? "Join as Shop" : "Download Now"}
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    
+                      {/* Footer Section */}
+                    <footer className="bg-white/80 backdrop-blur-xl border-t border-red-100">
+                        <div className="max-w-6xl mx-auto px-4 py-6">
+                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                                <div className="text-sm text-red-600">
+                                    © {new Date().getFullYear()} Knoc. All rights reserved.
+                                </div>
+                                <a 
+                                    href="mailto:contact@knoc.in" 
+                                    className="text-sm text-red-600 hover:text-red-500 transition-colors duration-300"
+                                >
+                                    contact@knoc.in
+                                </a>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+            </div>
+         );
+    };
+
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<DualLanding />);
+    </script>
+</body>
+</html>
