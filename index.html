@@ -196,6 +196,22 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const FloatingCard = ({ position, icon, title, subtitle }) => (
+            <div className={`floating-card ${position}`}>
+                <div className="bg-white/90 backdrop-blur-xl p-4 rounded-xl shadow-lg border border-red-100">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-500 rounded-lg flex items-center justify-center">
+                            <span className="text-white font-bold">{icon}</span>
+                        </div>
+                        <div>
+                            <p className="font-medium text-red-900">{title}</p>
+                            <p className="text-sm text-red-600">{subtitle}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
         const DualLanding = () => {
             const [showBusiness, setShowBusiness] = React.useState(false);
 
@@ -228,22 +244,6 @@
                     description: "Convert local searches into sales opportunities"
                 }
             ];
-
-            const FloatingCard = ({ position, icon, title, subtitle }) => (
-                <div className={`floating-card ${position}`}>
-                    <div className="bg-white/90 backdrop-blur-xl p-4 rounded-xl shadow-lg border border-red-100">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-500 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold">{icon}</span>
-                            </div>
-                            <div>
-                                <p className="font-medium text-red-900">{title}</p>
-                                <p className="text-sm text-red-600">{subtitle}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 overflow-x-hidden">
@@ -375,73 +375,66 @@
                             <div className="grid md:grid-cols-3 gap-8">
                                 {(showBusiness ? businessFeatures : userFeatures).map((feature, index) => (
                                     <div key={feature.title} className="feature-card">
-                                        <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-lg border-2 border-red-100 hover:shadow-xl hover:border-red-200 transition-all duration-300">
-                                            <div className="w-14 h-14 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center mb-6">
-                                                <span className="text-white font-bold text-xl">
-                                                    {index + 1}
-                                                </span>
-                                            </div>
-                                            <h3 className="text-xl font-semibold text-red-900 mb-3">
-                                                {feature.title}
-                                            </h3>
-                                            <p className="text-red-600">
-                                                {feature.description}
-                                            </p>
+                                    <div className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-lg border-2 border-red-100 hover:shadow-xl hover:border-red-200 transition-all duration-300">
+                                        <div className="w-14 h-14 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center mb-6">
+                                            <span className="text-white font-bold text-xl">
+                                                {index + 1}
+                                            </span>
                                         </div>
+                                        <h3 className="text-xl font-semibold text-red-900 mb-3">
+                                            {feature.title}
+                                        </h3>
+                                        <p className="text-red-600">
+                                            {feature.description}
+                                        </p>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* CTA Section */}
-                    <section className="py-20">
-                        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                            <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden">
-                                <div className="absolute inset-0 bg-black opacity-10 mix-blend-overlay"></div>
-                                <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 relative z-10">
-                                    {showBusiness ? "Ready to Grow?" : "Ready to Find?"}
-                                </h2>
-                                <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-red-100 relative z-10">
-                                    {showBusiness ? 
-                                        "Join local shops connecting with nearby customers" :
-                                        "Join others discovering products near them instantly"
-                                    }
-                                </p>
-                                <button className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10">
-                                    {showBusiness ? "Join as Shop" : "Download Now"}
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-                    
-                      {/* Footer Section */}
-                    <footer className="bg-white/80 backdrop-blur-xl border-t border-red-100">
-                        <div className="max-w-6xl mx-auto px-4 py-6">
-                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                                <div className="text-sm text-red-600">
-                                    © {new Date().getFullYear()} Knoc. All rights reserved.
                                 </div>
-                                <a 
-                                    href="mailto:contact@knoc.in" 
-                                    className="text-sm text-red-600 hover:text-red-500 transition-colors duration-300"
-                                >
-                                    contact@knoc.in
-                                </a>
-                            </div>
+                            ))}
                         </div>
-                    </footer>
-                </div>
-            );
-        };
+                    </div>
+                </section>
+
+                {/* CTA Section */}
+                <section className="py-20">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                        <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden">
+                            <div className="absolute inset-0 bg-black opacity-10 mix-blend-overlay"></div>
+                            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 relative z-10">
+                                {showBusiness ? "Ready to Grow?" : "Ready to Find?"}
+                            </h2>
+                            <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-red-100 relative z-10">
+                                {showBusiness ? 
+                                    "Join local shops connecting with nearby customers" :
+                                    "Join others discovering products near them instantly"
+                                }
+                            </p>
+                            <button className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10">
+                                {showBusiness ? "Join as Shop" : "Download Now"}
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Footer Section */}
+                <footer className="bg-white/80 backdrop-blur-xl border-t border-red-100">
+                    <div className="max-w-6xl mx-auto px-4 py-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div className="text-sm text-red-600">
+                                © {new Date().getFullYear()} Knoc. All rights reserved.
+                            </div>
+                            <a 
+                                href="mailto:contact@knoc.in" 
+                                className="text-sm text-red-600 hover:text-red-500 transition-colors duration-300"
+                            >
+                                contact@knoc.in
+                            </a>
+                        </div>
+                    </div>
+                </footer>
             </div>
-         );
+        );
     };
 
-
-        // Render the app
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<DualLanding />);
-    </script>
-</body>
-</html>
+    // Render the app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<DualLanding />);
