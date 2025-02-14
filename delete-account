@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knoc - Account Deletion</title>
+    
+    <!-- Rubik Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-red-50 via-white to-red-50">
+    <div class="min-h-screen py-12 px-4 sm:px-6">
+        <div class="max-w-3xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center space-x-3 mb-12">
+                <div class="w-10 h-10 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center">
+                    <span class="text-white font-bold">K</span>
+                </div>
+                <span class="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-500 text-transparent bg-clip-text">
+                    Knoc
+                </span>
+            </div>
 
+            <!-- Content -->
+            <div class="bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl p-8">
+                <h1 class="text-3xl font-bold text-red-900 mb-6">Account Deletion Instructions</h1>
+                
+                <div class="space-y-6 text-red-700">
+                    <p class="leading-relaxed">
+                        To delete your Knoc account and associated data, please follow these steps:
+                    </p>
+
+                    <div class="bg-red-50 rounded-xl p-6 space-y-4">
+                        <h2 class="font-semibold text-red-900 text-xl">Steps to Delete Your Account:</h2>
+                        <ol class="list-decimal list-inside space-y-3">
+                            <li>Open the Knoc app</li>
+                            <li>Navigate to your Profile screen</li>
+                            <li>Scroll down and tap on "Delete My Account"</li>
+                            <li>Confirm your decision when prompted</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h2 class="font-semibold text-red-900 text-xl">What Gets Deleted:</h2>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Personal Information (name, email, phone number)</li>
+                            <li>Profile Data</li>
+                            <li>Chat History</li>
+                            <li>Product Inquiries</li>
+                            <li>Account Settings</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-red-50 rounded-xl p-6">
+                        <h2 class="font-semibold text-red-900 text-xl mb-4">Data Retention:</h2>
+                        <p>Some anonymized data may be retained for analytical purposes, including:</p>
+                        <ul class="list-disc list-inside space-y-2 mt-2">
+                            <li>Product search patterns (anonymized)</li>
+                            <li>Category preferences (anonymized)</li>
+                            <li>Market trends (anonymized)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl p-6">
+                        <h2 class="font-semibold text-xl mb-4">Need Help?</h2>
+                        <p class="mb-4">
+                            If you're having trouble deleting your account or have questions about data retention, please contact us at:
+                        </p>
+                        <a 
+                            href="mailto:contact@knoc.in"
+                            class="text-white underline hover:text-red-100 transition-colors"
+                        >
+                            contact@knoc.in
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
