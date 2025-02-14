@@ -214,6 +214,7 @@
 
         const DualLanding = () => {
             const [showBusiness, setShowBusiness] = React.useState(false);
+            const [showPrivacyPolicy, setShowPrivacyPolicy] = React.useState(false);
 
             const userFeatures = [
                 {
@@ -422,15 +423,28 @@
                             <div className="text-sm text-red-600">
                                 © {new Date().getFullYear()} Knoc. All rights reserved.
                             </div>
-                            <a 
-                                href="mailto:contact@knoc.in" 
-                                className="text-sm text-red-600 hover:text-red-500 transition-colors duration-300"
-                            >
-                                contact@knoc.in
-                            </a>
+                            <div className="flex items-center gap-4">
+                                <button 
+                                    onClick={() => setShowPrivacyPolicy(true)}
+                                    className="text-sm text-red-600 hover:text-red-500 transition-colors duration-300"
+                                >
+                                    Privacy Policy
+                                </button>
+                                <a 
+                                    href="mailto:contact@knoc.in" 
+                                    className="text-sm text-red-600 hover:text-red-500 transition-colors duration-300"
+                                >
+                                    contact@knoc.in
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </footer>
+
+                {/* Privacy Policy Modal */}
+                {showPrivacyPolicy && (
+                    <PrivacyPolicy onClose={() => setShowPrivacyPolicy(false)} />
+                )}
             </div>
         );
     };
@@ -438,3 +452,6 @@
     // Render the app
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<DualLanding />);
+</script>
+</body>
+</html>
