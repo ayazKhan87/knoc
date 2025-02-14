@@ -352,8 +352,6 @@
                                         </p>
                                         <a 
                                             href="mailto:contact@knoc.in"
-                                            className="text-white under
-                                            href="mailto:contact@knoc.in"
                                             className="text-white underline hover:text-red-100 transition-colors"
                                         >
                                             contact@knoc.in
@@ -384,7 +382,7 @@
             </div>
         );
 
-        // Main Component
+        // Main DualLanding Component
         const DualLanding = () => {
             const [showBusiness, setShowBusiness] = React.useState(false);
             const [showPrivacyPolicy, setShowPrivacyPolicy] = React.useState(false);
@@ -490,7 +488,7 @@
                                     <div className="relative image-container main-image-container">
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 opacity-10 rounded-3xl main-image-rotate"></div>
                                         <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl">
-                                            <div className="placeholder-image w-full h-64 rounded-xl"></div>
+                                            <div className="w-full h-auto rounded-xl object-cover placeholder-image" style={{ aspectRatio: "16/9" }}></div>
                                         </div>
                                         
                                         {/* Floating Cards */}
