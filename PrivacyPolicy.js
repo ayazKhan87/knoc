@@ -1,13 +1,12 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 
 const PrivacyPolicy = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto">
       <div className="min-h-screen py-8 px-4">
         <div className="max-w-4xl mx-auto">
-          <Card className="bg-white/95 backdrop-blur-xl shadow-xl">
-            <CardContent className="p-8">
+          <div className="bg-white/95 backdrop-blur-xl shadow-xl rounded-xl">
+            <div className="p-8">
               {/* Header */}
               <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-red-900">Privacy Policy</h1>
@@ -161,8 +160,8 @@ const PrivacyPolicy = ({ onClose }) => {
                   contact@knoc.in
                 </a>
               </section>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
