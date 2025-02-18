@@ -10,18 +10,13 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
     <!-- React and ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
     <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Dialog Component Dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/class-variance-authority/0.7.0/index.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clsx/2.1.0/clsx.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwind-merge/2.2.1/tailwind-merge.min.js"></script>
 
     <style>
         body {
@@ -125,49 +120,6 @@
             }
         }
 
-        /* Dialog styles */
-        .dialog-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 50;
-            backdrop-filter: blur(4px);
-        }
-
-        .dialog-content {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90vw;
-            max-width: 32rem;
-            max-height: 85vh;
-            padding: 1.5rem;
-            animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 51;
-            overflow-y: auto;
-        }
-
-        @keyframes overlayShow {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes contentShow {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -48%) scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
         /* Main image container animation for all devices */
         .main-image-container {
             transition: all 0.3s ease;
@@ -244,144 +196,6 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // Download Guide Component
-        const DownloadGuide = ({ isButton = true }) => {
-            const [isOpen, setIsOpen] = React.useState(false);
-            const [step, setStep] = React.useState(1);
-            
-            const steps = [
-                {
-                    title: "Join the Beta Group",
-                    content: (
-                        <div className="space-y-4">
-                            <p className="text-red-700">First, you'll need to join our beta testing group:</p>
-                            <div className="bg-red-50 p-4 rounded-lg space-y-4">
-                                <ol className="list-decimal list-inside space-y-2 text-red-700">
-                                    <li>Click the button below to open the Google Group</li>
-                                    <li>Sign in with your Google Account</li>
-                                    <li>Click "Ask to join group"</li>
-                                    <li>Wait for automatic approval (usually instant)</li>
-                                </ol>
-                                <a 
-                                    href="https://groups.google.com/g/knocbeta"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block w-full"
-                                >
-                                    <button className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                                        Open Beta Group
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-                    )
-                },
-                {
-                    title: "Download the App",
-                    content: (
-                        <div className="space-y-4">
-                            <p className="text-red-700">Now that you're in the beta group, you can download Knoc:</p>
-                            <div className="bg-red-50 p-4 rounded-lg space-y-4">
-                                <ol className="list-decimal list-inside space-y-2 text-red-700">
-                                    <li>Click the button below to open Play Store</li>
-                                    <li>Make sure you're signed in with the same Google Account</li>
-                                    <li>Click "Install" to download Knoc</li>
-                                </ol>
-                                <a 
-                                    href="https://play.google.com/store/apps/details?id=com.knoc.app"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block w-full"
-                                >
-                                    <button className="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                                        Open Play Store
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-                    )
-                }
-            ];
-
-            return (
-                <>
-                    {isButton ? (
-                        <button 
-                            onClick={() => setIsOpen(true)}
-                            className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300"
-                        >
-                            Download App
-                        </button>
-                    ) : (
-                        <button 
-                            onClick={() => setIsOpen(true)}
-                            className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10"
-                        >
-                            Download Now
-                        </button>
-                    )}
-
-                    {isOpen && (
-                        <>
-                            <div className="dialog-overlay" onClick={() => setIsOpen(false)} />
-                            <div className="dialog-content">
-                                <div className="pt-6">
-                                    {/* Progress Bar */}
-                                    <div className="flex items-center mb-8">
-                                        {steps.map((_, index) => (
-                                            <React.Fragment key={index}>
-                                                <div 
-                                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                                        step > index + 1 ? 'bg-green-500' : 
-                                                        step === index + 1 ? 'bg-red-600' : 'bg-gray-200'
-                                                    } text-white font-medium`}
-                                                >
-                                                    {step > index + 1 ? '✓' : index + 1}
-                                                </div>
-                                                {index < steps.length - 1 && (
-                                                    <div className={`h-1 flex-1 ${
-                                                        step > index + 1 ? 'bg-green-500' : 'bg-gray-200'
-                                                    }`} />
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-
-                                    {/* Content */}
-                                    <h2 className="text-2xl font-bold text-red-900 mb-4">
-                                        {steps[step - 1].title}
-                                    </h2>
-                                    <div className="mt-4">
-                                        {steps[step - 1].content}
-                                    </div>
-
-                                    {/* Navigation */}
-                                    <div className="flex justify-between mt-8">
-                                        {step > 1 && (
-                                            <button
-                                                onClick={() => setStep(step - 1)}
-                                                className="text-red-600 hover:text-red-700 transition-colors"
-                                            >
-                                                ← Back
-                                            </button>
-                                        )}
-                                        {step < steps.length && (
-                                            <button
-                                                onClick={() => setStep(step + 1)}
-                                                className="ml-auto text-red-600 hover:text-red-700 transition-colors"
-                                            >
-                                                Next →
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </>
-            );
-        };
-
         // Privacy Policy Component
         const PrivacyPolicy = ({ onClose }) => {
             return (
@@ -455,6 +269,81 @@
                                         </div>
                                     </section>
 
+                                    {/* Data Usage */}
+                                    <section className="mb-8">
+                                        <h2 className="text-xl font-semibold text-red-900 mb-4">How We Use Your Data</h2>
+                                        <div className="bg-white p-6 rounded-xl border-2 border-red-100">
+                                            <ul className="space-y-3 text-red-700">
+                                                <li className="flex items-start">
+                                                    <span className="text-red-500 mr-2">•</span>
+                                                    User identification and registration
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="text-red-500 mr-2">•</span>
+                                                    Sending updates and notifications
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="text-red-500 mr-2">•</span>
+                                                    Improving the service experience
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    {/* Data Retention */}
+                                    <section className="mb-8">
+                                        <h2 className="text-xl font-semibold text-red-900 mb-4">Data Retention</h2>
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="bg-white p-6 rounded-xl border-2 border-red-100">
+                                                <h3 className="font-medium text-red-900 mb-3">User Data Retention</h3>
+                                                <p className="text-red-700 mb-3">When user accounts are deleted:</p>
+                                                <div className="space-y-2">
+                                                    <p className="text-red-600 text-sm">We retain (anonymized):</p>
+                                                    <ul className="list-disc list-inside text-red-700 text-sm ml-2">
+                                                        <li>Product inquiries</li>
+                                                        <li>Category preferences</li>
+                                                        <li>Search patterns</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="bg-white p-6 rounded-xl border-2 border-red-100">
+                                                <h3 className="font-medium text-red-900 mb-3">Shop Data Retention</h3>
+                                                <p className="text-red-700 mb-3">When shop accounts are deleted:</p>
+                                                <div className="space-y-2">
+                                                    <p className="text-red-600 text-sm">We retain (anonymized):</p>
+                                                    <ul className="list-disc list-inside text-red-700 text-sm ml-2">
+                                                        <li>Category information</li>
+                                                        <li>Location data</li>
+                                                        <li>Market trends</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Image Privacy */}
+                                    <section className="mb-8">
+                                        <h2 className="text-xl font-semibold text-red-900 mb-4">Image Privacy</h2>
+                                        <div className="bg-red-50 p-6 rounded-xl text-red-700">
+                                            <p className="mb-4">Images captured or uploaded through the app:</p>
+                                            <ul className="space-y-2">
+                                                <li className="flex items-start">
+                                                    <span className="text-red-500 mr-2">•</span>
+                                                    Are stored securely on our servers
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="text-red-500 mr-2">•</span>
+                                                    Are only used for intended purposes
+                                                </li>
+                                                <li className="flex items-start">
+                                                    <span className="text-red-500 mr-2">•</span>
+                                                    May be compressed for optimization
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
                                     {/* Contact */}
                                     <section className="bg-gradient-to-r from-red-600 to-red-500 text-white p-6 rounded-xl">
                                         <h2 className="text-xl font-semibold mb-4">Contact Us</h2>
@@ -475,6 +364,124 @@
                 </div>
             );
         };
+
+const DownloadGuideModal = ({ onClose }) => {
+    const [currentStep, setCurrentStep] = useState(1);
+    
+    const steps = [
+        {
+            title: "Join Beta Testing Group",
+            description: "First, join our beta testing group on Google Groups to get access",
+            action: "Join Group",
+            actionLink: "https://groups.google.com/g/knocbeta"
+        },
+        {
+            title: "Download from Play Store",
+            description: "Once you've joined the group, you can download the app from Play Store",
+            action: "Download App",
+            actionLink: "https://play.google.com/store/apps/details?id=com.knoc.app"
+        }
+    ];
+
+    const currentStepData = steps[currentStep - 1];
+
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div className="max-w-md w-full mx-4">
+                <div className="bg-white rounded-2xl shadow-xl">
+                    {/* Header */}
+                    <div className="p-6 border-b border-red-100">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-2xl font-bold text-red-900">Download Knoc</h2>
+                            <button 
+                                onClick={onClose}
+                                className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                                <svg 
+                                    className="w-6 h-6 text-red-600" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round" 
+                                        strokeWidth={2} 
+                                        d="M6 18L18 6M6 6l12 12" 
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Progress Steps */}
+                    <div className="px-6 pt-6">
+                        <div className="flex items-center mb-8">
+                            {steps.map((step, index) => (
+                                <React.Fragment key={index}>
+                                    <div className="flex items-center">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                            index + 1 <= currentStep ? 'bg-red-600 text-white' : 'bg-red-100 text-red-400'
+                                        }`}>
+                                            {index + 1}
+                                        </div>
+                                        <span className="ml-2 text-sm font-medium text-red-900">
+                                            Step {index + 1}
+                                        </span>
+                                    </div>
+                                    {index < steps.length - 1 && (
+                                        <div className={`flex-1 h-0.5 mx-4 ${
+                                            index + 1 < currentStep ? 'bg-red-600' : 'bg-red-100'
+                                        }`} />
+                                    )}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6 pt-0">
+                        <div className="mb-6">
+                            <h3 className="text-xl font-semibold text-red-900 mb-2">
+                                {currentStepData.title}
+                            </h3>
+                            <p className="text-red-600">
+                                {currentStepData.description}
+                            </p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4">
+                            
+                                href={currentStepData.actionLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-xl font-medium text-center shadow-lg hover:shadow-red-200/50 transition-all duration-300"
+                            >
+                                {currentStepData.action}
+                            </a>
+                            {currentStep < steps.length && (
+                                <button
+                                    onClick={() => setCurrentStep(currentStep + 1)}
+                                    className="flex-1 border-2 border-red-200 text-red-600 px-6 py-3 rounded-xl font-medium hover:bg-red-50 transition-all duration-300"
+                                >
+                                    Next Step
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="p-6 border-t border-red-100 bg-red-50/50">
+                        <p className="text-sm text-red-600 text-center">
+                            Having trouble? Contact us at contact@knoc.in
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
         // Floating Card Component
         const FloatingCard = ({ position, icon, title, subtitle }) => (
@@ -497,6 +504,7 @@
         const DualLanding = () => {
             const [showBusiness, setShowBusiness] = React.useState(false);
             const [showPrivacyPolicy, setShowPrivacyPolicy] = React.useState(false);
+            const [showDownloadGuide, setShowDownloadGuide] = React.useState(false);
 
             const userFeatures = [
                 {
@@ -585,13 +593,12 @@
                                     </p>
 
                                     <div className="flex flex-col sm:flex-row gap-4">
-                                        {showBusiness ? (
-                                            <button className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300">
-                                                Join as Shop
-                                            </button>
-                                        ) : (
-                                            <DownloadGuide />
-                                        )}
+                                         <button 
+                                        onClick={() => showBusiness ? null : setShowDownloadGuide(true)}
+                                        className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300"
+                                    >
+                                        {showBusiness ? "Join as Shop" : "Download App"}
+                                        </button>
                                         <button className="border-2 border-red-200 text-red-600 px-8 py-4 rounded-xl font-medium hover:bg-red-50 transition-all duration-300">
                                             Learn More
                                         </button>
@@ -613,7 +620,6 @@
                                                     e.target.className = "w-full h-auto rounded-xl object-cover placeholder-image";
                                                 }}
                                             />
-                                            <div className="w-full h-64 rounded-xl placeholder-image"></div>
                                         </div>
                                         
                                         {/* Floating Cards */}
@@ -705,13 +711,12 @@
                                         "Join others discovering products near them instantly"
                                     }
                                 </p>
-                                {showBusiness ? (
-                                    <button className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10">
-                                        Join as Shop
+                                    <button 
+                                        onClick={() => showBusiness ? null : setShowDownloadGuide(true)}
+                                        className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10"
+                                    >
+                                        {showBusiness ? "Join as Shop" : "Download Now"}
                                     </button>
-                                ) : (
-                                    <DownloadGuide isButton={false} />
-                                )}
                             </div>
                         </div>
                     </section>
@@ -742,9 +747,13 @@
                     </footer>
 
                     {/* Privacy Policy Modal */}
-                    {showPrivacyPolicy && (
-                        <PrivacyPolicy onClose={() => setShowPrivacyPolicy(false)} />
-                    )}
+                        {showPrivacyPolicy && (
+                            <PrivacyPolicy onClose={() => setShowPrivacyPolicy(false)} />
+                        )}
+                        
+                        {showDownloadGuide && (
+                            <DownloadGuideModal onClose={() => setShowDownloadGuide(false)} />
+                        )}
                 </div>
             );
         };
