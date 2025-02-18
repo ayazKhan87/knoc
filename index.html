@@ -196,6 +196,9 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        // Import React and useState
+        const { useState, useEffect } = React;
+
         // Privacy Policy Component
         const PrivacyPolicy = ({ onClose }) => {
             return (
@@ -352,7 +355,7 @@
                                         </p>
                                         <a 
                                             href="mailto:contact@knoc.in"
-                                            className="text-white underline hover:text-red-100 transition-colors"
+                                           className="text-white underline hover:text-red-100 transition-colors duration-300"
                                         >
                                             contact@knoc.in
                                         </a>
@@ -365,123 +368,124 @@
             );
         };
 
-const DownloadGuideModal = ({ onClose }) => {
-    const [currentStep, setCurrentStep] = useState(1);
-    
-    const steps = [
-        {
-            title: "Join Beta Testing Group",
-            description: "First, join our beta testing group on Google Groups to get access",
-            action: "Join Group",
-            actionLink: "https://groups.google.com/g/knocbeta"
-        },
-        {
-            title: "Download from Play Store",
-            description: "Once you've joined the group, you can download the app from Play Store",
-            action: "Download App",
-            actionLink: "https://play.google.com/store/apps/details?id=com.knoc.app"
-        }
-    ];
+        // Download Guide Modal Component
+        const DownloadGuideModal = ({ onClose }) => {
+            const [currentStep, setCurrentStep] = useState(1);
+            
+            const steps = [
+                {
+                    title: "Join Beta Testing Group",
+                    description: "First, join our beta testing group on Google Groups to get access",
+                    action: "Join Group",
+                    actionLink: "https://groups.google.com/g/knocbeta"
+                },
+                {
+                    title: "Download from Play Store",
+                    description: "Once you've joined the group, you can download the app from Play Store",
+                    action: "Download App",
+                    actionLink: "https://play.google.com/store/apps/details?id=com.knoc.app"
+                }
+            ];
 
-    const currentStepData = steps[currentStep - 1];
+            const currentStepData = steps[currentStep - 1];
 
-    return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div className="max-w-md w-full mx-4">
-                <div className="bg-white rounded-2xl shadow-xl">
-                    {/* Header */}
-                    <div className="p-6 border-b border-red-100">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-bold text-red-900">Download Knoc</h2>
-                            <button 
-                                onClick={onClose}
-                                className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                                <svg 
-                                    className="w-6 h-6 text-red-600" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path 
-                                        strokeLinecap="round" 
-                                        strokeLinejoin="round" 
-                                        strokeWidth={2} 
-                                        d="M6 18L18 6M6 6l12 12" 
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+            return (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="max-w-md w-full mx-4">
+                        <div className="bg-white rounded-2xl shadow-xl">
+                            {/* Header */}
+                            <div className="p-6 border-b border-red-100">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-2xl font-bold text-red-900">Download Knoc</h2>
+                                    <button 
+                                        onClick={onClose}
+                                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                        <svg 
+                                            className="w-6 h-6 text-red-600" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path 
+                                                strokeLinecap="round" 
+                                                strokeLinejoin="round" 
+                                                strokeWidth={2} 
+                                                d="M6 18L18 6M6 6l12 12" 
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
 
-                    {/* Progress Steps */}
-                    <div className="px-6 pt-6">
-                        <div className="flex items-center mb-8">
-                            {steps.map((step, index) => (
-                                <React.Fragment key={index}>
-                                    <div className="flex items-center">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                            index + 1 <= currentStep ? 'bg-red-600 text-white' : 'bg-red-100 text-red-400'
-                                        }`}>
-                                            {index + 1}
-                                        </div>
-                                        <span className="ml-2 text-sm font-medium text-red-900">
-                                            Step {index + 1}
-                                        </span>
-                                    </div>
-                                    {index < steps.length - 1 && (
-                                        <div className={`flex-1 h-0.5 mx-4 ${
-                                            index + 1 < currentStep ? 'bg-red-600' : 'bg-red-100'
-                                        }`} />
+                            {/* Progress Steps */}
+                            <div className="px-6 pt-6">
+                                <div className="flex items-center mb-8">
+                                    {steps.map((step, index) => (
+                                        <React.Fragment key={index}>
+                                            <div className="flex items-center">
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                                    index + 1 <= currentStep ? 'bg-red-600 text-white' : 'bg-red-100 text-red-400'
+                                                }`}>
+                                                    {index + 1}
+                                                </div>
+                                                <span className="ml-2 text-sm font-medium text-red-900">
+                                                    Step {index + 1}
+                                                </span>
+                                            </div>
+                                            {index < steps.length - 1 && (
+                                                <div className={`flex-1 h-0.5 mx-4 ${
+                                                    index + 1 < currentStep ? 'bg-red-600' : 'bg-red-100'
+                                                }`} />
+                                            )}
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-6 pt-0">
+                                <div className="mb-6">
+                                    <h3 className="text-xl font-semibold text-red-900 mb-2">
+                                        {currentStepData.title}
+                                    </h3>
+                                    <p className="text-red-600">
+                                        {currentStepData.description}
+                                    </p>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex gap-4">
+                                    <a
+                                        href={currentStepData.actionLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-xl font-medium text-center shadow-lg hover:shadow-red-200/50 transition-all duration-300"
+                                    >
+                                        {currentStepData.action}
+                                    </a>
+                                    {currentStep < steps.length && (
+                                        <button
+                                            onClick={() => setCurrentStep(currentStep + 1)}
+                                            className="flex-1 border-2 border-red-200 text-red-600 px-6 py-3 rounded-xl font-medium hover:bg-red-50 transition-all duration-300"
+                                        >
+                                            Next Step
+                                        </button>
                                     )}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
+                                </div>
+                            </div>
 
-                    {/* Content */}
-                    <div className="p-6 pt-0">
-                        <div className="mb-6">
-                            <h3 className="text-xl font-semibold text-red-900 mb-2">
-                                {currentStepData.title}
-                            </h3>
-                            <p className="text-red-600">
-                                {currentStepData.description}
-                            </p>
+                            {/* Footer */}
+                            <div className="p-6 border-t border-red-100 bg-red-50/50">
+                                <p className="text-sm text-red-600 text-center">
+                                    Having trouble? Contact us at contact@knoc.in
+                                </p>
+                            </div>
                         </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-4">
-                            
-                                href={currentStepData.actionLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-xl font-medium text-center shadow-lg hover:shadow-red-200/50 transition-all duration-300"
-                            >
-                                {currentStepData.action}
-                            </a>
-                            {currentStep < steps.length && (
-                                <button
-                                    onClick={() => setCurrentStep(currentStep + 1)}
-                                    className="flex-1 border-2 border-red-200 text-red-600 px-6 py-3 rounded-xl font-medium hover:bg-red-50 transition-all duration-300"
-                                >
-                                    Next Step
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="p-6 border-t border-red-100 bg-red-50/50">
-                        <p className="text-sm text-red-600 text-center">
-                            Having trouble? Contact us at contact@knoc.in
-                        </p>
                     </div>
                 </div>
-            </div>
-        </div>
-    );
-};
+            );
+        };
 
         // Floating Card Component
         const FloatingCard = ({ position, icon, title, subtitle }) => (
@@ -502,9 +506,9 @@ const DownloadGuideModal = ({ onClose }) => {
 
         // Main DualLanding Component
         const DualLanding = () => {
-            const [showBusiness, setShowBusiness] = React.useState(false);
-            const [showPrivacyPolicy, setShowPrivacyPolicy] = React.useState(false);
-            const [showDownloadGuide, setShowDownloadGuide] = React.useState(false);
+            const [showBusiness, setShowBusiness] = useState(false);
+            const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+            const [showDownloadGuide, setShowDownloadGuide] = useState(false);
 
             const userFeatures = [
                 {
@@ -593,11 +597,17 @@ const DownloadGuideModal = ({ onClose }) => {
                                     </p>
 
                                     <div className="flex flex-col sm:flex-row gap-4">
-                                         <button 
-                                        onClick={() => showBusiness ? null : setShowDownloadGuide(true)}
-                                        className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300"
-                                    >
-                                        {showBusiness ? "Join as Shop" : "Download App"}
+                                        <button 
+                                            onClick={() => {
+                                                if (showBusiness) {
+                                                    window.location.href = 'https://forms.gle/YourShopRegistrationForm';
+                                                } else {
+                                                    setShowDownloadGuide(true);
+                                                }
+                                            }}
+                                            className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300"
+                                        >
+                                            {showBusiness ? "Join as Shop" : "Download App"}
                                         </button>
                                         <button className="border-2 border-red-200 text-red-600 px-8 py-4 rounded-xl font-medium hover:bg-red-50 transition-all duration-300">
                                             Learn More
@@ -610,16 +620,10 @@ const DownloadGuideModal = ({ onClose }) => {
                                     <div className="relative image-container main-image-container">
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 opacity-10 rounded-3xl main-image-rotate"></div>
                                         <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl">
-                                            <img 
-                                                src="mainImage.png"
-                                                alt="Main Illustration" 
-                                                className="w-full h-auto rounded-xl object-cover" 
-                                                style={{ aspectRatio: "16/9" }} 
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.target.className = "w-full h-auto rounded-xl object-cover placeholder-image";
-                                                }}
-                                            />
+                                            <div 
+                                                className="w-full h-auto rounded-xl object-cover placeholder-image"
+                                                style={{ aspectRatio: "16/9" }}
+                                            ></div>
                                         </div>
                                         
                                         {/* Floating Cards */}
@@ -711,12 +715,18 @@ const DownloadGuideModal = ({ onClose }) => {
                                         "Join others discovering products near them instantly"
                                     }
                                 </p>
-                                    <button 
-                                        onClick={() => showBusiness ? null : setShowDownloadGuide(true)}
-                                        className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10"
-                                    >
-                                        {showBusiness ? "Join as Shop" : "Download Now"}
-                                    </button>
+                                <button 
+                                    onClick={() => {
+                                        if (showBusiness) {
+                                            window.location.href = 'https://forms.gle/YourShopRegistrationForm';
+                                        } else {
+                                            setShowDownloadGuide(true);
+                                        }
+                                    }}
+                                    className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10"
+                                >
+                                    {showBusiness ? "Join as Shop" : "Download Now"}
+                                </button>
                             </div>
                         </div>
                     </section>
@@ -746,14 +756,14 @@ const DownloadGuideModal = ({ onClose }) => {
                         </div>
                     </footer>
 
-                    {/* Privacy Policy Modal */}
-                        {showPrivacyPolicy && (
-                            <PrivacyPolicy onClose={() => setShowPrivacyPolicy(false)} />
-                        )}
-                        
-                        {showDownloadGuide && (
-                            <DownloadGuideModal onClose={() => setShowDownloadGuide(false)} />
-                        )}
+                    {/* Modals */}
+                    {showPrivacyPolicy && (
+                        <PrivacyPolicy onClose={() => setShowPrivacyPolicy(false)} />
+                    )}
+                    
+                    {showDownloadGuide && (
+                        <DownloadGuideModal onClose={() => setShowDownloadGuide(false)} />
+                    )}
                 </div>
             );
         };
