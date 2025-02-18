@@ -546,15 +546,18 @@
                     <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-red-100">
                         <div className="max-w-6xl mx-auto px-4">
                             <div className="flex items-center justify-between py-4">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center relative">
-                                        <div className="absolute inset-0 bg-red-500 rounded-xl animate-pulse opacity-50"></div>
-                                        <span className="text-white font-bold">K</span>
-                                    </div>
-                                    <span className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-500 text-transparent bg-clip-text">
-                                        Knoc
-                                    </span>
+                            <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-xl relative overflow-hidden">
+                                    <img 
+                                        src="knoc_logo.png"
+                                        alt="Knoc Logo"
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
+                                <span className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-500 text-transparent bg-clip-text">
+                                    Knoc
+                                </span>
+                            </div>
                                 <button 
                                     onClick={() => setShowBusiness(!showBusiness)}
                                     className="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-2 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300 transform hover:scale-105"
