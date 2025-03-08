@@ -450,10 +450,6 @@
                     description: "Convert local searches into sales opportunities"
                 }
             ];
-            
-            const handleDownloadClick = () => {
-                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
-            };
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 overflow-x-hidden">
@@ -515,18 +511,14 @@
                                     </p>
 
                                     <div className="flex flex-col sm:flex-row gap-4">
-                                        <button 
-                                            onClick={() => {
-                                                if (showBusiness) {
-                                                    window.location.href = 'https://forms.gle/YourShopRegistrationForm';
-                                                } else {
-                                                    handleDownloadClick();
-                                                }
-                                            }}
-                                            className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300"
+                                        <a 
+                                            href={showBusiness ? 'https://forms.gle/YourShopRegistrationForm' : 'https://play.google.com/store/apps/details?id=com.knoc.app'}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-red-200/50 transition-all duration-300 text-center"
                                         >
                                             {showBusiness ? "Join as Shop" : "Download App"}
-                                        </button>
+                                        </a>
                                         <button className="border-2 border-red-200 text-red-600 px-8 py-4 rounded-xl font-medium hover:bg-red-50 transition-all duration-300">
                                             Learn More
                                         </button>
@@ -655,18 +647,14 @@
                                         "Join others discovering products near them instantly"
                                     }
                                 </p>
-                                <button 
-                                    onClick={() => {
-                                        if (showBusiness) {
-                                            window.location.href = 'https://www.knoc.in/';
-                                        } else {
-                                            handleDownloadClick();
-                                        }
-                                    }}
-                                    className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10"
+                                <a 
+                                    href={showBusiness ? 'https://www.knoc.in/' : 'https://play.google.com/store/apps/details?id=com.knoc.app'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-white text-red-600 px-8 py-4 rounded-xl font-medium shadow-lg transition-all duration-300 transform hover:scale-105 relative z-10 inline-block"
                                 >
                                     {showBusiness ? "Join as Shop" : "Download Now"}
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </section>
@@ -696,8 +684,7 @@
                                     {/* Social Icons */}
                                     <div className="flex space-x-4 mb-4">
                                         <a 
-                                            href="https://youtube.com/@knoc-knoc?si=S7SYD9A8QT3zfVJ9" 
-                                            target="_blank"
+                                            href="https://youtube.com/@knoc-knoc?si=S7SYD9A8QT3zfVJ9"target="_blank"
                                             rel="noopener noreferrer"
                                             className="w-9 h-9 bg-red-50 rounded-full flex items-center justify-center text-red-600 hover:bg-red-100 transition-colors duration-300"
                                         >
@@ -757,7 +744,9 @@
                                     <ul className="space-y-2">
                                         <li>
                                             <a 
-                                                onClick={() => setShowDownloadGuide(true)}
+                                                href="https://play.google.com/store/apps/details?id=com.knoc.app"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
                                                 className="text-red-600 hover:text-red-500 transition-colors duration-300 text-sm cursor-pointer"
                                             >
                                                 Download App
@@ -796,10 +785,6 @@
                     {/* Modals */}
                     {showPrivacyPolicy && (
                         <PrivacyPolicy onClose={() => setShowPrivacyPolicy(false)} />
-                    )}
-                    
-                    {showDownloadGuide && (
-                        <DownloadGuideModal onClose={() => setShowDownloadGuide(false)} />
                     )}
                 </div>
             );
