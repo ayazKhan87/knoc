@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script type="text/javascript">
+    function openAppOrRedirect() {
+      const query = new URLSearchParams(window.location.search);
+      const data = query.get("data");
+      const sig = query.get("sig");
+
+      const appUrl = `knoc.app://post?data=${data}&sig=${sig}`; // Please modify this URL according to your app's scheme
+      window.location = appUrl;
+
+      setTimeout(() => {
+        window.location.href = "https://play.google.com/store/apps/details?id=com.knoc.app";
+      }, 1200);
+    }
+  </script>
+</head>
+<body onload="openAppOrRedirect()">
+  <p style="text-align: center;">Opening Knoc App...</p>
+</body>
+</html>
