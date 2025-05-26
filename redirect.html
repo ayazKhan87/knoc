@@ -27,18 +27,21 @@
       width: 80px;
       height: 80px;
       margin: 0 auto 20px;
-      background-color: #ff4444;
+      background-color: #ef4444;
       border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 36px;
-      font-weight: bold;
+      overflow: hidden;
+    }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .spinner {
       border: 3px solid #f3f3f3;
-      border-top: 3px solid #ff4444;
+      border-top: 3px solid #ef4444;
       border-radius: 50%;
       width: 40px;
       height: 40px;
@@ -50,22 +53,22 @@
       100% { transform: rotate(360deg); }
     }
     .message {
-      color: #333;
+      color: #2e2e2e;
       margin: 20px 0;
       font-size: 18px;
     }
     .fallback {
       margin-top: 30px;
       font-size: 14px;
-      color: #666;
+      color: #2e2e2e;
     }
     .fallback a {
-      color: #ff4444;
+      color: #ef4444;
       text-decoration: none;
       font-weight: 500;
     }
     .btn {
-      background-color: #ff4444;
+      background-color: #ef4444;
       color: white;
       padding: 12px 24px;
       border: none;
@@ -78,23 +81,39 @@
       cursor: pointer;
     }
     .btn:hover {
-      background-color: #e63939;
+      background-color: #dc2626;
+    }
+    .btn-secondary {
+      background-color: #666;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background-color: #555;
     }
     .hidden {
       display: none;
+    }
+    .desktop-message {
+      color: #2e2e2e;
+      line-height: 1.6;
+    }
+    .desktop-message p {
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo">K</div>
+    <div class="logo">
+      <img src="knoc_logo.png" alt="Knoc Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='K';">
+    </div>
     <div class="spinner" id="spinner"></div>
     <div class="message" id="message">Opening Knoc App...</div>
     <div class="fallback hidden" id="fallback">
       <p>Knoc app not installed?</p>
       <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn" id="playStoreBtn">Download from Play Store</a>
       <br><br>
-      <a href="https://www.knoc.in" class="btn" style="background-color: #666;">Visit Website</a>
+      <a href="https://www.knoc.in" class="btn btn-secondary">Visit Website</a>
     </div>
   </div>
 
@@ -107,10 +126,7 @@
       const data = query.get("data");
       const sig = query.get("sig");
       
-      console.log('Deep link data:', { data, sig });
-      
       if (!data || !sig) {
-        console.log('Invalid deep link, redirecting to main website');
         window.location.href = "https://www.knoc.in";
         return;
       }
@@ -118,35 +134,34 @@
       // Detect device type
       const userAgent = navigator.userAgent.toLowerCase();
       const isAndroid = /android/.test(userAgent);
-      const isIOS = /iphone|ipad|ipod/.test(userAgent);
-      const isMobile = isAndroid || isIOS;
+      const isMobile = /android|iphone|ipad|ipod|mobile/.test(userAgent);
       
-      console.log('Device detection:', { isAndroid, isIOS, isMobile });
-
       if (!isMobile) {
         showDesktopMessage();
         return;
       }
 
-      // Try to open the app immediately
-      attemptAppOpen(data, sig, isAndroid, isIOS);
+      if (isAndroid) {
+        // Try to open the app immediately for Android
+        attemptAppOpen(data, sig);
+      } else {
+        // For iOS users, show not available message
+        showIOSMessage();
+      }
     }
     
-    function attemptAppOpen(data, sig, isAndroid, isIOS) {
+    function attemptAppOpen(data, sig) {
       // Create the app URL
       const appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-      console.log('Attempting to open app with URL:', appUrl);
       
       // Set up visibility change listener to detect if app opened
       let isPageVisible = true;
       
       const handleVisibilityChange = () => {
         if (document.hidden) {
-          console.log('Page became hidden - app likely opened');
           appOpened = true;
           clearTimeout(redirectTimer);
         } else {
-          console.log('Page became visible');
           isPageVisible = true;
         }
       };
@@ -156,12 +171,10 @@
       
       // Listen for page focus events (additional detection)
       const handleBlur = () => {
-        console.log('Page lost focus - app might have opened');
         appOpened = true;
       };
       
       const handleFocus = () => {
-        console.log('Page gained focus');
         if (!appOpened) {
           // If we get focus back quickly, app probably didn't open
           setTimeout(() => {
@@ -178,45 +191,41 @@
       // Set a timer to show fallback options if app doesn't open
       redirectTimer = setTimeout(() => {
         if (!appOpened && !document.hidden) {
-          console.log('App did not open, showing fallback options');
           showFallbackOptions();
         }
-      }, 2500); // Increased timeout for better detection
+      }, 2500);
       
       // Try to open the app
       try {
-        if (isAndroid) {
-          // For Android, try intent first, then custom scheme
-          const intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
-          console.log('Trying Android intent:', intentUrl);
-          
-          // Create a hidden iframe to trigger the intent
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = intentUrl;
-          document.body.appendChild(iframe);
-          
-          // Also try the custom scheme as fallback
-          setTimeout(() => {
-            if (!appOpened) {
-              console.log('Trying custom scheme fallback');
-              window.location.href = appUrl;
-            }
-          }, 500);
-          
-        } else if (isIOS) {
-          // For iOS, try custom scheme
-          window.location.href = appUrl;
-        }
+        // For Android, try intent first, then custom scheme
+        const intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+        
+        // Create a hidden iframe to trigger the intent
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = intentUrl;
+        document.body.appendChild(iframe);
+        
+        // Also try the custom scheme as fallback
+        setTimeout(() => {
+          if (!appOpened) {
+            window.location.href = appUrl;
+          }
+        }, 500);
+        
       } catch (error) {
-        console.error('Error opening app:', error);
         showFallbackOptions();
       }
     }
     
     function showDesktopMessage() {
       document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('message').textContent = 'Please open this link on your mobile device to view in the Knoc app.';
+      const messageEl = document.getElementById('message');
+      messageEl.classList.add('desktop-message');
+      messageEl.innerHTML = `
+        <p><strong>Please open this link on your Android device</strong></p>
+        <p>The Knoc app is available on Android devices.</p>
+      `;
       
       const fallback = document.getElementById('fallback');
       fallback.innerHTML = `
@@ -226,36 +235,29 @@
       fallback.classList.remove('hidden');
     }
     
+    function showIOSMessage() {
+      document.getElementById('spinner').classList.add('hidden');
+      const messageEl = document.getElementById('message');
+      messageEl.classList.add('desktop-message');
+      messageEl.innerHTML = `
+        <p><strong>Knoc app is not yet available for iOS</strong></p>
+        <p>We're working on bringing Knoc to iOS devices soon!</p>
+      `;
+      
+      const fallback = document.getElementById('fallback');
+      fallback.innerHTML = `
+        <p>Meanwhile, you can:</p>
+        <a href="https://www.knoc.in" class="btn">Visit Knoc Website</a>
+      `;
+      fallback.classList.remove('hidden');
+    }
+    
     function showFallbackOptions() {
       if (appOpened) return; // Don't show if app already opened
       
-      console.log('Showing fallback options');
       document.getElementById('spinner').classList.add('hidden');
       document.getElementById('message').textContent = 'Having trouble opening the app?';
       document.getElementById('fallback').classList.remove('hidden');
-    }
-    
-    // Enhanced app detection for Android
-    function detectAndroidApp() {
-      return new Promise((resolve) => {
-        const timeout = setTimeout(() => {
-          resolve(false);
-        }, 1000);
-        
-        const cleanup = () => {
-          clearTimeout(timeout);
-          document.removeEventListener('visibilitychange', onVisibilityChange);
-        };
-        
-        const onVisibilityChange = () => {
-          if (document.hidden) {
-            cleanup();
-            resolve(true);
-          }
-        };
-        
-        document.addEventListener('visibilitychange', onVisibilityChange);
-      });
     }
     
     // Start the process when page loads
