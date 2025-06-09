@@ -100,6 +100,22 @@
     .desktop-message p {
       margin: 10px 0;
     }
+    .shop-preview {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+    .shop-preview h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+    .shop-preview p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -109,6 +125,13 @@
     </div>
     <div class="spinner" id="spinner"></div>
     <div class="message" id="message">Opening Knoc App...</div>
+    
+    <!-- ✅ NEW: Shop preview section -->
+    <div class="shop-preview hidden" id="shopPreview">
+      <h3 id="shopName">Shop Preview</h3>
+      <p id="shopDescription">Loading shop details...</p>
+    </div>
+    
     <div class="fallback hidden" id="fallback">
       <p>Knoc app not installed?</p>
       <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn" id="playStoreBtn">Download from Play Store</a>
@@ -120,6 +143,7 @@
   <script type="text/javascript">
     let appOpened = false;
     let redirectTimer = null;
+    let linkType = 'unknown';
     
     function openAppOrRedirect() {
       const query = new URLSearchParams(window.location.search);
@@ -129,6 +153,16 @@
       if (!data || !sig) {
         window.location.href = "https://www.knoc.in";
         return;
+      }
+
+      // ✅ NEW: Try to decode and identify link type for preview
+      try {
+        linkType = identifyLinkType(data);
+        if (linkType === 'shop') {
+          showShopPreview(data);
+        }
+      } catch (e) {
+        console.log('Could not decode link for preview:', e);
       }
 
       // Detect device type
@@ -150,9 +184,58 @@
       }
     }
     
+    // ✅ NEW: Function to identify link type from encoded data
+    function identifyLinkType(encodedData) {
+      try {
+        // Simple base64 decode to check content
+        const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
+        
+        if (decodedData.startsWith('shop:')) {
+          return 'shop';
+        } else if (decodedData.includes(':')) {
+          return 'post';
+        }
+        
+        return 'unknown';
+      } catch (e) {
+        return 'unknown';
+      }
+    }
+    
+    // ✅ NEW: Function to show shop preview
+    function showShopPreview(encodedData) {
+      try {
+        const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
+        
+        if (decodedData.startsWith('shop:')) {
+          const shopId = decodedData.substring(5);
+          
+          // Show shop preview section
+          const previewEl = document.getElementById('shopPreview');
+          const nameEl = document.getElementById('shopName');
+          const descEl = document.getElementById('shopDescription');
+          
+          nameEl.textContent = 'Shop Profile';
+          descEl.textContent = 'View this amazing shop on Knoc!';
+          
+          previewEl.classList.remove('hidden');
+          
+          // Update message
+          document.getElementById('message').textContent = 'Opening shop profile...';
+        }
+      } catch (e) {
+        console.log('Error showing shop preview:', e);
+      }
+    }
+    
     function attemptAppOpen(data, sig) {
-      // Create the app URL
-      const appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
+      // Create the app URL based on link type
+      let appUrl;
+      if (linkType === 'shop') {
+        appUrl = `knoc://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
+      } else {
+        appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
+      }
       
       // Set up visibility change listener to detect if app opened
       let isPageVisible = true;
@@ -197,8 +280,13 @@
       
       // Try to open the app
       try {
-        // For Android, try intent first, then custom scheme
-        const intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+        // ✅ UPDATED: Create intent URL based on link type
+        let intentUrl;
+        if (linkType === 'shop') {
+          intentUrl = `intent://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+        } else {
+          intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+        }
         
         // Create a hidden iframe to trigger the intent
         const iframe = document.createElement('iframe');
@@ -222,10 +310,18 @@
       document.getElementById('spinner').classList.add('hidden');
       const messageEl = document.getElementById('message');
       messageEl.classList.add('desktop-message');
-      messageEl.innerHTML = `
-        <p><strong>Please open this link on your Android device</strong></p>
-        <p>The Knoc app is available on Android devices.</p>
-      `;
+      
+      if (linkType === 'shop') {
+        messageEl.innerHTML = `
+          <p><strong>Please open this shop link on your Android device</strong></p>
+          <p>The Knoc app is available on Android devices.</p>
+        `;
+      } else {
+        messageEl.innerHTML = `
+          <p><strong>Please open this link on your Android device</strong></p>
+          <p>The Knoc app is available on Android devices.</p>
+        `;
+      }
       
       const fallback = document.getElementById('fallback');
       fallback.innerHTML = `
@@ -256,7 +352,13 @@
       if (appOpened) return; // Don't show if app already opened
       
       document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('message').textContent = 'Having trouble opening the app?';
+      
+      if (linkType === 'shop') {
+        document.getElementById('message').textContent = 'Having trouble opening the shop?';
+      } else {
+        document.getElementById('message').textContent = 'Having trouble opening the app?';
+      }
+      
       document.getElementById('fallback').classList.remove('hidden');
     }
     
