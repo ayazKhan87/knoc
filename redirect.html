@@ -472,7 +472,7 @@
       
       if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
         // Create URL for the web profile page
-        const webProfileUrl = `https://www.knoc.in/ShopProfile.html?data=${encodeURIComponent(originalData)}&sig=${encodeURIComponent(originalSig)}`;
+        const webProfileUrl = `https://www.knoc.in/shopProfile.html?data=${encodeURIComponent(originalData)}&sig=${encodeURIComponent(originalSig)}`;
         
         webProfileBtn.href = webProfileUrl;
         webProfileBtn.onclick = (e) => {
