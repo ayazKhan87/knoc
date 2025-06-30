@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Profile - Knoc</title>
+    <meta name="description" content="Discover amazing shops and products on Knoc">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Shop Profile - Knoc">
+    <meta property="og:description" content="Discover amazing shops and products on Knoc">
+    <meta property="og:image" content="https://www.knoc.in/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Shop Profile - Knoc">
+    <meta property="twitter:description" content="Discover amazing shops and products on Knoc">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .app-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #ef4444;
+        }
+        
+        .btn-secondary:hover {
+            background: #f3f4f6;
+        }
+        
+        /* Cover Section */
+        .cover-section {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            overflow: hidden;
+        }
+        
+        .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-pic {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: #f3f4f6;
+            object-fit: cover;
+        }
+        
+        /* Shop Info */
+        .shop-info {
+            padding: 3rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+        
+        .shop-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        
+        .shop-description {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .shop-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #111827;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .shop-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Products Grid */
+        .products-section {
+            padding: 2rem 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #111827;
+            text-align: center;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .product-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #f3f4f6;
+        }
+        
+        .product-info {
+            padding: 1rem;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111827;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #ef4444;
+        }
+        
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ef4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #dc2626;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6b7280;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .header-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .shop-stats {
+                gap: 1rem;
+            }
+            
+            .shop-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 0.75rem;
+            }
+        }
+        
+        .fallback-section {
+            background: #f8f9fa;
+            border-top: 1px solid #e5e7eb;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        
+        .fallback-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        
+        .fallback-text {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-nav">
+                <div class="logo">Knoc</div>
+                <div class="app-buttons">
+                    <a href="#" class="btn btn-primary" id="openAppBtn">Open in App</a>
+                    <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn btn-secondary">Download</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            <p>Loading shop profile...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div id="errorState" class="error" style="display: none;">
+            <div class="empty-icon">⚠️</div>
+            <h3>Oops! Something went wrong</h3>
+            <p id="errorMessage">Unable to load shop profile</p>
+            <a href="https://www.knoc.in" class="btn btn-primary" style="margin-top: 1rem;">Visit Knoc</a>
+        </div>
+        
+        <!-- Shop Profile -->
+        <div id="shopProfile" style="display: none;">
+            <!-- Cover Section -->
+            <div class="cover-section">
+                <img id="coverImage" class="cover-image" style="display: none;" alt="Shop Cover">
+                <img id="profilePic" class="profile-pic" alt="Shop Profile">
+            </div>
+            
+            <!-- Shop Info -->
+            <div class="shop-info">
+                <h1 id="shopName" class="shop-name">Shop Name</h1>
+                <p id="shopDescription" class="shop-description">Shop description...</p>
+                
+                <div class="shop-stats">
+                    <div class="stat">
+                        <div id="followersCount" class="stat-value">0</div>
+                        <div class="stat-label">Followers</div>
+                    </div>
+                    <div class="stat">
+                        <div id="productsCount" class="stat-value">0</div>
+                        <div class="stat-label">Products</div>
+                    </div>
+                </div>
+                
+                <div class="shop-actions">
+                    <a href="#" class="btn btn-primary" id="followBtn">Follow Shop</a>
+                    <a href="#" class="btn btn-secondary" id="shareBtn">Share</a>
+                </div>
+            </div>
+            
+            <!-- Products Section -->
+            <div class="products-section">
+                <h2 class="section-title">Products</h2>
+                <div id="productsGrid" class="products-grid"></div>
+                
+                <!-- Empty Products State -->
+                <div id="emptyProducts" class="empty-state" style="display: none;">
+                    <div class="empty-icon">🛍️</div>
+                    <h3>No Products Yet</h3>
+                    <p>This shop hasn't added any products yet.<br>Check back soon!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Fallback Section -->
+        <div class="fallback-section">
+            <h3 class="fallback-title">Get the Full Experience</h3>
+            <p class="fallback-text">Download the Knoc app to follow shops, save products, and get notifications about new deals!</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn btn-primary">
+                    📱 Download for Android
+                </a>
+                <a href="https://www.knoc.in" class="btn btn-secondary">
+                    🌐 Visit Website
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your actual URL
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual anon key
+        const DEEP_LINK_SECRET_KEY = 'CHANGE_THIS_IN_PRODUCTION_kJ8#mP2$vN5!qR7@wX9&zL4*tY6^hG3%'; // Same as your Dart code
+
+        // Initialize Supabase client
+        let supabase;
+        
+        async function initSupabase() {
+            try {
+                // Import Supabase from CDN
+                const { createClient } = window.supabase;
+                supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                return true;
+            } catch (error) {
+                console.error('Failed to initialize Supabase:', error);
+                return false;
+            }
+        }
+
+        // Decode and verify deep link
+        function decodeShopLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = urlParams.get('data');
+            const sig = urlParams.get('sig');
+            
+            if (!data || !sig) {
+                // Try to get shopId directly from URL path
+                const pathParts = window.location.pathname.split('/');
+                const shopIndex = pathParts.indexOf('shop');
+                if (shopIndex !== -1 && pathParts[shopIndex + 1]) {
+                    return pathParts[shopIndex + 1];
+                }
+                throw new Error('No shop data found in URL');
+            }
+            
+            // Verify signature using the same logic as your Dart code
+            const expectedSig = CryptoJS.HmacSHA256(data, DEEP_LINK_SECRET_KEY).toString();
+            if (expectedSig !== sig) {
+                throw new Error('Invalid link signature');
+            }
+            
+            // Decode base64 data
+            try {
+                const decodedData = atob(data.replace(/-/g, '+').replace(/_/g, '/'));
+                
+                if (decodedData.startsWith('shop:')) {
+                    return decodedData.substring(5); // Remove 'shop:' prefix
+                } else {
+                    throw new Error('Invalid shop link format');
+                }
+            } catch (e) {
+                throw new Error('Failed to decode shop link');
+            }
+        }
+
+        // Fetch shop data from Supabase
+        async function fetchShopData(shopId) {
+            try {
+                // Fetch shop details
+                const { data: shopData, error: shopError } = await supabase
+                    .from('shops')
+                    .select(`
+                        *,
+                        owner:owner_id (id, name, email)
+                    `)
+                    .eq('id', shopId)
+                    .single();
+
+                if (shopError) throw shopError;
+                if (!shopData) throw new Error('Shop not found');
+
+                // Fetch shop media (profile pic, cover photo)
+                const { data: mediaData } = await supabase
+                    .from('shop_media')
+                    .select('*')
+                    .eq('shop_id', shopId)
+                    .eq('is_active', true);
+
+                // Fetch product posts only
+                const { data: postsData } = await supabase
+                    .from('shop_posts')
+                    .select(`
+                        *,
+                        post_media (*),
+                        post_likes (count)
+                    `)
+                    .eq('shop_id', shopId)
+                    .eq('is_active', true)
+                    .eq('post_type', 'product')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                return {
+                    shop: shopData,
+                    media: mediaData || [],
+                    products: postsData || []
+                };
+            } catch (error) {
+                console.error('Error fetching shop data:', error);
+                throw error;
+            }
+        }
+
+        // Get media URLs
+        function getMediaUrl(mediaList, mediaType) {
+            const media = mediaList.find(m => m.media_type === mediaType && m.is_active);
+            return media ? (media.thumbnail_url || media.url) : null;
+        }
+
+        // Render shop profile
+        function renderShopProfile(data) {
+            const { shop, media, products } = data;
+            
+            // Update meta tags for SEO
+            document.title = `${shop.shop_name} - Knoc`;
+            document.querySelector('meta[property="og:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
+            document.querySelector('meta[property="twitter:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
+            
+            if (shop.description) {
+                document.querySelector('meta[name="description"]').setAttribute('content', shop.description);
+                document.querySelector('meta[property="og:description"]').setAttribute('content', shop.description);
+                document.querySelector('meta[property="twitter:description"]').setAttribute('content', shop.description);
+            }
+
+            // Cover image
+            const coverUrl = getMediaUrl(media, 'cover_photo') || shop.cover_image;
+            if (coverUrl) {
+                const coverImg = document.getElementById('coverImage');
+                coverImg.src = coverUrl;
+                coverImg.style.display = 'block';
+                
+                // Update OG image
+                document.querySelector('meta[property="og:image"]').setAttribute('content', coverUrl);
+            }
+
+            // Profile picture
+            const profileUrl = getMediaUrl(media, 'profile_pic') || shop.image_url;
+            const profilePic = document.getElementById('profilePic');
+            if (profileUrl) {
+                profilePic.src = profileUrl;
+            } else {
+                profilePic.style.display = 'none';
+            }
+
+            // Shop info
+            document.getElementById('shopName').textContent = shop.shop_name || 'Shop';
+            document.getElementById('shopDescription').textContent = shop.description || 'Welcome to our shop!';
+            document.getElementById('followersCount').textContent = shop.follower_count || '0';
+            document.getElementById('productsCount').textContent = products.length.toString();
+
+            // Render products
+            renderProducts(products);
+
+            // Setup deep linking for buttons
+            setupDeepLinking(shop.id);
+
+            // Show profile
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('shopProfile').style.display = 'block';
+        }
+
+        // Render products grid
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyProducts');
+
+            if (products.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.innerHTML = '';
+            emptyState.style.display = 'none';
+
+            products.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create product card
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            const mediaList = product.post_media || [];
+            const imageUrl = mediaList.length > 0 ? (mediaList[0].thumbnail_url || mediaList[0].url) : null;
+            
+            // Extract price from metadata
+            const metadata = product.metadata || {};
+            const price = metadata.price || metadata.discounted_price || metadata.original_price;
+            const priceText = price ? `₹${price}` : 'Price on request';
+
+            card.innerHTML = `
+                ${imageUrl ? `<img class="product-image" src="${imageUrl}" alt="${product.content}" loading="lazy">` : '<div class="product-image"></div>'}
+                <div class="product-info">
+                    <div class="product-name">${product.content || 'Product'}</div>
+                    <div class="product-price">${priceText}</div>
+                </div>
+            `;
+
+            // Add click handler to open in app
+            card.addEventListener('click', () => {
+                openPostInApp(product.id, product.shop_id);
+            });
+
+            return card;
+        }
+
+        // Setup deep linking
+        function setupDeepLinking(shopId) {
+            // Open app button
+            document.getElementById('openAppBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openShopInApp(shopId);
+            });
+
+            // Follow button
+            document.getElementById('followBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openShopInApp(shopId);
+            });
+
+            // Share button
+            document.getElementById('shareBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                shareShop(shopId);
+            });
+        }
+
+        // Open shop in app
+        function openShopInApp(shopId) {
+            // Create the same encrypted link format as your Dart code
+            try {
+                const rawData = `shop:${shopId}`;
+                const encodedData = btoa(rawData).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
+                
+                const appUrl = `knoc://shop?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
+                
+                // Try to open app
+                window.location.href = appUrl;
+                
+                // Fallback to Play Store after a delay
+                setTimeout(() => {
+                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+                }, 2000);
+            } catch (error) {
+                console.error('Error creating deep link:', error);
+                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            }
+        }
+
+        // Open specific post in app
+        function openPostInApp(postId, shopId) {
+            try {
+                const rawData = `${postId}:${shopId}`;
+                const encodedData = btoa(rawData).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
+                
+                const appUrl = `knoc://post?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
+                
+                window.location.href = appUrl;
+                
+                setTimeout(() => {
+                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+                }, 2000);
+            } catch (error) {
+                console.error('Error creating post deep link:', error);
+                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            }
+        }
+
+        // Share shop
+        function shareShop(shopId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.getElementById('shopName').textContent,
+                    text: document.getElementById('shopDescription').textContent,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Shop link copied to clipboard!');
+                });
+            }
+        }
+
+        // Show error state
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorState').style.display = 'block';
+        }
+
+        // Main initialization
+        async function init() {
+            try {
+                // Load Supabase from CDN
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/umd/supabase.min.js';
+                script.onload = async () => {
+                    const initialized = await initSupabase();
+                    if (!initialized) {
+                        showError('Failed to initialize database connection');
+                        return;
+                    }
+
+                    try {
+                        const shopId = decodeShopLink();
+                        const shopData = await fetchShopData(shopId);
+                        renderShopProfile(shopData);
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showError(error.message || 'Failed to load shop profile');
+                    }
+                };
+                script.onerror = () => {
+                    showError('Failed to load required libraries');
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError('Failed to initialize page');
+            }
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
