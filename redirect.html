@@ -10,34 +10,52 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
-      background-color: #f5f5f5;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
     }
     .container {
       text-align: center;
-      padding: 20px;
+      padding: 30px;
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      max-width: 400px;
-      width: 90%;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      max-width: 450px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ef4444, #dc2626);
     }
     .logo {
       width: 80px;
       height: 80px;
       margin: 0 auto 20px;
-      background-color: #ef4444;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
       border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
     }
     .logo img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    .logo-text {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
     }
     .spinner {
       border: 3px solid #f3f3f3;
@@ -56,16 +74,17 @@
       color: #2e2e2e;
       margin: 20px 0;
       font-size: 18px;
+      font-weight: 500;
+    }
+    .sub-message {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
     }
     .fallback {
       margin-top: 30px;
       font-size: 14px;
       color: #2e2e2e;
-    }
-    .fallback a {
-      color: #ef4444;
-      text-decoration: none;
-      font-weight: 500;
     }
     .btn {
       background-color: #ef4444;
@@ -77,18 +96,31 @@
       font-weight: 500;
       text-decoration: none;
       display: inline-block;
-      margin: 10px 5px;
+      margin: 8px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
     .btn:hover {
       background-color: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
     }
     .btn-secondary {
-      background-color: #666;
-      color: white;
+      background-color: #6b7280;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
     }
     .btn-secondary:hover {
-      background-color: #555;
+      background-color: #4b5563;
+      box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
+    }
+    .btn-web {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    .btn-web:hover {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
     }
     .hidden {
       display: none;
@@ -98,14 +130,15 @@
       line-height: 1.6;
     }
     .desktop-message p {
-      margin: 10px 0;
+      margin: 15px 0;
     }
     .shop-preview {
       background: linear-gradient(135deg, #ef4444, #dc2626);
       color: white;
-      padding: 16px;
+      padding: 20px;
       border-radius: 12px;
-      margin: 16px 0;
+      margin: 20px 0;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
     }
     .shop-preview h3 {
       margin: 0 0 8px 0;
@@ -116,27 +149,73 @@
       opacity: 0.9;
       font-size: 14px;
     }
+    .preview-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    @media (max-width: 480px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+    }
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="logo">
-      <img src="knoc_logo.png" alt="Knoc Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='K';">
+      <img src="https://www.knoc.in/knoc_logo.png" alt="Knoc Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-text\'>K</div>';">
     </div>
-    <div class="spinner" id="spinner"></div>
+    <div class="spinner pulse" id="spinner"></div>
     <div class="message" id="message">Opening Knoc App...</div>
+    <div class="sub-message" id="subMessage">Please wait while we redirect you</div>
     
-    <!-- ✅ NEW: Shop preview section -->
+    <!-- Enhanced Shop Preview -->
     <div class="shop-preview hidden" id="shopPreview">
-      <h3 id="shopName">Shop Preview</h3>
-      <p id="shopDescription">Loading shop details...</p>
+      <div class="preview-icon">🏪</div>
+      <h3 id="shopName">Shop Profile</h3>
+      <p id="shopDescription">Discover amazing products and deals!</p>
     </div>
     
+    <!-- Enhanced Fallback Options -->
     <div class="fallback hidden" id="fallback">
-      <p>Knoc app not installed?</p>
-      <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn" id="playStoreBtn">Download from Play Store</a>
-      <br><br>
-      <a href="https://www.knoc.in" class="btn btn-secondary">Visit Website</a>
+      <p><strong>Choose how you'd like to continue:</strong></p>
+      
+      <!-- NEW: Web Profile Button for Shop Links -->
+      <div id="webProfileOption" class="hidden">
+        <a href="#" class="btn btn-web" id="webProfileBtn">
+          🌐 View Shop Profile
+        </a>
+        <p style="font-size: 12px; color: #666; margin: 8px 0;">
+          Browse products without downloading the app
+        </p>
+      </div>
+      
+      <div class="options-grid">
+        <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn" id="playStoreBtn">
+          📱 Download App
+        </a>
+        <a href="https://www.knoc.in" class="btn btn-secondary">
+          🌐 Visit Website
+        </a>
+      </div>
     </div>
   </div>
 
@@ -144,22 +223,37 @@
     let appOpened = false;
     let redirectTimer = null;
     let linkType = 'unknown';
+    let decodedShopId = null;
+    let originalData = null;
+    let originalSig = null;
     
     function openAppOrRedirect() {
       const query = new URLSearchParams(window.location.search);
       const data = query.get("data");
       const sig = query.get("sig");
       
+      // Store original parameters for web profile fallback
+      originalData = data;
+      originalSig = sig;
+      
       if (!data || !sig) {
-        window.location.href = "https://www.knoc.in";
+        // No valid deep link data, redirect to main website
+        setTimeout(() => {
+          window.location.href = "https://www.knoc.in";
+        }, 2000);
         return;
       }
 
-      // ✅ NEW: Try to decode and identify link type for preview
+      // Try to decode and identify link type for preview
       try {
-        linkType = identifyLinkType(data);
+        const linkInfo = identifyAndDecodeLinkType(data);
+        linkType = linkInfo.type;
+        decodedShopId = linkInfo.shopId;
+        
         if (linkType === 'shop') {
-          showShopPreview(data);
+          showShopPreview(linkInfo.shopId);
+        } else if (linkType === 'post') {
+          showPostPreview(linkInfo.postId, linkInfo.shopId);
         }
       } catch (e) {
         console.log('Could not decode link for preview:', e);
@@ -184,48 +278,64 @@
       }
     }
     
-    // ✅ NEW: Function to identify link type from encoded data
-    function identifyLinkType(encodedData) {
+    // Enhanced function to identify and decode link type
+    function identifyAndDecodeLinkType(encodedData) {
       try {
-        // Simple base64 decode to check content
+        // Decode base64 (handle URL-safe base64)
         const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
         
         if (decodedData.startsWith('shop:')) {
-          return 'shop';
+          return {
+            type: 'shop',
+            shopId: decodedData.substring(5)
+          };
         } else if (decodedData.includes(':')) {
-          return 'post';
+          const parts = decodedData.split(':');
+          return {
+            type: 'post',
+            postId: parts[0],
+            shopId: parts[1]
+          };
         }
         
-        return 'unknown';
+        return { type: 'unknown' };
       } catch (e) {
-        return 'unknown';
+        return { type: 'unknown' };
       }
     }
     
-    // ✅ NEW: Function to show shop preview
-    function showShopPreview(encodedData) {
-      try {
-        const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
-        
-        if (decodedData.startsWith('shop:')) {
-          const shopId = decodedData.substring(5);
-          
-          // Show shop preview section
-          const previewEl = document.getElementById('shopPreview');
-          const nameEl = document.getElementById('shopName');
-          const descEl = document.getElementById('shopDescription');
-          
-          nameEl.textContent = 'Shop Profile';
-          descEl.textContent = 'View this amazing shop on Knoc!';
-          
-          previewEl.classList.remove('hidden');
-          
-          // Update message
-          document.getElementById('message').textContent = 'Opening shop profile...';
-        }
-      } catch (e) {
-        console.log('Error showing shop preview:', e);
-      }
+    // Enhanced shop preview
+    function showShopPreview(shopId) {
+      const previewEl = document.getElementById('shopPreview');
+      const nameEl = document.getElementById('shopName');
+      const descEl = document.getElementById('shopDescription');
+      
+      nameEl.textContent = 'Shop Profile';
+      descEl.textContent = 'View products, follow the shop, and discover amazing deals!';
+      
+      previewEl.classList.remove('hidden');
+      
+      // Update messages
+      document.getElementById('message').textContent = 'Opening shop profile...';
+      document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
+    }
+    
+    // NEW: Show post preview
+    function showPostPreview(postId, shopId) {
+      const previewEl = document.getElementById('shopPreview');
+      const nameEl = document.getElementById('shopName');
+      const descEl = document.getElementById('shopDescription');
+      
+      // Update preview for post
+      previewEl.querySelector('.preview-icon').textContent = '📦';
+      nameEl.textContent = 'Product Post';
+      descEl.textContent = 'Check out this amazing product!';
+      
+      previewEl.classList.remove('hidden');
+      
+      // Update messages
+      document.getElementById('message').textContent = 'Opening product...';
+      document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
     }
     
     function attemptAppOpen(data, sig) {
@@ -264,7 +374,7 @@
             if (!appOpened && isPageVisible) {
               showFallbackOptions();
             }
-          }, 1000);
+          }, 1500);
         }
       };
       
@@ -276,11 +386,11 @@
         if (!appOpened && !document.hidden) {
           showFallbackOptions();
         }
-      }, 2500);
+      }, 3000); // Increased timeout to 3 seconds
       
       // Try to open the app
       try {
-        // ✅ UPDATED: Create intent URL based on link type
+        // Create intent URL based on link type
         let intentUrl;
         if (linkType === 'shop') {
           intentUrl = `intent://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
@@ -299,9 +409,10 @@
           if (!appOpened) {
             window.location.href = appUrl;
           }
-        }, 500);
+        }, 800);
         
       } catch (error) {
+        console.error('Error opening app:', error);
         showFallbackOptions();
       }
     }
@@ -309,43 +420,29 @@
     function showDesktopMessage() {
       document.getElementById('spinner').classList.add('hidden');
       const messageEl = document.getElementById('message');
+      const subMessageEl = document.getElementById('subMessage');
       messageEl.classList.add('desktop-message');
       
       if (linkType === 'shop') {
-        messageEl.innerHTML = `
-          <p><strong>Please open this shop link on your Android device</strong></p>
-          <p>The Knoc app is available on Android devices.</p>
-        `;
+        messageEl.innerHTML = '<strong>Shop Profile Link Detected</strong>';
+        subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
       } else {
-        messageEl.innerHTML = `
-          <p><strong>Please open this link on your Android device</strong></p>
-          <p>The Knoc app is available on Android devices.</p>
-        `;
+        messageEl.innerHTML = '<strong>Product Link Detected</strong>';
+        subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
       }
       
-      const fallback = document.getElementById('fallback');
-      fallback.innerHTML = `
-        <p>Or visit our website to continue browsing:</p>
-        <a href="https://www.knoc.in" class="btn">Visit Knoc Website</a>
-      `;
-      fallback.classList.remove('hidden');
+      showFallbackOptions();
     }
     
     function showIOSMessage() {
       document.getElementById('spinner').classList.add('hidden');
       const messageEl = document.getElementById('message');
+      const subMessageEl = document.getElementById('subMessage');
       messageEl.classList.add('desktop-message');
-      messageEl.innerHTML = `
-        <p><strong>Knoc app is not yet available for iOS</strong></p>
-        <p>We're working on bringing Knoc to iOS devices soon!</p>
-      `;
+      messageEl.innerHTML = '<strong>Knoc app is not yet available for iOS</strong>';
+      subMessageEl.textContent = "We're working on bringing Knoc to iOS devices soon!";
       
-      const fallback = document.getElementById('fallback');
-      fallback.innerHTML = `
-        <p>Meanwhile, you can:</p>
-        <a href="https://www.knoc.in" class="btn">Visit Knoc Website</a>
-      `;
-      fallback.classList.remove('hidden');
+      showFallbackOptions();
     }
     
     function showFallbackOptions() {
@@ -353,13 +450,39 @@
       
       document.getElementById('spinner').classList.add('hidden');
       
+      // Update main message
       if (linkType === 'shop') {
-        document.getElementById('message').textContent = 'Having trouble opening the shop?';
+        document.getElementById('message').textContent = 'Unable to open shop in app?';
+        document.getElementById('subMessage').textContent = 'No worries! You can still view the shop profile';
+        
+        // Show web profile option for shop links
+        setupWebProfileButton();
+        document.getElementById('webProfileOption').classList.remove('hidden');
       } else {
-        document.getElementById('message').textContent = 'Having trouble opening the app?';
+        document.getElementById('message').textContent = 'Unable to open product in app?';
+        document.getElementById('subMessage').textContent = 'Download the app to see the full product details';
       }
       
       document.getElementById('fallback').classList.remove('hidden');
+    }
+    
+    // NEW: Setup web profile button
+    function setupWebProfileButton() {
+      const webProfileBtn = document.getElementById('webProfileBtn');
+      
+      if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
+        // Create URL for the web profile page
+        const webProfileUrl = `https://www.knoc.in/shop-profile.html?data=${encodeURIComponent(originalData)}&sig=${encodeURIComponent(originalSig)}`;
+        
+        webProfileBtn.href = webProfileUrl;
+        webProfileBtn.onclick = (e) => {
+          // Track the web profile view
+          console.log('User chose web profile view for shop:', decodedShopId);
+        };
+      } else {
+        // Fallback if we can't construct the proper URL
+        webProfileBtn.href = 'https://www.knoc.in';
+      }
     }
     
     // Start the process when page loads
@@ -369,6 +492,19 @@
     if (document.readyState === 'complete') {
       openAppOrRedirect();
     }
+    
+    // Add some visual feedback for button interactions
+    document.addEventListener('DOMContentLoaded', function() {
+      const buttons = document.querySelectorAll('.btn');
+      buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        button.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+    });
   </script>
 </body>
 </html>
