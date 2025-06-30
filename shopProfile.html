@@ -401,19 +401,33 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-        // Supabase Configuration
+        // ===== CONFIGURATION SECTION =====
+        // TODO: Replace these with your actual Supabase credentials
         const SUPABASE_URL = 'https://rtwtkapynafirwixyeal.supabase.co'; // Replace with your actual URL
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0d3RrYXB5bmFmaXJ3aXh5ZWFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2OTcwODYsImV4cCI6MjA1NDI3MzA4Nn0.UxKAcSfVuWLvbMU6nLQmF55BHngD8m1ZtKVGm9fnNas'; // Replace with your actual anon key
         const DEEP_LINK_SECRET_KEY = 'CHANGE_THIS_IN_PRODUCTION_kJ8#mP2$vN5!qR7@wX9&zL4*tY6^hG3%'; // Same as your Dart code
+        // ================================
 
         // Initialize Supabase client
         let supabase;
         
         async function initSupabase() {
             try {
-                // Import Supabase from CDN
+                // Check if Supabase is available
+                if (typeof window.supabase === 'undefined') {
+                    console.error('Supabase library not found');
+                    return false;
+                }
+                
+                // Import Supabase from the global object
                 const { createClient } = window.supabase;
+                if (!createClient) {
+                    console.error('createClient not found in Supabase library');
+                    return false;
+                }
+                
                 supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase initialized successfully');
                 return true;
             } catch (error) {
                 console.error('Failed to initialize Supabase:', error);
@@ -702,10 +716,11 @@
         // Main initialization
         async function init() {
             try {
-                // Load Supabase from CDN
+                // Load Supabase from unpkg CDN (more reliable)
                 const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/umd/supabase.min.js';
+                script.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js';
                 script.onload = async () => {
+                    console.log('Supabase library loaded');
                     const initialized = await initSupabase();
                     if (!initialized) {
                         showError('Failed to initialize database connection');
@@ -721,8 +736,9 @@
                         showError(error.message || 'Failed to load shop profile');
                     }
                 };
-                script.onerror = () => {
-                    showError('Failed to load required libraries');
+                script.onerror = (error) => {
+                    console.error('Script loading error:', error);
+                    showError('Failed to load required libraries. Please check your internet connection.');
                 };
                 document.head.appendChild(script);
             } catch (error) {
