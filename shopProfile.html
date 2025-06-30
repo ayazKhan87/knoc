@@ -492,8 +492,14 @@
             document.getElementById('debugUrl').textContent = currentUrl;
             
             const urlParams = new URLSearchParams(window.location.search);
-            const data = urlParams.get('data');
+            let data = urlParams.get('data');
             const sig = urlParams.get('sig');
+            
+            // ✅ FIX: Handle URL decoding properly
+            if (data) {
+                data = decodeURIComponent(data);
+                debugLog('Decoded data parameter', data);
+            }
             
             debugLog('URL params', { data, sig });
             
@@ -525,13 +531,23 @@
             
             debugLog('Verifying signature...');
             
-            // Verify signature using the same logic as your Dart code
-            const expectedSig = CryptoJS.HmacSHA256(data, DEEP_LINK_SECRET_KEY).toString();
+            // ✅ FIX: Use the original (possibly URL-encoded) data for signature verification
+            // because that's what the Dart code signed
+            const originalData = urlParams.get('data'); // Get original before decoding
+            const expectedSig = CryptoJS.HmacSHA256(originalData, DEEP_LINK_SECRET_KEY).toString();
+            debugLog('Original data for signature', originalData);
             debugLog('Expected signature', expectedSig);
             debugLog('Received signature', sig);
             
             if (expectedSig !== sig) {
-                throw new Error('Invalid link signature');
+                // ✅ FIX: Try with decoded data if original doesn't match
+                const expectedSigDecoded = CryptoJS.HmacSHA256(data, DEEP_LINK_SECRET_KEY).toString();
+                debugLog('Trying with decoded data - Expected signature', expectedSigDecoded);
+                
+                if (expectedSigDecoded !== sig) {
+                    throw new Error(`Invalid link signature. Original: ${expectedSig}, Decoded: ${expectedSigDecoded}, Received: ${sig}`);
+                }
+                // Use decoded data for further processing
             }
             
             debugLog('Signature verified, decoding data...');
