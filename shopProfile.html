@@ -42,6 +42,32 @@
         .category-chip:hover {
             transform: scale(1.05);
         }
+
+        .order-item {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -69,6 +95,16 @@
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
+                </button>
+
+                <!-- Order List Button -->
+                <button id="order-list-btn" class="absolute top-4 right-4 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all">
+                    <div class="relative">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
+                        </svg>
+                        <span id="order-count" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
+                    </div>
                 </button>
             </div>
             
@@ -207,9 +243,55 @@
         </div>
     </div>
 
+    <!-- Order List Modal -->
+    <div id="order-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeOrderModal()"></div>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Your Order</h3>
+                        <button onclick="closeOrderModal()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div id="order-list" class="space-y-3 max-h-96 overflow-y-auto">
+                        <!-- Order items will be shown here -->
+                    </div>
+                    
+                    <div id="order-empty" class="hidden text-center py-8">
+                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500">Your order is empty</p>
+                    </div>
+                </div>
+                
+                <div id="order-footer" class="hidden bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="w-full">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-lg font-bold">Total:</span>
+                            <span id="order-total" class="text-lg font-bold text-red-600">₹0</span>
+                        </div>
+                        <button class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors">
+                            Place Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let shopData = null;
         let currentCategory = 'all';
+        let orderList = [];
 
         // Get shop ID from URL or use test ID
         function getShopIdFromUrl() {
@@ -256,6 +338,153 @@
                 console.error('Error loading shop data:', error);
                 showError();
             }
+        }
+
+        // Add item to order
+        async function addToOrder(product) {
+            const { metadata = {} } = product;
+            const originalPrice = metadata.original_price || metadata.price || 299;
+            const discountedPrice = metadata.discounted_price;
+            const displayPrice = discountedPrice || originalPrice;
+
+            const orderItem = {
+                id: product.id,
+                name: product.content,
+                price: displayPrice,
+                quantity: 1
+            };
+
+            // Check if item already exists in order
+            const existingIndex = orderList.findIndex(item => item.id === product.id);
+            
+            if (existingIndex !== -1) {
+                // Increase quantity
+                orderList[existingIndex].quantity++;
+                showToast('Item quantity updated!');
+            } else {
+                // Add new item
+                orderList.push(orderItem);
+                showToast('Item added to order!', 'success');
+            }
+
+            // Record in database
+            try {
+                await fetch('https://rtwtkapynafirwixyeal.supabase.co/functions/v1/Food-AddItem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        shop_id: shopData.shop.id,
+                        product_name: product.content,
+                        price: displayPrice
+                    })
+                });
+            } catch (error) {
+                console.error('Failed to record order in database:', error);
+                // Continue anyway, don't block the UI
+            }
+
+            updateOrderUI();
+        }
+
+        // Remove item from order (UI only)
+        function removeFromOrder(productId) {
+            const index = orderList.findIndex(item => item.id === productId);
+            if (index !== -1) {
+                if (orderList[index].quantity > 1) {
+                    orderList[index].quantity--;
+                } else {
+                    orderList.splice(index, 1);
+                }
+                updateOrderUI();
+                showToast('Item removed from order');
+            }
+        }
+
+        // Update order UI elements
+        function updateOrderUI() {
+            const orderCount = orderList.reduce((total, item) => total + item.quantity, 0);
+            const orderTotal = orderList.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+            // Update order count badge
+            const countBadge = document.getElementById('order-count');
+            if (orderCount > 0) {
+                countBadge.textContent = orderCount;
+                countBadge.classList.remove('hidden');
+                countBadge.classList.add('bounce-in');
+            } else {
+                countBadge.classList.add('hidden');
+            }
+
+            // Update order modal
+            updateOrderModal();
+        }
+
+        // Update order modal content
+        function updateOrderModal() {
+            const orderListEl = document.getElementById('order-list');
+            const orderEmpty = document.getElementById('order-empty');
+            const orderFooter = document.getElementById('order-footer');
+            const orderTotal = document.getElementById('order-total');
+
+            if (orderList.length === 0) {
+                orderListEl.innerHTML = '';
+                orderEmpty.classList.remove('hidden');
+                orderFooter.classList.add('hidden');
+                return;
+            }
+
+            orderEmpty.classList.add('hidden');
+            orderFooter.classList.remove('hidden');
+
+            // Calculate total
+            const total = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            orderTotal.textContent = `₹${Math.round(total)}`;
+
+            // Render order items
+            orderListEl.innerHTML = orderList.map(item => `
+                <div class="order-item flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-900 text-sm">${item.name}</h4>
+                        <p class="text-red-600 font-bold">₹${Math.round(item.price)}</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="removeFromOrder('${item.id}')" class="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                </svg>
+                            </button>
+                            <span class="font-bold text-gray-900 min-w-[20px] text-center">${item.quantity}</span>
+                            <button onclick="addToOrderFromModal('${item.id}')" class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Add to order from modal (increase quantity)
+        async function addToOrderFromModal(productId) {
+            const product = shopData.products.find(p => p.id === productId);
+            if (product) {
+                await addToOrder(product);
+            }
+        }
+
+        // Open order modal
+        function openOrderModal() {
+            document.getElementById('order-modal').classList.remove('hidden');
+            updateOrderModal();
+        }
+
+        // Close order modal
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
         }
 
         // Render shop profile
@@ -439,7 +668,7 @@
                                 <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
                             ` : ''}
                         </div>
-                        <button class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors">
+                        <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
                             </svg>
@@ -507,9 +736,10 @@
             });
         }
 
-        function showToast(message) {
+        function showToast(message, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            const bgColor = type === 'success' ? 'bg-green-600' : 'bg-gray-800';
+            toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg z-50`;
             toast.textContent = message;
             document.body.appendChild(toast);
             
@@ -517,6 +747,9 @@
                 toast.remove();
             }, 3000);
         }
+
+        // Order list button click handler
+        document.getElementById('order-list-btn').addEventListener('click', openOrderModal);
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
@@ -528,6 +761,13 @@
             if (e.target.classList.contains('category-chip')) {
                 const category = e.target.dataset.category;
                 filterProducts(category);
+            }
+        });
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'order-modal') {
+                closeOrderModal();
             }
         });
     </script>
