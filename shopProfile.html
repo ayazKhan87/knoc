@@ -4,1458 +4,519 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Profile - Knoc</title>
-    <meta name="description" content="Discover amazing shops and products on Knoc">
+    <meta name="description" content="Shop profile and products on Knoc">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Shop Profile - Knoc">
-    <meta property="og:description" content="Discover amazing shops and products on Knoc">
-    <meta property="og:image" content="https://www.knoc.in/og-image.jpg">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Shop Profile - Knoc">
-    <meta property="twitter:description" content="Discover amazing shops and products on Knoc">
-    
+    <!-- Custom CSS for animations and gradients -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
         }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
         
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-        }
-        
-        /* Header */
-        .header {
+        .gradient-bg {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            padding: 1rem;
-            position: relative;
-        }
-        
-        .header-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .app-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-        
-        .btn-primary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn-primary:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: #ef4444;
-        }
-        
-        .btn-secondary:hover {
-            background: #f3f4f6;
-        }
-        
-        /* Cover Section */
-        .cover-section {
-            position: relative;
-            height: 200px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            overflow: hidden;
-        }
-        
-        .cover-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .profile-pic {
-            position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 4px solid white;
-            background: #f3f4f6;
-            object-fit: cover;
-        }
-        
-        /* Shop Info */
-        .shop-info {
-            padding: 3rem 1.5rem 1.5rem;
-            text-align: center;
-        }
-        
-        .shop-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: #111827;
-        }
-        
-        .shop-description {
-            color: #6b7280;
-            margin-bottom: 1rem;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .shop-stats {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #111827;
-        }
-        
-        .stat-label {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-        
-        .shop-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        /* Products Grid */
-        .products-section {
-            padding: 2rem 1rem;
-        }
-        
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #111827;
-            text-align: center;
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
         }
         
         .product-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         
         .product-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
-        .product-image {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            background: #f3f4f6;
+        .category-chip {
+            transition: all 0.2s ease;
         }
         
-        .product-info {
-            padding: 1rem;
-        }
-        
-        .product-name {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #111827;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .product-price {
-            font-size: 1.125rem;
-            font-weight: bold;
-            color: #ef4444;
-        }
-        
-        /* Loading States */
-        .loading {
-            text-align: center;
-            padding: 3rem 1rem;
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #ef4444;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .error {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #dc2626;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #6b7280;
-        }
-        
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        
-        /* Debug info */
-        .debug-info {
-            background: #f0f0f0;
-            padding: 1rem;
-            margin: 1rem;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.875rem;
-            color: #666;
-        }
-        
-        /* Responsive */
-        @media (max-width: 640px) {
-            .header-nav {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .shop-stats {
-                gap: 1rem;
-            }
-            
-            .shop-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 0.75rem;
-            }
-        }
-        
-        .fallback-section {
-            background: #f8f9fa;
-            border-top: 1px solid #e5e7eb;
-            padding: 2rem 1rem;
-            text-align: center;
-        }
-        
-        .fallback-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #111827;
-        }
-        
-        .fallback-text {
-            color: #6b7280;
-            margin-bottom: 1.5rem;
+        .category-chip:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-nav">
-                <div class="logo">Knoc</div>
-                <div class="app-buttons">
-                    <a href="#" class="btn btn-primary" id="openAppBtn">Open in App</a>
-                    <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn btn-secondary">Download</a>
-                </div>
-            </div>
+<body class="bg-gray-50">
+    <!-- Loading State -->
+    <div id="loading" class="min-h-screen">
+        <div class="loading-shimmer h-48 w-full"></div>
+        <div class="p-4 space-y-4">
+            <div class="loading-shimmer h-20 w-20 rounded-full mx-auto"></div>
+            <div class="loading-shimmer h-6 w-48 mx-auto rounded"></div>
+            <div class="loading-shimmer h-4 w-64 mx-auto rounded"></div>
         </div>
-        
-        <!-- Debug Info (remove in production) -->
-        <div id="debugInfo" class="debug-info" style="display: none;">
-            <strong>Debug Information:</strong><br>
-            URL: <span id="debugUrl"></span><br>
-            Shop ID: <span id="debugShopId"></span><br>
-            Error: <span id="debugError"></span>
-        </div>
-        
-        <!-- Loading State -->
-        <div id="loadingState" class="loading">
-            <div class="spinner"></div>
-            <p>Loading shop profile...</p>
-        </div>
-        
-        <!-- Error State -->
-        <div id="errorState" class="error" style="display: none;">
-            <div class="empty-icon">⚠️</div>
-            <h3>Oops! Something went wrong</h3>
-            <p id="errorMessage">Unable to load shop profile</p>
-            <button onclick="toggleDebug()" class="btn btn-secondary" style="margin-top: 1rem;">Show Debug Info</button>
-            <a href="https://www.knoc.in" class="btn btn-primary" style="margin-top: 1rem;">Visit Knoc</a>
-        </div>
-        
-        <!-- Shop Profile -->
-        <div id="shopProfile" style="display: none;">
-            <!-- Cover Section -->
-            <div class="cover-section">
-                <img id="coverImage" class="cover-image" style="display: none;" alt="Shop Cover">
-                <img id="profilePic" class="profile-pic" alt="Shop Profile">
+    </div>
+
+    <!-- Main Content -->
+    <div id="content" class="hidden min-h-screen">
+        <!-- Header Section -->
+        <div class="relative">
+            <!-- Cover Image -->
+            <div id="cover-section" class="h-48 gradient-bg relative overflow-hidden">
+                <img id="cover-image" class="w-full h-full object-cover hidden" alt="Shop Cover">
+                <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+                
+                <!-- Back Button -->
+                <button onclick="history.back()" class="absolute top-4 left-4 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
             </div>
             
-            <!-- Shop Info -->
-            <div class="shop-info">
-                <h1 id="shopName" class="shop-name">Shop Name</h1>
-                <p id="shopDescription" class="shop-description">Shop description...</p>
-                
-                <div class="shop-stats">
-                    <div class="stat">
-                        <div id="followersCount" class="stat-value">0</div>
-                        <div class="stat-label">Followers</div>
+            <!-- Profile Section -->
+            <div class="relative px-4 pb-6">
+                <!-- Profile Image -->
+                <div class="absolute -top-10 left-1/2 transform -translate-x-1/2">
+                    <div class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg">
+                        <img id="profile-image" class="w-full h-full object-cover" alt="Shop Logo">
                     </div>
-                    <div class="stat">
-                        <div id="productsCount" class="stat-value">0</div>
-                        <div class="stat-label">Products</div>
-                    </div>
+                    <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                 </div>
                 
-                <div class="shop-actions">
-                    <a href="#" class="btn btn-primary" id="followBtn">Follow Shop</a>
-                    <a href="#" class="btn btn-secondary" id="shareBtn">Share</a>
-                </div>
-            </div>
-            
-            <!-- Products Section -->
-            <div class="products-section">
-                <h2 class="section-title">Products</h2>
-                <div id="productsGrid" class="products-grid"></div>
-                
-                <!-- Empty Products State -->
-                <div id="emptyProducts" class="empty-state" style="display: none;">
-                    <div class="empty-icon">🛍️</div>
-                    <h3>No Products Yet</h3>
-                    <p>This shop hasn't added any products yet.<br>Check back soon!</p>
+                <!-- Shop Info -->
+                <div class="pt-12 text-center">
+                    <div class="flex items-center justify-center space-x-2 mb-2">
+                        <div class="flex items-center text-yellow-500">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                            <span id="shop-rating" class="ml-1 font-semibold">4.9</span>
+                        </div>
+                        <span id="verified-badge" class="hidden bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            Verified
+                        </span>
+                    </div>
+                    
+                    <h1 id="shop-name" class="text-2xl font-bold text-gray-900 mb-2">Shop Name</h1>
+                    <p id="shop-description" class="text-gray-600 text-sm mb-4 max-w-md mx-auto">Shop description goes here...</p>
+                    
+                    <!-- Stats -->
+                    <div class="flex justify-center space-x-8 mb-6">
+                        <div class="text-center">
+                            <div id="follower-count" class="text-lg font-bold text-gray-900">0</div>
+                            <div class="text-sm text-gray-500">Followers</div>
+                        </div>
+                        <div class="text-center">
+                            <div id="product-count" class="text-lg font-bold text-gray-900">0</div>
+                            <div class="text-sm text-gray-500">Products</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3 justify-center mb-6">
+                        <button class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors">
+                            Download App
+                        </button>
+                        <button id="share-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors">
+                            Share
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Fallback Section -->
-        <div class="fallback-section">
-            <h3 class="fallback-title">Get the Full Experience</h3>
-            <p class="fallback-text">Download the Knoc app to follow shops, save products, and get notifications about new deals!</p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn btn-primary">
-                    📱 Download for Android
-                </a>
-                <a href="https://www.knoc.in" class="btn btn-secondary">
-                    🌐 Visit Website
-                </a>
+
+        <!-- Promotion Banner -->
+        <div id="promotion-banner" class="hidden mx-4 mb-6 p-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl text-white shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="flex items-center mb-2">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-sm font-bold">SPECIAL OFFER</span>
+                    </div>
+                    <h3 id="promotion-title" class="text-lg font-bold">Limited Time Deal</h3>
+                    <p id="promotion-description" class="text-sm opacity-90"></p>
+                </div>
+                <div class="text-center">
+                    <div id="promotion-percent" class="text-2xl font-bold">20%</div>
+                    <div class="text-sm font-bold">OFF</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Filter -->
+        <div class="px-4 mb-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-bold text-gray-900">Products</h2>
+                <div class="flex items-center space-x-2">
+                    <button class="p-2 bg-white border border-gray-200 rounded-lg">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                    <button class="p-2 bg-white border border-gray-200 rounded-lg">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="categories-container" class="flex space-x-2 overflow-x-auto pb-2">
+                <button class="category-chip bg-red-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap font-medium" data-category="all">
+                    All Products
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="px-4 pb-20">
+            <div id="products-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <!-- Products will be loaded here -->
+            </div>
+            
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-12">
+                <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">No Products Available</h3>
+                <p class="text-gray-600">This shop hasn't added any products yet.</p>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- Error State -->
+    <div id="error" class="hidden min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Shop Not Found</h2>
+            <p class="text-gray-600 mb-4">The shop you're looking for doesn't exist or is not available.</p>
+            <button onclick="window.location.href='/'" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                Go Home
+            </button>
+        </div>
+    </div>
+
     <script>
-        // ===== CONFIGURATION SECTION =====
-        // TODO: Replace these with your actual Supabase credentials
-        const SUPABASE_URL = 'https://rtwtkapynafirwixyeal.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0d3RrYXB5bmFmaXJ3aXh5ZWFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2OTcwODYsImV4cCI6MjA1NDI3MzA4Nn0.UxKAcSfVuWLvbMU6nLQmF55BHngD8m1ZtKVGm9fnNas'; // ⚠️ YOU MUST REPLACE THIS!
-        
-        // IMPORTANT: This must match exactly with your Dart code's secret key
-        // Based on your environment variable
-        const DEEP_LINK_SECRET_KEY = 'ajdr%733ugq@qys237cgyu1*gy$yya625vq6ef
-        
-        // Debug mode
-        let DEBUG_MODE = true; // Set to false in production
+        let shopData = null;
+        let currentCategory = 'all';
 
-        // Initialize Supabase client
-        let supabase;
-        
-        function debugLog(message, data = null) {
-            if (DEBUG_MODE) {
-                console.log('[DEBUG]', message, data);
-                const debugInfo = document.getElementById('debugInfo');
-                if (debugInfo) {
-                    debugInfo.style.display = 'block';
-                }
+        // Get shop ID from URL
+        function getShopIdFromUrl() {
+            const path = window.location.pathname;
+            const parts = path.split('/');
+            return parts[parts.length - 1] || parts[parts.length - 2];
+        }
+
+        // Load shop data
+        async function loadShopData() {
+            const shopId = getShopIdFromUrl();
+            
+            if (!shopId) {
+                showError();
+                return;
             }
-        }
-        
-        function toggleDebug() {
-            const debugInfo = document.getElementById('debugInfo');
-            debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
-        }
-        
-        async function initSupabase() {
+
             try {
-                debugLog('Initializing Supabase...');
+                // Replace with your actual Supabase edge function URL
+                const response = await fetch(`https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView/${shopId}`);
                 
-                // Check if the anon key is still placeholder
-                if (SUPABASE_ANON_KEY === 'YOUR_ACTUAL_SUPABASE_ANON_KEY_HERE') {
-                    debugLog('ERROR: Supabase anon key is still placeholder!');
-                    throw new Error('Supabase anon key not configured. Please replace YOUR_ACTUAL_SUPABASE_ANON_KEY_HERE with your real key.');
-                }
-                
-                // Check if Supabase is available
-                if (typeof window.supabase === 'undefined') {
-                    debugLog('Supabase library not found');
-                    return false;
-                }
-                
-                // Import Supabase from the global object
-                const { createClient } = window.supabase;
-                if (!createClient) {
-                    debugLog('createClient not found in Supabase library');
-                    return false;
-                }
-                
-                supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                
-                // Test the connection
-                debugLog('Testing Supabase connection...');
-                const { data, error } = await supabase.from('shops').select('count').limit(1);
-                if (error) {
-                    debugLog('Supabase connection test failed', error);
-                    throw new Error('Supabase connection failed: ' + error.message);
-                }
-                
-                debugLog('Supabase initialized and tested successfully');
-                return true;
-            } catch (error) {
-                debugLog('Failed to initialize Supabase', error);
-                return false;
-            }
-        }
-
-        // Fixed base64 decoding to match Dart's actual output (standard base64, not URL-safe)
-        function base64Decode(str) {
-            // Dart is using standard base64, not URL-safe, so no character replacement needed
-            return atob(str);
-        }
-
-        // Decode and verify deep link
-        function decodeShopLink() {
-            const currentUrl = window.location.href;
-            debugLog('Current URL', currentUrl);
-            document.getElementById('debugUrl').textContent = currentUrl;
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const rawData = urlParams.get('data');
-            const sig = urlParams.get('sig');
-            
-            // URL decode the data parameter if it's encoded
-            const data = rawData ? decodeURIComponent(rawData) : null;
-            
-            debugLog('Raw URL params', { rawData, sig });
-            debugLog('Decoded URL params', { data, sig });
-            
-            if (!data || !sig) {
-                debugLog('No secure deep link found, trying path-based extraction');
-                
-                // Try to get shopId directly from URL path
-                const pathParts = window.location.pathname.split('/');
-                debugLog('Path parts', pathParts);
-                
-                const shopIndex = pathParts.indexOf('shop');
-                if (shopIndex !== -1 && pathParts[shopIndex + 1]) {
-                    const shopId = pathParts[shopIndex + 1];
-                    debugLog('Found shop ID in path', shopId);
-                    document.getElementById('debugShopId').textContent = shopId;
-                    return shopId;
-                }
-                
-                // Check if there's a direct shop ID in query params
-                const directShopId = urlParams.get('shopId') || urlParams.get('shop_id') || urlParams.get('id');
-                if (directShopId) {
-                    debugLog('Found direct shop ID in query', directShopId);
-                    document.getElementById('debugShopId').textContent = directShopId;
-                    return directShopId;
-                }
-                
-                throw new Error('No shop data found in URL');
-            }
-            
-            debugLog('Verifying signature for data:', data);
-            debugLog('Signature to verify:', sig);
-            
-            // Verify signature using the same logic as your Dart code
-            const expectedSig = CryptoJS.HmacSHA256(data, DEEP_LINK_SECRET_KEY).toString();
-            debugLog('Expected signature', expectedSig);
-            debugLog('Received signature', sig);
-            
-            if (expectedSig !== sig) {
-                // Log detailed debugging info
-                debugLog('Signature mismatch details:', {
-                    dataLength: data.length,
-                    sigLength: sig.length,
-                    secretKeyLength: DEEP_LINK_SECRET_KEY.length,
-                    secretKey: DEEP_LINK_SECRET_KEY
-                });
-                throw new Error(`Invalid link signature. Expected: ${expectedSig}, Got: ${sig}`);
-            }
-            
-            debugLog('Signature verified, decoding data...');
-            
-            // Decode base64 data using standard base64 (not URL-safe)
-            try {
-                const decodedData = base64Decode(data);
-                debugLog('Decoded data', decodedData);
-                
-                if (decodedData.startsWith('shop:')) {
-                    const shopId = decodedData.substring(5); // Remove 'shop:' prefix
-                    debugLog('Extracted shop ID', shopId);
-                    document.getElementById('debugShopId').textContent = shopId;
-                    return shopId;
-                } else {
-                    throw new Error('Invalid shop link format - expected "shop:" prefix');
-                }
-            } catch (e) {
-                debugLog('Failed to decode shop link', e);
-                throw new Error('Failed to decode shop link: ' + e.message);
-            }
-        }
-
-        // Fetch shop data from Supabase
-        async function fetchShopData(shopId) {
-            try {
-                debugLog('Fetching shop data for ID', shopId);
-                
-                // Fetch shop details
-                const { data: shopData, error: shopError } = await supabase
-                    .from('shops')
-                    .select(`
-                        *,
-                        owner:owner_id (id, name, email)
-                    `)
-                    .eq('id', shopId)
-                    .single();
-
-                if (shopError) {
-                    debugLog('Shop query error', shopError);
-                    throw shopError;
-                }
-                
-                if (!shopData) {
-                    debugLog('No shop data found');
+                if (!response.ok) {
                     throw new Error('Shop not found');
                 }
 
-                debugLog('Shop data fetched', shopData);
-
-                // Fetch shop media (profile pic, cover photo)
-                const { data: mediaData, error: mediaError } = await supabase
-                    .from('shop_media')
-                    .select('*')
-                    .eq('shop_id', shopId)
-                    .eq('is_active', true);
-
-                if (mediaError) {
-                    debugLog('Media query error (non-fatal)', mediaError);
-                }
-
-                debugLog('Media data fetched', mediaData);
-
-                // Fetch product posts only
-                const { data: postsData, error: postsError } = await supabase
-                    .from('shop_posts')
-                    .select(`
-                        *,
-                        post_media (*),
-                        post_likes (count)
-                    `)
-                    .eq('shop_id', shopId)
-                    .eq('is_active', true)
-                    .eq('post_type', 'product')
-                    .order('created_at', { ascending: false })
-                    .limit(20);
-
-                if (postsError) {
-                    debugLog('Posts query error (non-fatal)', postsError);
-                }
-
-                debugLog('Posts data fetched', postsData);
-
-                return {
-                    shop: shopData,
-                    media: mediaData || [],
-                    products: postsData || []
-                };
+                shopData = await response.json();
+                renderShopProfile();
+                hideLoading();
+                
             } catch (error) {
-                debugLog('Error fetching shop data', error);
-                throw error;
+                console.error('Error loading shop data:', error);
+                showError();
             }
-        }
-
-        // Get media URLs
-        function getMediaUrl(mediaList, mediaType) {
-            const media = mediaList.find(m => m.media_type === mediaType && m.is_active);
-            return media ? (media.thumbnail_url || media.url) : null;
         }
 
         // Render shop profile
-        function renderShopProfile(data) {
-            try {
-                debugLog('Starting to render shop profile...', data);
-                
-                if (!data || !data.shop) {
-                    throw new Error('Invalid shop data received');
-                }
-                
-                const { shop, media, products } = data;
-                debugLog('Shop data structure verified', { 
-                    hasShop: !!shop, 
-                    hasMedia: !!media, 
-                    hasProducts: !!products,
-                    shopName: shop?.shop_name,
-                    mediaCount: media?.length,
-                    productsCount: products?.length
-                });
-                
-                // Update meta tags for SEO
-                document.title = `${shop.shop_name} - Knoc`;
-                debugLog('Updated page title');
-                
-                try {
-                    document.querySelector('meta[property="og:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
-                    document.querySelector('meta[property="twitter:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
-                    debugLog('Updated meta tags');
-                } catch (metaError) {
-                    debugLog('Meta tag update failed (non-critical)', metaError);
-                }
-                
-                if (shop.description) {
-                    try {
-                        document.querySelector('meta[name="description"]').setAttribute('content', shop.description);
-                        document.querySelector('meta[property="og:description"]').setAttribute('content', shop.description);
-                        document.querySelector('meta[property="twitter:description"]').setAttribute('content', shop.description);
-                        debugLog('Updated description meta tags');
-                    } catch (descError) {
-                        debugLog('Description meta update failed (non-critical)', descError);
-                    }
-                }
+        function renderShopProfile() {
+            const { shop, products, discounts, subcategories, stats } = shopData;
 
-                // Cover image
-                debugLog('Processing cover image...');
-                const coverUrl = getMediaUrl(media, 'cover_photo') || shop.cover_image;
-                if (coverUrl) {
-                    const coverImg = document.getElementById('coverImage');
-                    if (coverImg) {
-                        coverImg.src = coverUrl;
-                        coverImg.style.display = 'block';
-                        debugLog('Cover image set', coverUrl);
-                        
-                        // Update OG image
-                        try {
-                            document.querySelector('meta[property="og:image"]').setAttribute('content', coverUrl);
-                        } catch (ogError) {
-                            debugLog('OG image update failed (non-critical)', ogError);
-                        }
-                    }
-                } else {
-                    debugLog('No cover image found');
-                }
+            // Update page title
+            document.title = `${shop.name} - Knoc`;
 
-                // Profile picture
-                debugLog('Processing profile picture...');
-                const profileUrl = getMediaUrl(media, 'profile_pic') || shop.image_url;
-                const profilePic = document.getElementById('profilePic');
-                if (profilePic) {
-                    if (profileUrl) {
-                        profilePic.src = profileUrl;
-                        debugLog('Profile picture set', profileUrl);
-                    } else {
-                        profilePic.style.display = 'none';
-                        debugLog('No profile picture found');
-                    }
-                }
+            // Update meta description
+            const metaDesc = document.querySelector('meta[name="description"]');
+            metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
 
-                // Shop info
-                debugLog('Setting shop information...');
-                const shopNameEl = document.getElementById('shopName');
-                const shopDescEl = document.getElementById('shopDescription');
-                const followersEl = document.getElementById('followersCount');
-                const productsEl = document.getElementById('productsCount');
-                
-                if (shopNameEl) shopNameEl.textContent = shop.shop_name || 'Shop';
-                if (shopDescEl) shopDescEl.textContent = shop.description || 'Welcome to our shop!';
-                if (followersEl) followersEl.textContent = shop.follower_count || '0';
-                if (productsEl) productsEl.textContent = products.length.toString();
-                
-                debugLog('Shop info updated');
-
-                // Render products
-                debugLog('Rendering products...');
-                renderProducts(products);
-
-                // Setup deep linking for buttons
-                debugLog('Setting up deep linking...');
-                setupDeepLinking(shop.id);
-
-                // Show profile and hide loading
-                debugLog('Showing profile...');
-                const loadingState = document.getElementById('loadingState');
-                const shopProfile = document.getElementById('shopProfile');
-                
-                if (loadingState) loadingState.style.display = 'none';
-                if (shopProfile) shopProfile.style.display = 'block';
-                
-                debugLog('Shop profile rendered successfully!');
-            } catch (error) {
-                debugLog('Error rendering shop profile', error);
-                throw error;
+            // Set cover image
+            if (shop.coverImage) {
+                const coverImg = document.getElementById('cover-image');
+                coverImg.src = shop.coverImage;
+                coverImg.classList.remove('hidden');
             }
+
+            // Set profile image
+            const profileImg = document.getElementById('profile-image');
+            profileImg.src = shop.profileImage || '/default-shop-avatar.png';
+
+            // Update shop info
+            document.getElementById('shop-name').textContent = shop.name;
+            document.getElementById('shop-description').textContent = shop.description;
+            document.getElementById('shop-rating').textContent = shop.rating.toFixed(1);
+            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount);
+            document.getElementById('product-count').textContent = formatNumber(stats.totalProducts);
+
+            // Show verified badge if verified
+            if (shop.verifiedAt) {
+                document.getElementById('verified-badge').classList.remove('hidden');
+            }
+
+            // Show promotion banner if discounts available
+            if (discounts.length > 0) {
+                showPromotionBanner(discounts[0]);
+            }
+
+            // Render categories
+            renderCategories(subcategories);
+
+            // Render products
+            renderProducts(products);
+        }
+
+        // Show promotion banner
+        function showPromotionBanner(discount) {
+            const banner = document.getElementById('promotion-banner');
+            document.getElementById('promotion-title').textContent = discount.title || 'Special Offer';
+            document.getElementById('promotion-description').textContent = discount.description || '';
+            
+            if (discount.discount_percent) {
+                document.getElementById('promotion-percent').textContent = `${Math.round(discount.discount_percent)}%`;
+            }
+            
+            banner.classList.remove('hidden');
+        }
+
+        // Render categories
+        function renderCategories(subcategories) {
+            const container = document.getElementById('categories-container');
+            
+            // Add subcategory filters
+            subcategories.forEach(sub => {
+                const button = document.createElement('button');
+                button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
+                button.textContent = sub.name;
+                button.dataset.category = sub.id;
+                button.onclick = () => filterProducts(sub.id);
+                container.appendChild(button);
+            });
+        }
+
+        // Filter products by category
+        function filterProducts(categoryId) {
+            currentCategory = categoryId;
+            
+            // Update active category chip
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                if (chip.dataset.category === categoryId) {
+                    chip.className = 'category-chip bg-red-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap font-medium';
+                } else {
+                    chip.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
+                }
+            });
+
+            // Filter and render products
+            const filteredProducts = categoryId === 'all' 
+                ? shopData.products 
+                : shopData.products.filter(p => p.subcategoryId === categoryId);
+            
+            renderProducts(filteredProducts);
         }
 
         // Render products grid
         function renderProducts(products) {
-            const grid = document.getElementById('productsGrid');
-            const emptyState = document.getElementById('emptyProducts');
-
+            const grid = document.getElementById('products-grid');
+            const emptyState = document.getElementById('empty-state');
+            
+            grid.innerHTML = '';
+            
             if (products.length === 0) {
-                grid.style.display = 'none';
-                emptyState.style.display = 'block';
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
                 return;
             }
-
-            grid.innerHTML = '';
-            emptyState.style.display = 'none';
+            
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
 
             products.forEach(product => {
-                const card = createProductCard(product);
-                grid.appendChild(card);
+                const productCard = createProductCard(product);
+                grid.appendChild(productCard);
             });
         }
 
-        // Create product card
+        // Create product card element
         function createProductCard(product) {
+            const { metadata = {} } = product;
+            const media = product.media[0]; // First image
+            
+            // Calculate pricing
+            const originalPrice = metadata.original_price || metadata.price || 299;
+            const discountedPrice = metadata.discounted_price;
+            const displayPrice = discountedPrice || originalPrice;
+            const hasDiscount = discountedPrice && discountedPrice < originalPrice;
+            const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
+
             const card = document.createElement('div');
-            card.className = 'product-card';
+            card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden';
             
-            const mediaList = product.post_media || [];
-            const imageUrl = mediaList.length > 0 ? (mediaList[0].thumbnail_url || mediaList[0].url) : null;
-            
-            // Extract price from metadata
-            const metadata = product.metadata || {};
-            const price = metadata.price || metadata.discounted_price || metadata.original_price;
-            const priceText = price ? `₹${price}` : 'Price on request';
-
             card.innerHTML = `
-                ${imageUrl ? `<img class="product-image" src="${imageUrl}" alt="${product.content}" loading="lazy">` : '<div class="product-image"></div>'}
-                <div class="product-info">
-                    <div class="product-name">${product.content || 'Product'}</div>
-                    <div class="product-price">${priceText}</div>
-                </div>
-            `;
-
-            // Add click handler to open in app
-            card.addEventListener('click', () => {
-                openPostInApp(product.id, product.shop_id);
-            });
-
-            return card;
-        }
-
-        // Setup deep linking
-        function setupDeepLinking(shopId) {
-            // Open app button
-            document.getElementById('openAppBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                openShopInApp(shopId);
-            });
-
-            // Follow button
-            document.getElementById('followBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                openShopInApp(shopId);
-            });
-
-            // Share button
-            document.getElementById('shareBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                shareShop(shopId);
-            });
-        }
-
-        // Fixed base64 encoding to match Dart's actual output (standard base64, not URL-safe)
-        function base64Encode(str) {
-            // Dart is actually using standard base64, not URL-safe
-            return btoa(str);
-        }
-
-        // Open shop in app
-        function openShopInApp(shopId) {
-            // Create the same encrypted link format as your Dart code
-            try {
-                debugLog('Creating shop deep link for', shopId);
-                
-                const rawData = `shop:${shopId}`;
-                const encodedData = base64Encode(rawData);
-                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
-                
-                debugLog('Encoded data', encodedData);
-                debugLog('Signature', signature);
-                
-                const appUrl = `knoc://shop?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
-                
-                debugLog('App URL', appUrl);
-                
-                // Try to open app
-                window.location.href = appUrl;
-                
-                // Fallback to Play Store after a delay
-                setTimeout(() => {
-                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
-                }, 2000);
-            } catch (error) {
-                debugLog('Error creating deep link', error);
-                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
-            }
-        }
-
-        // Open specific post in app
-        function openPostInApp(postId, shopId) {
-            try {
-                debugLog('Creating post deep link', { postId, shopId });
-                
-                const rawData = `${postId}:${shopId}`;
-                const encodedData = base64Encode(rawData);
-                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
-                
-                const appUrl = `knoc://post?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
-                
-                window.location.href = appUrl;
-                
-                setTimeout(() => {
-                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
-                }, 2000);
-            } catch (error) {
-                debugLog('Error creating post deep link', error);
-                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
-            }
-        }
-
-        // Share shop
-        function shareShop(shopId) {
-            if (navigator.share) {
-                navigator.share({
-                    title: document.getElementById('shopName').textContent,
-                    text: document.getElementById('shopDescription').textContent,
-                    url: window.location.href
-                });
-            } else {
-                // Fallback: copy to clipboard
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('Shop link copied to clipboard!');
-                });
-            }
-        }
-
-        // Show error state
-        function showError(message) {
-            debugLog('Showing error', message);
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('errorMessage').textContent = message;
-            document.getElementById('debugError').textContent = message;
-            document.getElementById('errorState').style.display = 'block';
-        }
-
-        // Main initialization
-        async function init() {
-            try {
-                debugLog('Starting initialization...');
-                
-                // Add timeout to prevent infinite loading
-                const timeoutId = setTimeout(() => {
-                    showError('Loading timeout - please check your internet connection and try again.');
-                }, 30000); // 30 second timeout
-                
-                // Load Supabase from unpkg CDN (more reliable)
-                const script = document.createElement('script');
-                script.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js';
-                
-                script.onload = async () => {
-                    try {
-                        debugLog('Supabase library loaded');
-                        
-                        const initialized = await initSupabase();
-                        if (!initialized) {
-                            clearTimeout(timeoutId);
-                            showError('Failed to initialize database connection. Please check the Supabase configuration.');
-                            return;
-                        }
-                        debugLog('Supabase initialized successfully');
-
-                        const shopId = decodeShopLink();
-                        debugLog('Shop ID decoded successfully', shopId);
-                        
-                        const shopData = await fetchShopData(shopId);
-                        debugLog('Shop data fetched successfully', shopData);
-                        
-                        renderShopProfile(shopData);
-                        debugLog('Shop profile should now be visible');
-                        
-                        clearTimeout(timeoutId);
-                    } catch (error) {
-                        clearTimeout(timeoutId);
-                        debugLog('Error in main flow', error);
-                        showError(error.message || 'Failed to load shop profile');
-                    }
-                };
-                
-                script.onerror = (error) => {
-                    clearTimeout(timeoutId);
-                    debugLog('Script loading error', error);
-                    showError('Failed to load required libraries. Please check your internet connection.');
-                };
-                
-                document.head.appendChild(script);
-            } catch (error) {
-                debugLog('Initialization error', error);
-                showError('Failed to initialize page');
-            }
-        }
-
-        // Start the app
-        init();
-    </script>
-</body>
-</html>;
-        
-        // Debug mode
-        let DEBUG_MODE = true; // Set to false in production
-
-        // Initialize Supabase client
-        let supabase;
-        
-        function debugLog(message, data = null) {
-            if (DEBUG_MODE) {
-                console.log('[DEBUG]', message, data);
-                const debugInfo = document.getElementById('debugInfo');
-                if (debugInfo) {
-                    debugInfo.style.display = 'block';
-                }
-            }
-        }
-        
-        function toggleDebug() {
-            const debugInfo = document.getElementById('debugInfo');
-            debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
-        }
-        
-        async function initSupabase() {
-            try {
-                debugLog('Initializing Supabase...');
-                
-                // Check if Supabase is available
-                if (typeof window.supabase === 'undefined') {
-                    debugLog('Supabase library not found');
-                    return false;
-                }
-                
-                // Import Supabase from the global object
-                const { createClient } = window.supabase;
-                if (!createClient) {
-                    debugLog('createClient not found in Supabase library');
-                    return false;
-                }
-                
-                supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                debugLog('Supabase initialized successfully');
-                return true;
-            } catch (error) {
-                debugLog('Failed to initialize Supabase', error);
-                return false;
-            }
-        }
-
-        // Fixed base64 URL encoding to match Dart's base64Url
-        function base64UrlDecode(str) {
-            // Add padding if needed
-            str += '='.repeat((4 - str.length % 4) % 4);
-            // Replace URL-safe characters
-            str = str.replace(/-/g, '+').replace(/_/g, '/');
-            return atob(str);
-        }
-
-        // Decode and verify deep link
-        function decodeShopLink() {
-            const currentUrl = window.location.href;
-            debugLog('Current URL', currentUrl);
-            document.getElementById('debugUrl').textContent = currentUrl;
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const rawData = urlParams.get('data');
-            const sig = urlParams.get('sig');
-            
-            // URL decode the data parameter if it's encoded
-            const data = rawData ? decodeURIComponent(rawData) : null;
-            
-            debugLog('Raw URL params', { rawData, sig });
-            debugLog('Decoded URL params', { data, sig });
-            
-            if (!data || !sig) {
-                debugLog('No secure deep link found, trying path-based extraction');
-                
-                // Try to get shopId directly from URL path
-                const pathParts = window.location.pathname.split('/');
-                debugLog('Path parts', pathParts);
-                
-                const shopIndex = pathParts.indexOf('shop');
-                if (shopIndex !== -1 && pathParts[shopIndex + 1]) {
-                    const shopId = pathParts[shopIndex + 1];
-                    debugLog('Found shop ID in path', shopId);
-                    document.getElementById('debugShopId').textContent = shopId;
-                    return shopId;
-                }
-                
-                // Check if there's a direct shop ID in query params
-                const directShopId = urlParams.get('shopId') || urlParams.get('shop_id') || urlParams.get('id');
-                if (directShopId) {
-                    debugLog('Found direct shop ID in query', directShopId);
-                    document.getElementById('debugShopId').textContent = directShopId;
-                    return directShopId;
-                }
-                
-                throw new Error('No shop data found in URL');
-            }
-            
-            debugLog('Verifying signature for data:', data);
-            debugLog('Signature to verify:', sig);
-            
-            // Verify signature using the same logic as your Dart code
-            const expectedSig = CryptoJS.HmacSHA256(data, DEEP_LINK_SECRET_KEY).toString();
-            debugLog('Expected signature', expectedSig);
-            debugLog('Received signature', sig);
-            
-            if (expectedSig !== sig) {
-                // Log detailed debugging info
-                debugLog('Signature mismatch details:', {
-                    dataLength: data.length,
-                    sigLength: sig.length,
-                    secretKeyLength: DEEP_LINK_SECRET_KEY.length,
-                    secretKey: DEEP_LINK_SECRET_KEY
-                });
-                throw new Error(`Invalid link signature. Expected: ${expectedSig}, Got: ${sig}`);
-            }
-            
-            debugLog('Signature verified, decoding data...');
-            
-            // Decode base64 data using URL-safe decoding
-            try {
-                const decodedData = base64UrlDecode(data);
-                debugLog('Decoded data', decodedData);
-                
-                if (decodedData.startsWith('shop:')) {
-                    const shopId = decodedData.substring(5); // Remove 'shop:' prefix
-                    debugLog('Extracted shop ID', shopId);
-                    document.getElementById('debugShopId').textContent = shopId;
-                    return shopId;
-                } else {
-                    throw new Error('Invalid shop link format - expected "shop:" prefix');
-                }
-            } catch (e) {
-                debugLog('Failed to decode shop link', e);
-                throw new Error('Failed to decode shop link: ' + e.message);
-            }
-        }
-
-        // Fetch shop data from Supabase
-        async function fetchShopData(shopId) {
-            try {
-                debugLog('Fetching shop data for ID', shopId);
-                
-                // Fetch shop details
-                const { data: shopData, error: shopError } = await supabase
-                    .from('shops')
-                    .select(`
-                        *,
-                        owner:owner_id (id, name, email)
-                    `)
-                    .eq('id', shopId)
-                    .single();
-
-                if (shopError) {
-                    debugLog('Shop query error', shopError);
-                    throw shopError;
-                }
-                
-                if (!shopData) {
-                    debugLog('No shop data found');
-                    throw new Error('Shop not found');
-                }
-
-                debugLog('Shop data fetched', shopData);
-
-                // Fetch shop media (profile pic, cover photo)
-                const { data: mediaData, error: mediaError } = await supabase
-                    .from('shop_media')
-                    .select('*')
-                    .eq('shop_id', shopId)
-                    .eq('is_active', true);
-
-                if (mediaError) {
-                    debugLog('Media query error (non-fatal)', mediaError);
-                }
-
-                debugLog('Media data fetched', mediaData);
-
-                // Fetch product posts only
-                const { data: postsData, error: postsError } = await supabase
-                    .from('shop_posts')
-                    .select(`
-                        *,
-                        post_media (*),
-                        post_likes (count)
-                    `)
-                    .eq('shop_id', shopId)
-                    .eq('is_active', true)
-                    .eq('post_type', 'product')
-                    .order('created_at', { ascending: false })
-                    .limit(20);
-
-                if (postsError) {
-                    debugLog('Posts query error (non-fatal)', postsError);
-                }
-
-                debugLog('Posts data fetched', postsData);
-
-                return {
-                    shop: shopData,
-                    media: mediaData || [],
-                    products: postsData || []
-                };
-            } catch (error) {
-                debugLog('Error fetching shop data', error);
-                throw error;
-            }
-        }
-
-        // Get media URLs
-        function getMediaUrl(mediaList, mediaType) {
-            const media = mediaList.find(m => m.media_type === mediaType && m.is_active);
-            return media ? (media.thumbnail_url || media.url) : null;
-        }
-
-        // Render shop profile
-        function renderShopProfile(data) {
-            try {
-                debugLog('Rendering shop profile', data);
-                
-                const { shop, media, products } = data;
-                
-                // Update meta tags for SEO
-                document.title = `${shop.shop_name} - Knoc`;
-                document.querySelector('meta[property="og:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
-                document.querySelector('meta[property="twitter:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
-                
-                if (shop.description) {
-                    document.querySelector('meta[name="description"]').setAttribute('content', shop.description);
-                    document.querySelector('meta[property="og:description"]').setAttribute('content', shop.description);
-                    document.querySelector('meta[property="twitter:description"]').setAttribute('content', shop.description);
-                }
-
-                // Cover image
-                const coverUrl = getMediaUrl(media, 'cover_photo') || shop.cover_image;
-                if (coverUrl) {
-                    const coverImg = document.getElementById('coverImage');
-                    coverImg.src = coverUrl;
-                    coverImg.style.display = 'block';
+                <div class="relative aspect-square">
+                    ${media ? `
+                        <img src="${media.thumbnailUrl || media.url}" 
+                             alt="${product.content}" 
+                             class="w-full h-full object-cover"
+                             loading="lazy">
+                    ` : `
+                        <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
+                            </svg>
+                        </div>
+                    `}
                     
-                    // Update OG image
-                    document.querySelector('meta[property="og:image"]').setAttribute('content', coverUrl);
-                }
-
-                // Profile picture
-                const profileUrl = getMediaUrl(media, 'profile_pic') || shop.image_url;
-                const profilePic = document.getElementById('profilePic');
-                if (profileUrl) {
-                    profilePic.src = profileUrl;
-                } else {
-                    profilePic.style.display = 'none';
-                }
-
-                // Shop info
-                document.getElementById('shopName').textContent = shop.shop_name || 'Shop';
-                document.getElementById('shopDescription').textContent = shop.description || 'Welcome to our shop!';
-                document.getElementById('followersCount').textContent = shop.follower_count || '0';
-                document.getElementById('productsCount').textContent = products.length.toString();
-
-                // Render products
-                renderProducts(products);
-
-                // Setup deep linking for buttons
-                setupDeepLinking(shop.id);
-
-                // Show profile
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('shopProfile').style.display = 'block';
+                    ${hasDiscount ? `
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                            ${discountPercent}% OFF
+                        </div>
+                    ` : ''}
+                    
+                    <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                </div>
                 
-                debugLog('Shop profile rendered successfully');
-            } catch (error) {
-                debugLog('Error rendering shop profile', error);
-                throw error;
-            }
-        }
-
-        // Render products grid
-        function renderProducts(products) {
-            const grid = document.getElementById('productsGrid');
-            const emptyState = document.getElementById('emptyProducts');
-
-            if (products.length === 0) {
-                grid.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            grid.innerHTML = '';
-            emptyState.style.display = 'none';
-
-            products.forEach(product => {
-                const card = createProductCard(product);
-                grid.appendChild(card);
-            });
-        }
-
-        // Create product card
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            
-            const mediaList = product.post_media || [];
-            const imageUrl = mediaList.length > 0 ? (mediaList[0].thumbnail_url || mediaList[0].url) : null;
-            
-            // Extract price from metadata
-            const metadata = product.metadata || {};
-            const price = metadata.price || metadata.discounted_price || metadata.original_price;
-            const priceText = price ? `₹${price}` : 'Price on request';
-
-            card.innerHTML = `
-                ${imageUrl ? `<img class="product-image" src="${imageUrl}" alt="${product.content}" loading="lazy">` : '<div class="product-image"></div>'}
-                <div class="product-info">
-                    <div class="product-name">${product.content || 'Product'}</div>
-                    <div class="product-price">${priceText}</div>
+                <div class="p-3">
+                    <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${product.content}</h3>
+                    
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-400">
+                            ${[1,2,3,4,5].map(i => `
+                                <svg class="w-3 h-3" fill="${i <= 4 ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                </svg>
+                            `).join('')}
+                        </div>
+                        <span class="text-xs text-gray-500 ml-1">4.5 (${product.likesCount})</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
+                            ${hasDiscount ? `
+                                <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
+                            ` : ''}
+                        </div>
+                        <button class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             `;
-
-            // Add click handler to open in app
-            card.addEventListener('click', () => {
-                openPostInApp(product.id, product.shop_id);
-            });
-
+            
             return card;
         }
 
-        // Setup deep linking
-        function setupDeepLinking(shopId) {
-            // Open app button
-            document.getElementById('openAppBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                openShopInApp(shopId);
-            });
-
-            // Follow button
-            document.getElementById('followBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                openShopInApp(shopId);
-            });
-
-            // Share button
-            document.getElementById('shareBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                shareShop(shopId);
-            });
-        }
-
-        // Fixed base64 URL encoding to match Dart's base64Url
-        function base64UrlEncode(str) {
-            return btoa(str)
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=+$/, '');
-        }
-
-        // Open shop in app
-        function openShopInApp(shopId) {
-            // Create the same encrypted link format as your Dart code
-            try {
-                debugLog('Creating shop deep link for', shopId);
-                
-                const rawData = `shop:${shopId}`;
-                const encodedData = base64UrlEncode(rawData);
-                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
-                
-                debugLog('Encoded data', encodedData);
-                debugLog('Signature', signature);
-                
-                const appUrl = `knoc://shop?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
-                
-                debugLog('App URL', appUrl);
-                
-                // Try to open app
-                window.location.href = appUrl;
-                
-                // Fallback to Play Store after a delay
-                setTimeout(() => {
-                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
-                }, 2000);
-            } catch (error) {
-                debugLog('Error creating deep link', error);
-                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+        // Utility functions
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
             }
-        }
-
-        // Open specific post in app
-        function openPostInApp(postId, shopId) {
-            try {
-                debugLog('Creating post deep link', { postId, shopId });
-                
-                const rawData = `${postId}:${shopId}`;
-                const encodedData = base64UrlEncode(rawData);
-                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
-                
-                const appUrl = `knoc://post?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
-                
-                window.location.href = appUrl;
-                
-                setTimeout(() => {
-                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
-                }, 2000);
-            } catch (error) {
-                debugLog('Error creating post deep link', error);
-                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
             }
+            return num.toString();
         }
 
-        // Share shop
-        function shareShop(shopId) {
-            if (navigator.share) {
-                navigator.share({
-                    title: document.getElementById('shopName').textContent,
-                    text: document.getElementById('shopDescription').textContent,
-                    url: window.location.href
-                });
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+        }
+
+        function showError() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+        }
+
+        // Share functionality
+        document.getElementById('share-btn').addEventListener('click', async () => {
+            if (navigator.share && shopData) {
+                try {
+                    await navigator.share({
+                        title: shopData.shop.name,
+                        text: shopData.shop.description,
+                        url: window.location.href
+                    });
+                } catch (err) {
+                    // Fallback to copying link
+                    copyToClipboard(window.location.href);
+                }
             } else {
-                // Fallback: copy to clipboard
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('Shop link copied to clipboard!');
-                });
+                // Fallback to copying link
+                copyToClipboard(window.location.href);
             }
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show toast notification
+                showToast('Link copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('Link copied to clipboard!');
+            });
         }
 
-        // Show error state
-        function showError(message) {
-            debugLog('Showing error', message);
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('errorMessage').textContent = message;
-            document.getElementById('debugError').textContent = message;
-            document.getElementById('errorState').style.display = 'block';
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
-        // Main initialization
-        async function init() {
-            try {
-                debugLog('Starting initialization...');
-                
-                // Load Supabase from unpkg CDN (more reliable)
-                const script = document.createElement('script');
-                script.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js';
-                script.onload = async () => {
-                    debugLog('Supabase library loaded');
-                    const initialized = await initSupabase();
-                    if (!initialized) {
-                        showError('Failed to initialize database connection');
-                        return;
-                    }
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadShopData();
+        });
 
-                    try {
-                        const shopId = decodeShopLink();
-                        debugLog('Shop ID decoded successfully', shopId);
-                        const shopData = await fetchShopData(shopId);
-                        renderShopProfile(shopData);
-                    } catch (error) {
-                        debugLog('Error in main flow', error);
-                        showError(error.message || 'Failed to load shop profile');
-                    }
-                };
-                script.onerror = (error) => {
-                    debugLog('Script loading error', error);
-                    showError('Failed to load required libraries. Please check your internet connection.');
-                };
-                document.head.appendChild(script);
-            } catch (error) {
-                debugLog('Initialization error', error);
-                showError('Failed to initialize page');
+        // Handle category filter clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('category-chip')) {
+                const category = e.target.dataset.category;
+                filterProducts(category);
             }
-        }
-
-        // Start the app
-        init();
+        });
     </script>
 </body>
 </html>
