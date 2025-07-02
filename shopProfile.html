@@ -211,11 +211,24 @@
         let shopData = null;
         let currentCategory = 'all';
 
-        // Get shop ID from URL
+        // Get shop ID from URL or use test ID
         function getShopIdFromUrl() {
+            // For testing with your real shop data
+            const testShopId = '3f270e3f-73f7-4b16-b6b8-37c5bcb89305';
+            
+            // Check URL first
+            const urlParams = new URLSearchParams(window.location.search);
+            const shopFromUrl = urlParams.get('shop');
+            if (shopFromUrl) return shopFromUrl;
+            
+            // Check path
             const path = window.location.pathname;
             const parts = path.split('/');
-            return parts[parts.length - 1] || parts[parts.length - 2];
+            const shopFromPath = parts[parts.length - 1];
+            if (shopFromPath && shopFromPath !== 'shopProfile.html') return shopFromPath;
+            
+            // Return test shop ID if nothing found
+            return testShopId;
         }
 
         // Load shop data
