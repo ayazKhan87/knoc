@@ -1,200 +1,1461 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Supabase Connection Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Profile - Knoc</title>
+    <meta name="description" content="Discover amazing shops and products on Knoc">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Shop Profile - Knoc">
+    <meta property="og:description" content="Discover amazing shops and products on Knoc">
+    <meta property="og:image" content="https://www.knoc.in/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Shop Profile - Knoc">
+    <meta property="twitter:description" content="Discover amazing shops and products on Knoc">
+    
     <style>
-        body { font-family: monospace; margin: 20px; }
-        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .info { background: #d1ecf1; color: #0c5460; }
-        .warning { background: #fff3cd; color: #856404; }
-        button { padding: 10px 20px; margin: 5px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .app-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #ef4444;
+        }
+        
+        .btn-secondary:hover {
+            background: #f3f4f6;
+        }
+        
+        /* Cover Section */
+        .cover-section {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            overflow: hidden;
+        }
+        
+        .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-pic {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: #f3f4f6;
+            object-fit: cover;
+        }
+        
+        /* Shop Info */
+        .shop-info {
+            padding: 3rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+        
+        .shop-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        
+        .shop-description {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .shop-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #111827;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .shop-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Products Grid */
+        .products-section {
+            padding: 2rem 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #111827;
+            text-align: center;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .product-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #f3f4f6;
+        }
+        
+        .product-info {
+            padding: 1rem;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111827;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #ef4444;
+        }
+        
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ef4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #dc2626;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6b7280;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Debug info */
+        .debug-info {
+            background: #f0f0f0;
+            padding: 1rem;
+            margin: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .header-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .shop-stats {
+                gap: 1rem;
+            }
+            
+            .shop-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 0.75rem;
+            }
+        }
+        
+        .fallback-section {
+            background: #f8f9fa;
+            border-top: 1px solid #e5e7eb;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        
+        .fallback-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+        
+        .fallback-text {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
-    <h1>Supabase Connection Test</h1>
-    <p>This will help diagnose the connection issue with your shop profile.</p>
-    
-    <div>
-        <button onclick="testBasicConnection()">Test Basic Connection</button>
-        <button onclick="testShopQuery()">Test Shop Query</button>
-        <button onclick="testShopMediaQuery()">Test Shop Media Query</button>
-        <button onclick="testShopPostsQuery()">Test Shop Posts Query</button>
-        <button onclick="clearResults()">Clear Results</button>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-nav">
+                <div class="logo">Knoc</div>
+                <div class="app-buttons">
+                    <a href="#" class="btn btn-primary" id="openAppBtn">Open in App</a>
+                    <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn btn-secondary">Download</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Debug Info (remove in production) -->
+        <div id="debugInfo" class="debug-info" style="display: none;">
+            <strong>Debug Information:</strong><br>
+            URL: <span id="debugUrl"></span><br>
+            Shop ID: <span id="debugShopId"></span><br>
+            Error: <span id="debugError"></span>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            <p>Loading shop profile...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div id="errorState" class="error" style="display: none;">
+            <div class="empty-icon">⚠️</div>
+            <h3>Oops! Something went wrong</h3>
+            <p id="errorMessage">Unable to load shop profile</p>
+            <button onclick="toggleDebug()" class="btn btn-secondary" style="margin-top: 1rem;">Show Debug Info</button>
+            <a href="https://www.knoc.in" class="btn btn-primary" style="margin-top: 1rem;">Visit Knoc</a>
+        </div>
+        
+        <!-- Shop Profile -->
+        <div id="shopProfile" style="display: none;">
+            <!-- Cover Section -->
+            <div class="cover-section">
+                <img id="coverImage" class="cover-image" style="display: none;" alt="Shop Cover">
+                <img id="profilePic" class="profile-pic" alt="Shop Profile">
+            </div>
+            
+            <!-- Shop Info -->
+            <div class="shop-info">
+                <h1 id="shopName" class="shop-name">Shop Name</h1>
+                <p id="shopDescription" class="shop-description">Shop description...</p>
+                
+                <div class="shop-stats">
+                    <div class="stat">
+                        <div id="followersCount" class="stat-value">0</div>
+                        <div class="stat-label">Followers</div>
+                    </div>
+                    <div class="stat">
+                        <div id="productsCount" class="stat-value">0</div>
+                        <div class="stat-label">Products</div>
+                    </div>
+                </div>
+                
+                <div class="shop-actions">
+                    <a href="#" class="btn btn-primary" id="followBtn">Follow Shop</a>
+                    <a href="#" class="btn btn-secondary" id="shareBtn">Share</a>
+                </div>
+            </div>
+            
+            <!-- Products Section -->
+            <div class="products-section">
+                <h2 class="section-title">Products</h2>
+                <div id="productsGrid" class="products-grid"></div>
+                
+                <!-- Empty Products State -->
+                <div id="emptyProducts" class="empty-state" style="display: none;">
+                    <div class="empty-icon">🛍️</div>
+                    <h3>No Products Yet</h3>
+                    <p>This shop hasn't added any products yet.<br>Check back soon!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Fallback Section -->
+        <div class="fallback-section">
+            <h3 class="fallback-title">Get the Full Experience</h3>
+            <p class="fallback-text">Download the Knoc app to follow shops, save products, and get notifications about new deals!</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn btn-primary">
+                    📱 Download for Android
+                </a>
+                <a href="https://www.knoc.in" class="btn btn-secondary">
+                    🌐 Visit Website
+                </a>
+            </div>
+        </div>
     </div>
-    
-    <div id="results"></div>
-    
-    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-        // ⚠️ REPLACE WITH YOUR ACTUAL SUPABASE CREDENTIALS
+        // ===== CONFIGURATION SECTION =====
+        // TODO: Replace these with your actual Supabase credentials
         const SUPABASE_URL = 'https://rtwtkapynafirwixyeal.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0d3RrYXB5bmFmaXJ3aXh5ZWFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2OTcwODYsImV4cCI6MjA1NDI3MzA4Nn0.UxKAcSfVuWLvbMU6nLQmF55BHngD8m1ZtKVGm9fnNas'; // ⚠️ REPLACE THIS!
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0d3RrYXB5bmFmaXJ3aXh5ZWFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2OTcwODYsImV4cCI6MjA1NDI3MzA4Nn0.UxKAcSfVuWLvbMU6nLQmF55BHngD8m1ZtKVGm9fnNas'; // ⚠️ YOU MUST REPLACE THIS!
         
-        const SHOP_ID = '2ea8f735-d3a5-4793-adbe-432d5b31bc40'; // From your URL
+        // IMPORTANT: This must match exactly with your Dart code's secret key
+        // Based on your environment variable
+        const DEEP_LINK_SECRET_KEY = 'ajdr%733ugq@qys237cgyu1*gy$yya625vq6ef
         
+        // Debug mode
+        let DEBUG_MODE = true; // Set to false in production
+
+        // Initialize Supabase client
         let supabase;
         
-        function addResult(message, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `result ${type}`;
-            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
-            document.getElementById('results').appendChild(div);
-            console.log(type.toUpperCase() + ':', message);
+        function debugLog(message, data = null) {
+            if (DEBUG_MODE) {
+                console.log('[DEBUG]', message, data);
+                const debugInfo = document.getElementById('debugInfo');
+                if (debugInfo) {
+                    debugInfo.style.display = 'block';
+                }
+            }
         }
         
-        function clearResults() {
-            document.getElementById('results').innerHTML = '';
+        function toggleDebug() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
         }
         
         async function initSupabase() {
             try {
+                debugLog('Initializing Supabase...');
+                
+                // Check if the anon key is still placeholder
                 if (SUPABASE_ANON_KEY === 'YOUR_ACTUAL_SUPABASE_ANON_KEY_HERE') {
-                    addResult('❌ SUPABASE_ANON_KEY is still placeholder! You must replace it with your real key.', 'error');
+                    debugLog('ERROR: Supabase anon key is still placeholder!');
+                    throw new Error('Supabase anon key not configured. Please replace YOUR_ACTUAL_SUPABASE_ANON_KEY_HERE with your real key.');
+                }
+                
+                // Check if Supabase is available
+                if (typeof window.supabase === 'undefined') {
+                    debugLog('Supabase library not found');
                     return false;
                 }
                 
+                // Import Supabase from the global object
                 const { createClient } = window.supabase;
+                if (!createClient) {
+                    debugLog('createClient not found in Supabase library');
+                    return false;
+                }
+                
                 supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                addResult('✅ Supabase client created', 'success');
+                
+                // Test the connection
+                debugLog('Testing Supabase connection...');
+                const { data, error } = await supabase.from('shops').select('count').limit(1);
+                if (error) {
+                    debugLog('Supabase connection test failed', error);
+                    throw new Error('Supabase connection failed: ' + error.message);
+                }
+                
+                debugLog('Supabase initialized and tested successfully');
                 return true;
             } catch (error) {
-                addResult('❌ Failed to create Supabase client: ' + error.message, 'error');
+                debugLog('Failed to initialize Supabase', error);
                 return false;
             }
         }
-        
-        async function testBasicConnection() {
-            addResult('🔄 Testing basic Supabase connection...', 'info');
+
+        // Fixed base64 decoding to match Dart's actual output (standard base64, not URL-safe)
+        function base64Decode(str) {
+            // Dart is using standard base64, not URL-safe, so no character replacement needed
+            return atob(str);
+        }
+
+        // Decode and verify deep link
+        function decodeShopLink() {
+            const currentUrl = window.location.href;
+            debugLog('Current URL', currentUrl);
+            document.getElementById('debugUrl').textContent = currentUrl;
             
-            if (!await initSupabase()) {
-                return;
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawData = urlParams.get('data');
+            const sig = urlParams.get('sig');
+            
+            // URL decode the data parameter if it's encoded
+            const data = rawData ? decodeURIComponent(rawData) : null;
+            
+            debugLog('Raw URL params', { rawData, sig });
+            debugLog('Decoded URL params', { data, sig });
+            
+            if (!data || !sig) {
+                debugLog('No secure deep link found, trying path-based extraction');
+                
+                // Try to get shopId directly from URL path
+                const pathParts = window.location.pathname.split('/');
+                debugLog('Path parts', pathParts);
+                
+                const shopIndex = pathParts.indexOf('shop');
+                if (shopIndex !== -1 && pathParts[shopIndex + 1]) {
+                    const shopId = pathParts[shopIndex + 1];
+                    debugLog('Found shop ID in path', shopId);
+                    document.getElementById('debugShopId').textContent = shopId;
+                    return shopId;
+                }
+                
+                // Check if there's a direct shop ID in query params
+                const directShopId = urlParams.get('shopId') || urlParams.get('shop_id') || urlParams.get('id');
+                if (directShopId) {
+                    debugLog('Found direct shop ID in query', directShopId);
+                    document.getElementById('debugShopId').textContent = directShopId;
+                    return directShopId;
+                }
+                
+                throw new Error('No shop data found in URL');
             }
             
+            debugLog('Verifying signature for data:', data);
+            debugLog('Signature to verify:', sig);
+            
+            // Verify signature using the same logic as your Dart code
+            const expectedSig = CryptoJS.HmacSHA256(data, DEEP_LINK_SECRET_KEY).toString();
+            debugLog('Expected signature', expectedSig);
+            debugLog('Received signature', sig);
+            
+            if (expectedSig !== sig) {
+                // Log detailed debugging info
+                debugLog('Signature mismatch details:', {
+                    dataLength: data.length,
+                    sigLength: sig.length,
+                    secretKeyLength: DEEP_LINK_SECRET_KEY.length,
+                    secretKey: DEEP_LINK_SECRET_KEY
+                });
+                throw new Error(`Invalid link signature. Expected: ${expectedSig}, Got: ${sig}`);
+            }
+            
+            debugLog('Signature verified, decoding data...');
+            
+            // Decode base64 data using standard base64 (not URL-safe)
             try {
-                // Try a simple query to test connection
-                const { data, error } = await supabase
-                    .from('shops')
-                    .select('count')
-                    .limit(1);
+                const decodedData = base64Decode(data);
+                debugLog('Decoded data', decodedData);
                 
-                if (error) {
-                    addResult('❌ Connection test failed: ' + error.message + ' (Code: ' + error.code + ')', 'error');
-                    
-                    if (error.code === '42P01') {
-                        addResult('💡 Error 42P01 means table "shops" does not exist. Check your database schema.', 'warning');
-                    } else if (error.code === 'PGRST116') {
-                        addResult('💡 Error PGRST116 means authentication failed. Check your anon key.', 'warning');
-                    }
+                if (decodedData.startsWith('shop:')) {
+                    const shopId = decodedData.substring(5); // Remove 'shop:' prefix
+                    debugLog('Extracted shop ID', shopId);
+                    document.getElementById('debugShopId').textContent = shopId;
+                    return shopId;
                 } else {
-                    addResult('✅ Basic connection successful!', 'success');
-                    addResult('📊 Query result: ' + JSON.stringify(data), 'info');
+                    throw new Error('Invalid shop link format - expected "shop:" prefix');
                 }
-            } catch (error) {
-                addResult('❌ Connection test error: ' + error.message, 'error');
+            } catch (e) {
+                debugLog('Failed to decode shop link', e);
+                throw new Error('Failed to decode shop link: ' + e.message);
             }
         }
-        
-        async function testShopQuery() {
-            addResult('🔄 Testing shop query for ID: ' + SHOP_ID, 'info');
-            
-            if (!supabase) {
-                await initSupabase();
-            }
-            
-            if (!supabase) {
-                addResult('❌ Supabase not initialized', 'error');
-                return;
-            }
-            
+
+        // Fetch shop data from Supabase
+        async function fetchShopData(shopId) {
             try {
-                const { data, error } = await supabase
+                debugLog('Fetching shop data for ID', shopId);
+                
+                // Fetch shop details
+                const { data: shopData, error: shopError } = await supabase
                     .from('shops')
                     .select(`
                         *,
                         owner:owner_id (id, name, email)
                     `)
-                    .eq('id', SHOP_ID)
+                    .eq('id', shopId)
                     .single();
-                
-                if (error) {
-                    addResult('❌ Shop query failed: ' + error.message + ' (Code: ' + error.code + ')', 'error');
-                    
-                    if (error.code === 'PGRST116') {
-                        addResult('💡 Shop not found or access denied.', 'warning');
-                    }
-                } else {
-                    addResult('✅ Shop query successful!', 'success');
-                    addResult('📊 Shop name: ' + (data.shop_name || 'N/A'), 'info');
-                    addResult('📊 Shop owner: ' + (data.owner?.name || 'N/A'), 'info');
+
+                if (shopError) {
+                    debugLog('Shop query error', shopError);
+                    throw shopError;
                 }
-            } catch (error) {
-                addResult('❌ Shop query error: ' + error.message, 'error');
-            }
-        }
-        
-        async function testShopMediaQuery() {
-            addResult('🔄 Testing shop media query for ID: ' + SHOP_ID, 'info');
-            
-            if (!supabase) {
-                await initSupabase();
-            }
-            
-            try {
-                const { data, error } = await supabase
+                
+                if (!shopData) {
+                    debugLog('No shop data found');
+                    throw new Error('Shop not found');
+                }
+
+                debugLog('Shop data fetched', shopData);
+
+                // Fetch shop media (profile pic, cover photo)
+                const { data: mediaData, error: mediaError } = await supabase
                     .from('shop_media')
                     .select('*')
-                    .eq('shop_id', SHOP_ID)
+                    .eq('shop_id', shopId)
                     .eq('is_active', true);
-                
-                if (error) {
-                    addResult('❌ Shop media query failed: ' + error.message, 'error');
-                } else {
-                    addResult('✅ Shop media query successful!', 'success');
-                    addResult('📊 Media count: ' + (data?.length || 0), 'info');
+
+                if (mediaError) {
+                    debugLog('Media query error (non-fatal)', mediaError);
                 }
-            } catch (error) {
-                addResult('❌ Shop media query error: ' + error.message, 'error');
-            }
-        }
-        
-        async function testShopPostsQuery() {
-            addResult('🔄 Testing shop posts query for ID: ' + SHOP_ID, 'info');
-            
-            if (!supabase) {
-                await initSupabase();
-            }
-            
-            try {
-                const { data, error } = await supabase
+
+                debugLog('Media data fetched', mediaData);
+
+                // Fetch product posts only
+                const { data: postsData, error: postsError } = await supabase
                     .from('shop_posts')
                     .select(`
                         *,
                         post_media (*),
                         post_likes (count)
                     `)
-                    .eq('shop_id', SHOP_ID)
+                    .eq('shop_id', shopId)
                     .eq('is_active', true)
                     .eq('post_type', 'product')
                     .order('created_at', { ascending: false })
                     .limit(20);
-                
-                if (error) {
-                    addResult('❌ Shop posts query failed: ' + error.message, 'error');
-                } else {
-                    addResult('✅ Shop posts query successful!', 'success');
-                    addResult('📊 Posts count: ' + (data?.length || 0), 'info');
+
+                if (postsError) {
+                    debugLog('Posts query error (non-fatal)', postsError);
                 }
+
+                debugLog('Posts data fetched', postsData);
+
+                return {
+                    shop: shopData,
+                    media: mediaData || [],
+                    products: postsData || []
+                };
             } catch (error) {
-                addResult('❌ Shop posts query error: ' + error.message, 'error');
+                debugLog('Error fetching shop data', error);
+                throw error;
+            }
+        }
+
+        // Get media URLs
+        function getMediaUrl(mediaList, mediaType) {
+            const media = mediaList.find(m => m.media_type === mediaType && m.is_active);
+            return media ? (media.thumbnail_url || media.url) : null;
+        }
+
+        // Render shop profile
+        function renderShopProfile(data) {
+            try {
+                debugLog('Starting to render shop profile...', data);
+                
+                if (!data || !data.shop) {
+                    throw new Error('Invalid shop data received');
+                }
+                
+                const { shop, media, products } = data;
+                debugLog('Shop data structure verified', { 
+                    hasShop: !!shop, 
+                    hasMedia: !!media, 
+                    hasProducts: !!products,
+                    shopName: shop?.shop_name,
+                    mediaCount: media?.length,
+                    productsCount: products?.length
+                });
+                
+                // Update meta tags for SEO
+                document.title = `${shop.shop_name} - Knoc`;
+                debugLog('Updated page title');
+                
+                try {
+                    document.querySelector('meta[property="og:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
+                    document.querySelector('meta[property="twitter:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
+                    debugLog('Updated meta tags');
+                } catch (metaError) {
+                    debugLog('Meta tag update failed (non-critical)', metaError);
+                }
+                
+                if (shop.description) {
+                    try {
+                        document.querySelector('meta[name="description"]').setAttribute('content', shop.description);
+                        document.querySelector('meta[property="og:description"]').setAttribute('content', shop.description);
+                        document.querySelector('meta[property="twitter:description"]').setAttribute('content', shop.description);
+                        debugLog('Updated description meta tags');
+                    } catch (descError) {
+                        debugLog('Description meta update failed (non-critical)', descError);
+                    }
+                }
+
+                // Cover image
+                debugLog('Processing cover image...');
+                const coverUrl = getMediaUrl(media, 'cover_photo') || shop.cover_image;
+                if (coverUrl) {
+                    const coverImg = document.getElementById('coverImage');
+                    if (coverImg) {
+                        coverImg.src = coverUrl;
+                        coverImg.style.display = 'block';
+                        debugLog('Cover image set', coverUrl);
+                        
+                        // Update OG image
+                        try {
+                            document.querySelector('meta[property="og:image"]').setAttribute('content', coverUrl);
+                        } catch (ogError) {
+                            debugLog('OG image update failed (non-critical)', ogError);
+                        }
+                    }
+                } else {
+                    debugLog('No cover image found');
+                }
+
+                // Profile picture
+                debugLog('Processing profile picture...');
+                const profileUrl = getMediaUrl(media, 'profile_pic') || shop.image_url;
+                const profilePic = document.getElementById('profilePic');
+                if (profilePic) {
+                    if (profileUrl) {
+                        profilePic.src = profileUrl;
+                        debugLog('Profile picture set', profileUrl);
+                    } else {
+                        profilePic.style.display = 'none';
+                        debugLog('No profile picture found');
+                    }
+                }
+
+                // Shop info
+                debugLog('Setting shop information...');
+                const shopNameEl = document.getElementById('shopName');
+                const shopDescEl = document.getElementById('shopDescription');
+                const followersEl = document.getElementById('followersCount');
+                const productsEl = document.getElementById('productsCount');
+                
+                if (shopNameEl) shopNameEl.textContent = shop.shop_name || 'Shop';
+                if (shopDescEl) shopDescEl.textContent = shop.description || 'Welcome to our shop!';
+                if (followersEl) followersEl.textContent = shop.follower_count || '0';
+                if (productsEl) productsEl.textContent = products.length.toString();
+                
+                debugLog('Shop info updated');
+
+                // Render products
+                debugLog('Rendering products...');
+                renderProducts(products);
+
+                // Setup deep linking for buttons
+                debugLog('Setting up deep linking...');
+                setupDeepLinking(shop.id);
+
+                // Show profile and hide loading
+                debugLog('Showing profile...');
+                const loadingState = document.getElementById('loadingState');
+                const shopProfile = document.getElementById('shopProfile');
+                
+                if (loadingState) loadingState.style.display = 'none';
+                if (shopProfile) shopProfile.style.display = 'block';
+                
+                debugLog('Shop profile rendered successfully!');
+            } catch (error) {
+                debugLog('Error rendering shop profile', error);
+                throw error;
+            }
+        }
+
+        // Render products grid
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyProducts');
+
+            if (products.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.innerHTML = '';
+            emptyState.style.display = 'none';
+
+            products.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create product card
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            const mediaList = product.post_media || [];
+            const imageUrl = mediaList.length > 0 ? (mediaList[0].thumbnail_url || mediaList[0].url) : null;
+            
+            // Extract price from metadata
+            const metadata = product.metadata || {};
+            const price = metadata.price || metadata.discounted_price || metadata.original_price;
+            const priceText = price ? `₹${price}` : 'Price on request';
+
+            card.innerHTML = `
+                ${imageUrl ? `<img class="product-image" src="${imageUrl}" alt="${product.content}" loading="lazy">` : '<div class="product-image"></div>'}
+                <div class="product-info">
+                    <div class="product-name">${product.content || 'Product'}</div>
+                    <div class="product-price">${priceText}</div>
+                </div>
+            `;
+
+            // Add click handler to open in app
+            card.addEventListener('click', () => {
+                openPostInApp(product.id, product.shop_id);
+            });
+
+            return card;
+        }
+
+        // Setup deep linking
+        function setupDeepLinking(shopId) {
+            // Open app button
+            document.getElementById('openAppBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openShopInApp(shopId);
+            });
+
+            // Follow button
+            document.getElementById('followBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openShopInApp(shopId);
+            });
+
+            // Share button
+            document.getElementById('shareBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                shareShop(shopId);
+            });
+        }
+
+        // Fixed base64 encoding to match Dart's actual output (standard base64, not URL-safe)
+        function base64Encode(str) {
+            // Dart is actually using standard base64, not URL-safe
+            return btoa(str);
+        }
+
+        // Open shop in app
+        function openShopInApp(shopId) {
+            // Create the same encrypted link format as your Dart code
+            try {
+                debugLog('Creating shop deep link for', shopId);
+                
+                const rawData = `shop:${shopId}`;
+                const encodedData = base64Encode(rawData);
+                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
+                
+                debugLog('Encoded data', encodedData);
+                debugLog('Signature', signature);
+                
+                const appUrl = `knoc://shop?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
+                
+                debugLog('App URL', appUrl);
+                
+                // Try to open app
+                window.location.href = appUrl;
+                
+                // Fallback to Play Store after a delay
+                setTimeout(() => {
+                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+                }, 2000);
+            } catch (error) {
+                debugLog('Error creating deep link', error);
+                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            }
+        }
+
+        // Open specific post in app
+        function openPostInApp(postId, shopId) {
+            try {
+                debugLog('Creating post deep link', { postId, shopId });
+                
+                const rawData = `${postId}:${shopId}`;
+                const encodedData = base64Encode(rawData);
+                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
+                
+                const appUrl = `knoc://post?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
+                
+                window.location.href = appUrl;
+                
+                setTimeout(() => {
+                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+                }, 2000);
+            } catch (error) {
+                debugLog('Error creating post deep link', error);
+                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            }
+        }
+
+        // Share shop
+        function shareShop(shopId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.getElementById('shopName').textContent,
+                    text: document.getElementById('shopDescription').textContent,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Shop link copied to clipboard!');
+                });
+            }
+        }
+
+        // Show error state
+        function showError(message) {
+            debugLog('Showing error', message);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('debugError').textContent = message;
+            document.getElementById('errorState').style.display = 'block';
+        }
+
+        // Main initialization
+        async function init() {
+            try {
+                debugLog('Starting initialization...');
+                
+                // Add timeout to prevent infinite loading
+                const timeoutId = setTimeout(() => {
+                    showError('Loading timeout - please check your internet connection and try again.');
+                }, 30000); // 30 second timeout
+                
+                // Load Supabase from unpkg CDN (more reliable)
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js';
+                
+                script.onload = async () => {
+                    try {
+                        debugLog('Supabase library loaded');
+                        
+                        const initialized = await initSupabase();
+                        if (!initialized) {
+                            clearTimeout(timeoutId);
+                            showError('Failed to initialize database connection. Please check the Supabase configuration.');
+                            return;
+                        }
+                        debugLog('Supabase initialized successfully');
+
+                        const shopId = decodeShopLink();
+                        debugLog('Shop ID decoded successfully', shopId);
+                        
+                        const shopData = await fetchShopData(shopId);
+                        debugLog('Shop data fetched successfully', shopData);
+                        
+                        renderShopProfile(shopData);
+                        debugLog('Shop profile should now be visible');
+                        
+                        clearTimeout(timeoutId);
+                    } catch (error) {
+                        clearTimeout(timeoutId);
+                        debugLog('Error in main flow', error);
+                        showError(error.message || 'Failed to load shop profile');
+                    }
+                };
+                
+                script.onerror = (error) => {
+                    clearTimeout(timeoutId);
+                    debugLog('Script loading error', error);
+                    showError('Failed to load required libraries. Please check your internet connection.');
+                };
+                
+                document.head.appendChild(script);
+            } catch (error) {
+                debugLog('Initialization error', error);
+                showError('Failed to initialize page');
+            }
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>;
+        
+        // Debug mode
+        let DEBUG_MODE = true; // Set to false in production
+
+        // Initialize Supabase client
+        let supabase;
+        
+        function debugLog(message, data = null) {
+            if (DEBUG_MODE) {
+                console.log('[DEBUG]', message, data);
+                const debugInfo = document.getElementById('debugInfo');
+                if (debugInfo) {
+                    debugInfo.style.display = 'block';
+                }
             }
         }
         
-        // Auto-run basic connection test on load
-        window.onload = () => {
-            addResult('🚀 Page loaded. Click "Test Basic Connection" to start.', 'info');
-        };
+        function toggleDebug() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        async function initSupabase() {
+            try {
+                debugLog('Initializing Supabase...');
+                
+                // Check if Supabase is available
+                if (typeof window.supabase === 'undefined') {
+                    debugLog('Supabase library not found');
+                    return false;
+                }
+                
+                // Import Supabase from the global object
+                const { createClient } = window.supabase;
+                if (!createClient) {
+                    debugLog('createClient not found in Supabase library');
+                    return false;
+                }
+                
+                supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                debugLog('Supabase initialized successfully');
+                return true;
+            } catch (error) {
+                debugLog('Failed to initialize Supabase', error);
+                return false;
+            }
+        }
+
+        // Fixed base64 URL encoding to match Dart's base64Url
+        function base64UrlDecode(str) {
+            // Add padding if needed
+            str += '='.repeat((4 - str.length % 4) % 4);
+            // Replace URL-safe characters
+            str = str.replace(/-/g, '+').replace(/_/g, '/');
+            return atob(str);
+        }
+
+        // Decode and verify deep link
+        function decodeShopLink() {
+            const currentUrl = window.location.href;
+            debugLog('Current URL', currentUrl);
+            document.getElementById('debugUrl').textContent = currentUrl;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawData = urlParams.get('data');
+            const sig = urlParams.get('sig');
+            
+            // URL decode the data parameter if it's encoded
+            const data = rawData ? decodeURIComponent(rawData) : null;
+            
+            debugLog('Raw URL params', { rawData, sig });
+            debugLog('Decoded URL params', { data, sig });
+            
+            if (!data || !sig) {
+                debugLog('No secure deep link found, trying path-based extraction');
+                
+                // Try to get shopId directly from URL path
+                const pathParts = window.location.pathname.split('/');
+                debugLog('Path parts', pathParts);
+                
+                const shopIndex = pathParts.indexOf('shop');
+                if (shopIndex !== -1 && pathParts[shopIndex + 1]) {
+                    const shopId = pathParts[shopIndex + 1];
+                    debugLog('Found shop ID in path', shopId);
+                    document.getElementById('debugShopId').textContent = shopId;
+                    return shopId;
+                }
+                
+                // Check if there's a direct shop ID in query params
+                const directShopId = urlParams.get('shopId') || urlParams.get('shop_id') || urlParams.get('id');
+                if (directShopId) {
+                    debugLog('Found direct shop ID in query', directShopId);
+                    document.getElementById('debugShopId').textContent = directShopId;
+                    return directShopId;
+                }
+                
+                throw new Error('No shop data found in URL');
+            }
+            
+            debugLog('Verifying signature for data:', data);
+            debugLog('Signature to verify:', sig);
+            
+            // Verify signature using the same logic as your Dart code
+            const expectedSig = CryptoJS.HmacSHA256(data, DEEP_LINK_SECRET_KEY).toString();
+            debugLog('Expected signature', expectedSig);
+            debugLog('Received signature', sig);
+            
+            if (expectedSig !== sig) {
+                // Log detailed debugging info
+                debugLog('Signature mismatch details:', {
+                    dataLength: data.length,
+                    sigLength: sig.length,
+                    secretKeyLength: DEEP_LINK_SECRET_KEY.length,
+                    secretKey: DEEP_LINK_SECRET_KEY
+                });
+                throw new Error(`Invalid link signature. Expected: ${expectedSig}, Got: ${sig}`);
+            }
+            
+            debugLog('Signature verified, decoding data...');
+            
+            // Decode base64 data using URL-safe decoding
+            try {
+                const decodedData = base64UrlDecode(data);
+                debugLog('Decoded data', decodedData);
+                
+                if (decodedData.startsWith('shop:')) {
+                    const shopId = decodedData.substring(5); // Remove 'shop:' prefix
+                    debugLog('Extracted shop ID', shopId);
+                    document.getElementById('debugShopId').textContent = shopId;
+                    return shopId;
+                } else {
+                    throw new Error('Invalid shop link format - expected "shop:" prefix');
+                }
+            } catch (e) {
+                debugLog('Failed to decode shop link', e);
+                throw new Error('Failed to decode shop link: ' + e.message);
+            }
+        }
+
+        // Fetch shop data from Supabase
+        async function fetchShopData(shopId) {
+            try {
+                debugLog('Fetching shop data for ID', shopId);
+                
+                // Fetch shop details
+                const { data: shopData, error: shopError } = await supabase
+                    .from('shops')
+                    .select(`
+                        *,
+                        owner:owner_id (id, name, email)
+                    `)
+                    .eq('id', shopId)
+                    .single();
+
+                if (shopError) {
+                    debugLog('Shop query error', shopError);
+                    throw shopError;
+                }
+                
+                if (!shopData) {
+                    debugLog('No shop data found');
+                    throw new Error('Shop not found');
+                }
+
+                debugLog('Shop data fetched', shopData);
+
+                // Fetch shop media (profile pic, cover photo)
+                const { data: mediaData, error: mediaError } = await supabase
+                    .from('shop_media')
+                    .select('*')
+                    .eq('shop_id', shopId)
+                    .eq('is_active', true);
+
+                if (mediaError) {
+                    debugLog('Media query error (non-fatal)', mediaError);
+                }
+
+                debugLog('Media data fetched', mediaData);
+
+                // Fetch product posts only
+                const { data: postsData, error: postsError } = await supabase
+                    .from('shop_posts')
+                    .select(`
+                        *,
+                        post_media (*),
+                        post_likes (count)
+                    `)
+                    .eq('shop_id', shopId)
+                    .eq('is_active', true)
+                    .eq('post_type', 'product')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                if (postsError) {
+                    debugLog('Posts query error (non-fatal)', postsError);
+                }
+
+                debugLog('Posts data fetched', postsData);
+
+                return {
+                    shop: shopData,
+                    media: mediaData || [],
+                    products: postsData || []
+                };
+            } catch (error) {
+                debugLog('Error fetching shop data', error);
+                throw error;
+            }
+        }
+
+        // Get media URLs
+        function getMediaUrl(mediaList, mediaType) {
+            const media = mediaList.find(m => m.media_type === mediaType && m.is_active);
+            return media ? (media.thumbnail_url || media.url) : null;
+        }
+
+        // Render shop profile
+        function renderShopProfile(data) {
+            try {
+                debugLog('Rendering shop profile', data);
+                
+                const { shop, media, products } = data;
+                
+                // Update meta tags for SEO
+                document.title = `${shop.shop_name} - Knoc`;
+                document.querySelector('meta[property="og:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
+                document.querySelector('meta[property="twitter:title"]').setAttribute('content', `${shop.shop_name} - Knoc`);
+                
+                if (shop.description) {
+                    document.querySelector('meta[name="description"]').setAttribute('content', shop.description);
+                    document.querySelector('meta[property="og:description"]').setAttribute('content', shop.description);
+                    document.querySelector('meta[property="twitter:description"]').setAttribute('content', shop.description);
+                }
+
+                // Cover image
+                const coverUrl = getMediaUrl(media, 'cover_photo') || shop.cover_image;
+                if (coverUrl) {
+                    const coverImg = document.getElementById('coverImage');
+                    coverImg.src = coverUrl;
+                    coverImg.style.display = 'block';
+                    
+                    // Update OG image
+                    document.querySelector('meta[property="og:image"]').setAttribute('content', coverUrl);
+                }
+
+                // Profile picture
+                const profileUrl = getMediaUrl(media, 'profile_pic') || shop.image_url;
+                const profilePic = document.getElementById('profilePic');
+                if (profileUrl) {
+                    profilePic.src = profileUrl;
+                } else {
+                    profilePic.style.display = 'none';
+                }
+
+                // Shop info
+                document.getElementById('shopName').textContent = shop.shop_name || 'Shop';
+                document.getElementById('shopDescription').textContent = shop.description || 'Welcome to our shop!';
+                document.getElementById('followersCount').textContent = shop.follower_count || '0';
+                document.getElementById('productsCount').textContent = products.length.toString();
+
+                // Render products
+                renderProducts(products);
+
+                // Setup deep linking for buttons
+                setupDeepLinking(shop.id);
+
+                // Show profile
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('shopProfile').style.display = 'block';
+                
+                debugLog('Shop profile rendered successfully');
+            } catch (error) {
+                debugLog('Error rendering shop profile', error);
+                throw error;
+            }
+        }
+
+        // Render products grid
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyProducts');
+
+            if (products.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.innerHTML = '';
+            emptyState.style.display = 'none';
+
+            products.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create product card
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            const mediaList = product.post_media || [];
+            const imageUrl = mediaList.length > 0 ? (mediaList[0].thumbnail_url || mediaList[0].url) : null;
+            
+            // Extract price from metadata
+            const metadata = product.metadata || {};
+            const price = metadata.price || metadata.discounted_price || metadata.original_price;
+            const priceText = price ? `₹${price}` : 'Price on request';
+
+            card.innerHTML = `
+                ${imageUrl ? `<img class="product-image" src="${imageUrl}" alt="${product.content}" loading="lazy">` : '<div class="product-image"></div>'}
+                <div class="product-info">
+                    <div class="product-name">${product.content || 'Product'}</div>
+                    <div class="product-price">${priceText}</div>
+                </div>
+            `;
+
+            // Add click handler to open in app
+            card.addEventListener('click', () => {
+                openPostInApp(product.id, product.shop_id);
+            });
+
+            return card;
+        }
+
+        // Setup deep linking
+        function setupDeepLinking(shopId) {
+            // Open app button
+            document.getElementById('openAppBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openShopInApp(shopId);
+            });
+
+            // Follow button
+            document.getElementById('followBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                openShopInApp(shopId);
+            });
+
+            // Share button
+            document.getElementById('shareBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                shareShop(shopId);
+            });
+        }
+
+        // Fixed base64 URL encoding to match Dart's base64Url
+        function base64UrlEncode(str) {
+            return btoa(str)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+        }
+
+        // Open shop in app
+        function openShopInApp(shopId) {
+            // Create the same encrypted link format as your Dart code
+            try {
+                debugLog('Creating shop deep link for', shopId);
+                
+                const rawData = `shop:${shopId}`;
+                const encodedData = base64UrlEncode(rawData);
+                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
+                
+                debugLog('Encoded data', encodedData);
+                debugLog('Signature', signature);
+                
+                const appUrl = `knoc://shop?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
+                
+                debugLog('App URL', appUrl);
+                
+                // Try to open app
+                window.location.href = appUrl;
+                
+                // Fallback to Play Store after a delay
+                setTimeout(() => {
+                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+                }, 2000);
+            } catch (error) {
+                debugLog('Error creating deep link', error);
+                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            }
+        }
+
+        // Open specific post in app
+        function openPostInApp(postId, shopId) {
+            try {
+                debugLog('Creating post deep link', { postId, shopId });
+                
+                const rawData = `${postId}:${shopId}`;
+                const encodedData = base64UrlEncode(rawData);
+                const signature = CryptoJS.HmacSHA256(encodedData, DEEP_LINK_SECRET_KEY).toString();
+                
+                const appUrl = `knoc://post?data=${encodeURIComponent(encodedData)}&sig=${encodeURIComponent(signature)}`;
+                
+                window.location.href = appUrl;
+                
+                setTimeout(() => {
+                    window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+                }, 2000);
+            } catch (error) {
+                debugLog('Error creating post deep link', error);
+                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            }
+        }
+
+        // Share shop
+        function shareShop(shopId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.getElementById('shopName').textContent,
+                    text: document.getElementById('shopDescription').textContent,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Shop link copied to clipboard!');
+                });
+            }
+        }
+
+        // Show error state
+        function showError(message) {
+            debugLog('Showing error', message);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('debugError').textContent = message;
+            document.getElementById('errorState').style.display = 'block';
+        }
+
+        // Main initialization
+        async function init() {
+            try {
+                debugLog('Starting initialization...');
+                
+                // Load Supabase from unpkg CDN (more reliable)
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js';
+                script.onload = async () => {
+                    debugLog('Supabase library loaded');
+                    const initialized = await initSupabase();
+                    if (!initialized) {
+                        showError('Failed to initialize database connection');
+                        return;
+                    }
+
+                    try {
+                        const shopId = decodeShopLink();
+                        debugLog('Shop ID decoded successfully', shopId);
+                        const shopData = await fetchShopData(shopId);
+                        renderShopProfile(shopData);
+                    } catch (error) {
+                        debugLog('Error in main flow', error);
+                        showError(error.message || 'Failed to load shop profile');
+                    }
+                };
+                script.onerror = (error) => {
+                    debugLog('Script loading error', error);
+                    showError('Failed to load required libraries. Please check your internet connection.');
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                debugLog('Initialization error', error);
+                showError('Failed to initialize page');
+            }
+        }
+
+        // Start the app
+        init();
     </script>
 </body>
 </html>
