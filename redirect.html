@@ -176,6 +176,16 @@
       50% { opacity: 0.7; }
       100% { opacity: 1; }
     }
+    .debug-info {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      font-size: 12px;
+      color: #6c757d;
+      text-align: left;
+    }
   </style>
 </head>
 <body>
@@ -186,6 +196,12 @@
     <div class="spinner pulse" id="spinner"></div>
     <div class="message" id="message">Opening Knoc App...</div>
     <div class="sub-message" id="subMessage">Please wait while we redirect you</div>
+    
+    <!-- Debug Info -->
+    <div class="debug-info" id="debugInfo">
+      <strong>Debug Info:</strong><br>
+      <span id="debugText">Loading...</span>
+    </div>
     
     <!-- Shop Preview -->
     <div class="shop-preview hidden" id="shopPreview">
@@ -234,29 +250,37 @@
     let originalData = null;
     let originalSig = null;
     
+    function updateDebugInfo(message) {
+      const debugEl = document.getElementById('debugText');
+      const timestamp = new Date().toLocaleTimeString();
+      debugEl.innerHTML += `<br>[${timestamp}] ${message}`;
+      console.log(`[${timestamp}] ${message}`);
+    }
+    
     function openAppOrRedirect() {
+      updateDebugInfo('Starting app redirect process...');
+      
       const query = new URLSearchParams(window.location.search);
       const data = query.get("data");
       const sig = query.get("sig");
+      const type = query.get("type");
+      
+      updateDebugInfo(`URL Parameters - data: ${data ? 'present' : 'missing'}, sig: ${sig ? 'present' : 'missing'}, type: ${type || 'not specified'}`);
       
       // Store original parameters
       originalData = data;
       originalSig = sig;
       
       if (!data || !sig) {
-        // No valid deep link data, redirect to main website
+        updateDebugInfo('No valid deep link data found, redirecting to main website');
         setTimeout(() => {
           window.location.href = "https://www.knoc.in";
         }, 2000);
         return;
       }
 
-      // ✅ NEW: Detect link type from query parameter
-      const query = new URLSearchParams(window.location.search);
-      const type = query.get("type");
-      
       let detectedType = type || 'unknown';
-      console.log('Detected link type from query parameter:', detectedType);
+      updateDebugInfo(`Detected link type: ${detectedType}`);
 
       // Try to decode and identify link type for preview
       try {
@@ -264,13 +288,15 @@
         linkType = linkInfo.type;
         decodedShopId = linkInfo.shopId;
         
+        updateDebugInfo(`Link info - type: ${linkType}, shopId: ${decodedShopId || 'none'}`);
+        
         if (linkType === 'shop') {
           showShopPreview(linkInfo.shopId);
         } else if (linkType === 'post') {
           showPostPreview(linkInfo.postId, linkInfo.shopId);
         }
       } catch (e) {
-        console.log('Could not decode link for preview:', e);
+        updateDebugInfo(`Could not decode link for preview: ${e.message}`);
       }
 
       // Detect device type
@@ -278,13 +304,14 @@
       const isAndroid = /android/.test(userAgent);
       const isMobile = /android|iphone|ipad|ipod|mobile/.test(userAgent);
       
+      updateDebugInfo(`Device detection - Android: ${isAndroid}, Mobile: ${isMobile}, UserAgent: ${userAgent}`);
+      
       if (!isMobile) {
         showDesktopMessage();
         return;
       }
 
       if (isAndroid) {
-        // ✅ NEW: Try to open the app first
         attemptAppOpen(data, sig);
       } else {
         // For iOS users, show not available message
@@ -292,17 +319,17 @@
       }
     }
     
-    // ✅ UPDATED: Enhanced link type detection with query parameter
     function identifyAndDecodeLinkType(encodedData, queryHint = null) {
       try {
         // Use query parameter hint first if available
-        if (queryHint) {
-          console.log('Using query parameter hint:', queryHint);
+        if (queryHint && queryHint !== 'unknown') {
+          updateDebugInfo(`Using query parameter hint: ${queryHint}`);
           return { type: queryHint };
         }
         
         // Decode base64 (handle URL-safe base64) as fallback
         const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
+        updateDebugInfo(`Decoded data: ${decodedData}`);
         
         if (decodedData.startsWith('shop:')) {
           return {
@@ -320,6 +347,7 @@
         
         return { type: 'unknown' };
       } catch (e) {
+        updateDebugInfo(`Error decoding link type: ${e.message}`);
         return { type: 'unknown' };
       }
     }
@@ -337,6 +365,8 @@
       // Update messages
       document.getElementById('message').textContent = 'Opening shop profile...';
       document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
+      
+      updateDebugInfo('Showing shop preview');
     }
     
     function showPostPreview(postId, shopId) {
@@ -352,9 +382,13 @@
       // Update messages
       document.getElementById('message').textContent = 'Opening product...';
       document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
+      
+      updateDebugInfo('Showing post preview');
     }
     
     function attemptAppOpen(data, sig) {
+      updateDebugInfo('Attempting to open app...');
+      
       // Create the app URL based on detected link type
       let appUrl;
       let intentUrl;
@@ -371,15 +405,20 @@
         intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
       }
       
+      updateDebugInfo(`App URL: ${appUrl}`);
+      updateDebugInfo(`Intent URL: ${intentUrl}`);
+      
       // Set up visibility change listener to detect if app opened
       let isPageVisible = true;
       
       const handleVisibilityChange = () => {
         if (document.hidden) {
           appOpened = true;
+          updateDebugInfo('Page became hidden - app likely opened');
           clearTimeout(redirectTimer);
         } else {
           isPageVisible = true;
+          updateDebugInfo('Page became visible');
         }
       };
       
@@ -389,13 +428,15 @@
       // Listen for page focus events
       const handleBlur = () => {
         appOpened = true;
+        updateDebugInfo('Page lost focus - app likely opened');
       };
       
       const handleFocus = () => {
+        updateDebugInfo('Page gained focus');
         if (!appOpened) {
           setTimeout(() => {
             if (!appOpened && isPageVisible) {
-              // ✅ NEW: Smart fallback based on link type
+              updateDebugInfo('App did not open - showing fallback');
               handleAppNotInstalled();
             }
           }, 1500);
@@ -408,36 +449,48 @@
       // Set a timer to show fallback options if app doesn't open
       redirectTimer = setTimeout(() => {
         if (!appOpened && !document.hidden) {
+          updateDebugInfo('Timer expired - app did not open');
           handleAppNotInstalled();
         }
       }, 3000);
       
       // Try to open the app
       try {
+        updateDebugInfo('Creating iframe with intent URL...');
+        
         // Create a hidden iframe to trigger the intent
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
         iframe.src = intentUrl;
         document.body.appendChild(iframe);
         
         // Also try the custom scheme as fallback
         setTimeout(() => {
           if (!appOpened) {
+            updateDebugInfo('Trying custom scheme URL...');
             window.location.href = appUrl;
           }
         }, 800);
         
+        // Remove iframe after some time
+        setTimeout(() => {
+          if (iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
+          }
+        }, 2000);
+        
       } catch (error) {
-        console.error('Error opening app:', error);
+        updateDebugInfo(`Error opening app: ${error.message}`);
         handleAppNotInstalled();
       }
     }
     
-    // ✅ NEW: Smart handling when app is not installed
     function handleAppNotInstalled() {
       if (appOpened) return;
       
-      console.log('App not installed, link type:', linkType);
+      updateDebugInfo(`App not installed, handling fallback for link type: ${linkType}`);
       
       if (linkType === 'shop') {
         // For shop links: offer web profile view
@@ -451,8 +504,8 @@
       }
     }
     
-    // ✅ NEW: Direct redirect to web profile for shop links
     function showShopWebFallback() {
+      updateDebugInfo('Showing shop web fallback');
       document.getElementById('spinner').classList.add('hidden');
       document.getElementById('message').textContent = 'Opening shop profile...';
       document.getElementById('subMessage').textContent = 'Redirecting to web view';
@@ -460,20 +513,22 @@
       // Direct redirect to web profile
       if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
         const webProfileUrl = `https://www.knoc.in/shopProfile.html?data=${encodeURIComponent(originalData)}&sig=${encodeURIComponent(originalSig)}`;
+        updateDebugInfo(`Redirecting to: ${webProfileUrl}`);
         
         setTimeout(() => {
           window.location.href = webProfileUrl;
         }, 1500);
       } else {
         // Fallback to main website if we can't construct proper URL
+        updateDebugInfo('Fallback to main website');
         setTimeout(() => {
           window.location.href = 'https://www.knoc.in';
         }, 1500);
       }
     }
     
-    // ✅ NEW: Redirect to Play Store for post links
     function redirectToPlayStore() {
+      updateDebugInfo('Redirecting to Play Store');
       document.getElementById('spinner').classList.add('hidden');
       document.getElementById('message').textContent = 'Redirecting to Play Store...';
       document.getElementById('subMessage').textContent = 'Install the Knoc app to view this post';
@@ -484,15 +539,22 @@
       }, 2000);
     }
     
-    // ✅ NEW: Show general fallback
     function showGeneralFallback() {
+      updateDebugInfo('Showing general fallback options');
       document.getElementById('spinner').classList.add('hidden');
       document.getElementById('message').textContent = 'Unable to open in app?';
       document.getElementById('subMessage').textContent = 'Choose how you\'d like to continue';
       document.getElementById('fallback').classList.remove('hidden');
+      
+      // Show web profile option for shop links
+      if (linkType === 'shop') {
+        document.getElementById('webProfileOption').classList.remove('hidden');
+        setupWebProfileButton();
+      }
     }
     
     function showDesktopMessage() {
+      updateDebugInfo('Showing desktop message');
       document.getElementById('spinner').classList.add('hidden');
       const messageEl = document.getElementById('message');
       const subMessageEl = document.getElementById('subMessage');
@@ -515,6 +577,7 @@
     }
     
     function showIOSMessage() {
+      updateDebugInfo('Showing iOS message');
       document.getElementById('spinner').classList.add('hidden');
       const messageEl = document.getElementById('message');
       const subMessageEl = document.getElementById('subMessage');
@@ -542,7 +605,7 @@
         
         webProfileBtn.href = webProfileUrl;
         webProfileBtn.onclick = (e) => {
-          console.log('User chose web profile view for shop:', decodedShopId);
+          updateDebugInfo(`User chose web profile view for shop: ${decodedShopId}`);
         };
       } else {
         // Fallback if we can't construct the proper URL
@@ -551,15 +614,25 @@
     }
     
     // Start the process when page loads
-    window.addEventListener('load', openAppOrRedirect);
+    window.addEventListener('load', () => {
+      updateDebugInfo('Page loaded, starting process...');
+      openAppOrRedirect();
+    });
     
     // Also try immediately in case load event already fired
     if (document.readyState === 'complete') {
+      updateDebugInfo('Page already loaded, starting process...');
+      openAppOrRedirect();
+    } else if (document.readyState === 'loading') {
+      updateDebugInfo('Page still loading...');
+    } else {
+      updateDebugInfo('Page interactive, starting process...');
       openAppOrRedirect();
     }
     
     // Add visual feedback for button interactions
     document.addEventListener('DOMContentLoaded', function() {
+      updateDebugInfo('DOM content loaded');
       const buttons = document.querySelectorAll('.btn');
       buttons.forEach(button => {
         button.addEventListener('mouseenter', function() {
@@ -570,6 +643,14 @@
         });
       });
     });
+    
+    // Add error handling for uncaught errors
+    window.addEventListener('error', function(e) {
+      updateDebugInfo(`JavaScript error: ${e.message} at line ${e.lineno}`);
+    });
+    
+    // Initial debug info
+    updateDebugInfo('Script loaded and ready');
   </script>
 </body>
 </html>
