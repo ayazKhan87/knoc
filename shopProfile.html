@@ -320,8 +320,11 @@
                             <span class="text-lg font-bold">Total:</span>
                             <span id="order-total" class="text-lg font-bold text-red-600">₹0</span>
                         </div>
-                        <button class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors">
-                            Place Order
+                        <button onclick="placeWhatsAppOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.515"/>
+                            </svg>
+                            Order via WhatsApp
                         </button>
                     </div>
                 </div>
@@ -922,15 +925,183 @@
             });
         }
 
+        // Generate WhatsApp order message
+        function generateOrderMessage() {
+            if (orderList.length === 0) return '';
+            
+            const shopName = shopData.shop.name;
+            const total = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            let message = `🛍️ *New Order from ${shopName}*\n\n`;
+            message += `📝 *Order Details:*\n`;
+            message += `${'-'.repeat(30)}\n`;
+            
+            orderList.forEach((item, index) => {
+                message += `${index + 1}. *${item.name}*\n`;
+                message += `   Quantity: ${item.quantity}\n`;
+                message += `   Price: ₹${Math.round(item.price)} each\n`;
+                message += `   Subtotal: ₹${Math.round(item.price * item.quantity)}\n\n`;
+            });
+            
+            message += `${'-'.repeat(30)}\n`;
+            message += `💰 *Total Amount: ₹${Math.round(total)}*\n\n`;
+            
+            message += `📍 *Customer Details:*\n`;
+            message += `• Please provide your delivery address\n`;
+            message += `• Contact number: [Your Phone]\n`;
+            message += `• Preferred delivery time: [Your Preference]\n\n`;
+            
+            message += `📱 *Order placed via:* ${window.location.href}\n`;
+            message += `🕒 *Order time:* ${new Date().toLocaleString()}\n\n`;
+            
+            message += `✨ Thank you for choosing ${shopName}! 🙏`;
+            
+            return encodeURIComponent(message);
+        }
+
+        // Place WhatsApp order
+        async function placeWhatsAppOrder() {
+            if (orderList.length === 0) {
+                showToast('Your cart is empty!', 'error');
+                return;
+            }
+
+            // Get shop contact number
+            const shopContact = shopData.shop.contact?.phone;
+            
+            if (!shopContact) {
+                showToast('Shop contact not available. Please contact the shop directly.', 'error');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const orderButton = document.querySelector('[onclick="placeWhatsAppOrder()"]');
+                const originalText = orderButton.innerHTML;
+                orderButton.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Preparing Order...
+                `;
+                orderButton.disabled = true;
+
+                // Generate the order message
+                const message = generateOrderMessage();
+                
+                // Clean phone number (remove spaces, dashes, etc.)
+                const cleanPhone = shopContact.replace(/[^\d+]/g, '');
+                
+                // Create WhatsApp URL
+                let whatsappUrl;
+                if (cleanPhone.startsWith('+')) {
+                    // International format
+                    whatsappUrl = `https://wa.me/${cleanPhone.substring(1)}?text=${message}`;
+                } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
+                    // Indian number with country code
+                    whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+                } else if (cleanPhone.length === 10) {
+                    // Indian number without country code
+                    whatsappUrl = `https://wa.me/91${cleanPhone}?text=${message}`;
+                } else {
+                    // Default format
+                    whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+                }
+
+                // Small delay for UX
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Try to open WhatsApp
+                const whatsappWindow = window.open(whatsappUrl, '_blank');
+                
+                // Check if popup was blocked
+                if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
+                    // Popup blocked, try direct navigation
+                    window.location.href = whatsappUrl;
+                } else {
+                    // Show success message and close modal
+                    showToast('Opening WhatsApp...', 'success');
+                    
+                    // Optional: Clear cart after successful order
+                    setTimeout(() => {
+                        if (confirm('Order sent to WhatsApp! Would you like to clear your cart?')) {
+                            orderList = [];
+                            updateOrderUI();
+                            closeOrderModal();
+                            showToast('Cart cleared successfully!', 'success');
+                        }
+                    }, 2000);
+                }
+
+                // Record order attempt in database (optional)
+                try {
+                    await fetch('https://rtwtkapynafirwixyeal.supabase.co/functions/v1/Food-AddItem', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            shop_id: shopData.shop.id,
+                            order_type: 'whatsapp',
+                            total_amount: orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                            items_count: orderList.reduce((sum, item) => sum + item.quantity, 0),
+                            order_data: orderList
+                        })
+                    });
+                } catch (dbError) {
+                    console.error('Failed to record order in database:', dbError);
+                    // Don't block the user flow
+                }
+
+            } catch (error) {
+                console.error('Error placing WhatsApp order:', error);
+                showToast('Failed to open WhatsApp. Please try again.', 'error');
+            } finally {
+                // Restore button state
+                const orderButton = document.querySelector('[onclick="placeWhatsAppOrder()"]');
+                orderButton.innerHTML = originalText;
+                orderButton.disabled = false;
+            }
+        }
+
+        // Enhanced show toast with error type
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-green-600' : 'bg-gray-800';
-            toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg z-50`;
+            let bgColor = 'bg-gray-800';
+            
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-green-600';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-600';
+                    break;
+                case 'warning':
+                    bgColor = 'bg-orange-600';
+                    break;
+                default:
+                    bgColor = 'bg-gray-800';
+            }
+            
+            toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 max-w-sm text-center`;
             toast.textContent = message;
             document.body.appendChild(toast);
             
+            // Add entrance animation
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, 20px)';
+            
+            requestAnimationFrame(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translate(-50%, 0px)';
+            });
+            
             setTimeout(() => {
-                toast.remove();
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -20px)';
+                setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
