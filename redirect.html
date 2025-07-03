@@ -187,18 +187,25 @@
     <div class="message" id="message">Opening Knoc App...</div>
     <div class="sub-message" id="subMessage">Please wait while we redirect you</div>
     
-    <!-- Enhanced Shop Preview -->
+    <!-- Shop Preview -->
     <div class="shop-preview hidden" id="shopPreview">
       <div class="preview-icon">🏪</div>
       <h3 id="shopName">Shop Profile</h3>
       <p id="shopDescription">Discover amazing products and deals!</p>
     </div>
     
-    <!-- Enhanced Fallback Options -->
+    <!-- Post Preview -->
+    <div class="shop-preview hidden" id="postPreview">
+      <div class="preview-icon">📦</div>
+      <h3 id="postName">Product Post</h3>
+      <p id="postDescription">Check out this amazing product!</p>
+    </div>
+    
+    <!-- Fallback Options -->
     <div class="fallback hidden" id="fallback">
       <p><strong>Choose how you'd like to continue:</strong></p>
       
-      <!-- NEW: Web Profile Button for Shop Links -->
+      <!-- Web Profile Button for Shop Links -->
       <div id="webProfileOption" class="hidden">
         <a href="#" class="btn btn-web" id="webProfileBtn">
           🌐 View Shop Profile
@@ -232,7 +239,7 @@
       const data = query.get("data");
       const sig = query.get("sig");
       
-      // Store original parameters for web profile fallback
+      // Store original parameters
       originalData = data;
       originalSig = sig;
       
@@ -244,9 +251,21 @@
         return;
       }
 
+      // ✅ NEW: Detect link type from URL path
+      const path = window.location.pathname;
+      let detectedType = 'unknown';
+      
+      if (path.endsWith('/redirect.html/shop')) {
+        detectedType = 'shop';
+      } else if (path.endsWith('/redirect.html/post')) {
+        detectedType = 'post';
+      }
+      
+      console.log('Detected link type from path:', detectedType);
+
       // Try to decode and identify link type for preview
       try {
-        const linkInfo = identifyAndDecodeLinkType(data);
+        const linkInfo = identifyAndDecodeLinkType(data, detectedType);
         linkType = linkInfo.type;
         decodedShopId = linkInfo.shopId;
         
@@ -270,7 +289,7 @@
       }
 
       if (isAndroid) {
-        // Try to open the app immediately for Android
+        // ✅ NEW: Try to open the app first
         attemptAppOpen(data, sig);
       } else {
         // For iOS users, show not available message
@@ -278,8 +297,8 @@
       }
     }
     
-    // Enhanced function to identify and decode link type
-    function identifyAndDecodeLinkType(encodedData) {
+    // ✅ UPDATED: Enhanced link type detection
+    function identifyAndDecodeLinkType(encodedData, pathHint = null) {
       try {
         // Decode base64 (handle URL-safe base64)
         const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
@@ -298,13 +317,17 @@
           };
         }
         
+        // Use path hint if available
+        if (pathHint) {
+          return { type: pathHint };
+        }
+        
         return { type: 'unknown' };
       } catch (e) {
         return { type: 'unknown' };
       }
     }
     
-    // Enhanced shop preview
     function showShopPreview(shopId) {
       const previewEl = document.getElementById('shopPreview');
       const nameEl = document.getElementById('shopName');
@@ -320,14 +343,11 @@
       document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
     }
     
-    // NEW: Show post preview
     function showPostPreview(postId, shopId) {
-      const previewEl = document.getElementById('shopPreview');
-      const nameEl = document.getElementById('shopName');
-      const descEl = document.getElementById('shopDescription');
+      const previewEl = document.getElementById('postPreview');
+      const nameEl = document.getElementById('postName');
+      const descEl = document.getElementById('postDescription');
       
-      // Update preview for post
-      previewEl.querySelector('.preview-icon').textContent = '📦';
       nameEl.textContent = 'Product Post';
       descEl.textContent = 'Check out this amazing product!';
       
@@ -339,12 +359,20 @@
     }
     
     function attemptAppOpen(data, sig) {
-      // Create the app URL based on link type
+      // Create the app URL based on detected link type
       let appUrl;
+      let intentUrl;
+      
       if (linkType === 'shop') {
         appUrl = `knoc://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-      } else {
+        intentUrl = `intent://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+      } else if (linkType === 'post') {
         appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
+        intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+      } else {
+        // Default to post format
+        appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
+        intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
       }
       
       // Set up visibility change listener to detect if app opened
@@ -362,17 +390,17 @@
       // Listen for page visibility changes
       document.addEventListener('visibilitychange', handleVisibilityChange);
       
-      // Listen for page focus events (additional detection)
+      // Listen for page focus events
       const handleBlur = () => {
         appOpened = true;
       };
       
       const handleFocus = () => {
         if (!appOpened) {
-          // If we get focus back quickly, app probably didn't open
           setTimeout(() => {
             if (!appOpened && isPageVisible) {
-              showFallbackOptions();
+              // ✅ NEW: Smart fallback based on link type
+              handleAppNotInstalled();
             }
           }, 1500);
         }
@@ -384,20 +412,12 @@
       // Set a timer to show fallback options if app doesn't open
       redirectTimer = setTimeout(() => {
         if (!appOpened && !document.hidden) {
-          showFallbackOptions();
+          handleAppNotInstalled();
         }
-      }, 3000); // Increased timeout to 3 seconds
+      }, 3000);
       
       // Try to open the app
       try {
-        // Create intent URL based on link type
-        let intentUrl;
-        if (linkType === 'shop') {
-          intentUrl = `intent://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
-        } else {
-          intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
-        }
-        
         // Create a hidden iframe to trigger the intent
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
@@ -413,8 +433,67 @@
         
       } catch (error) {
         console.error('Error opening app:', error);
-        showFallbackOptions();
+        handleAppNotInstalled();
       }
+    }
+    
+    // ✅ NEW: Smart handling when app is not installed
+    function handleAppNotInstalled() {
+      if (appOpened) return;
+      
+      console.log('App not installed, link type:', linkType);
+      
+      if (linkType === 'shop') {
+        // For shop links: offer web profile view
+        showShopWebFallback();
+      } else if (linkType === 'post') {
+        // For post links: redirect to Play Store
+        redirectToPlayStore();
+      } else {
+        // Unknown type: show general fallback
+        showGeneralFallback();
+      }
+    }
+    
+    // ✅ NEW: Direct redirect to web profile for shop links
+    function showShopWebFallback() {
+      document.getElementById('spinner').classList.add('hidden');
+      document.getElementById('message').textContent = 'Opening shop profile...';
+      document.getElementById('subMessage').textContent = 'Redirecting to web view';
+      
+      // Direct redirect to web profile
+      if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
+        const webProfileUrl = `https://www.knoc.in/shopProfile.html?data=${encodeURIComponent(originalData)}&sig=${encodeURIComponent(originalSig)}`;
+        
+        setTimeout(() => {
+          window.location.href = webProfileUrl;
+        }, 1500);
+      } else {
+        // Fallback to main website if we can't construct proper URL
+        setTimeout(() => {
+          window.location.href = 'https://www.knoc.in';
+        }, 1500);
+      }
+    }
+    
+    // ✅ NEW: Redirect to Play Store for post links
+    function redirectToPlayStore() {
+      document.getElementById('spinner').classList.add('hidden');
+      document.getElementById('message').textContent = 'Redirecting to Play Store...';
+      document.getElementById('subMessage').textContent = 'Install the Knoc app to view this post';
+      
+      // Redirect to Play Store after a short delay
+      setTimeout(() => {
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.knoc.app';
+      }, 2000);
+    }
+    
+    // ✅ NEW: Show general fallback
+    function showGeneralFallback() {
+      document.getElementById('spinner').classList.add('hidden');
+      document.getElementById('message').textContent = 'Unable to open in app?';
+      document.getElementById('subMessage').textContent = 'Choose how you\'d like to continue';
+      document.getElementById('fallback').classList.remove('hidden');
     }
     
     function showDesktopMessage() {
@@ -424,14 +503,19 @@
       messageEl.classList.add('desktop-message');
       
       if (linkType === 'shop') {
-        messageEl.innerHTML = '<strong>Shop Profile Link Detected</strong>';
-        subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
+        messageEl.innerHTML = '<strong>Shop Profile Link</strong>';
+        subMessageEl.textContent = 'Redirecting to web view...';
+        // Direct redirect for desktop shop links too
+        showShopWebFallback();
+      } else if (linkType === 'post') {
+        messageEl.innerHTML = '<strong>Product Link</strong>';
+        subMessageEl.textContent = 'Download the Knoc app to view this product';
+        showGeneralFallback();
       } else {
-        messageEl.innerHTML = '<strong>Product Link Detected</strong>';
+        messageEl.innerHTML = '<strong>Knoc Link</strong>';
         subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
+        showGeneralFallback();
       }
-      
-      showFallbackOptions();
     }
     
     function showIOSMessage() {
@@ -442,31 +526,17 @@
       messageEl.innerHTML = '<strong>Knoc app is not yet available for iOS</strong>';
       subMessageEl.textContent = "We're working on bringing Knoc to iOS devices soon!";
       
-      showFallbackOptions();
-    }
-    
-    function showFallbackOptions() {
-      if (appOpened) return; // Don't show if app already opened
-      
-      document.getElementById('spinner').classList.add('hidden');
-      
-      // Update main message
       if (linkType === 'shop') {
-        document.getElementById('message').textContent = 'Unable to open shop in app?';
-        document.getElementById('subMessage').textContent = 'No worries! You can still view the shop profile';
-        
-        // Show web profile option for shop links
-        setupWebProfileButton();
-        document.getElementById('webProfileOption').classList.remove('hidden');
+        // Direct redirect for iOS shop links too
+        setTimeout(() => {
+          showShopWebFallback();
+        }, 2000);
       } else {
-        document.getElementById('message').textContent = 'Unable to open product in app?';
-        document.getElementById('subMessage').textContent = 'Download the app to see the full product details';
+        showGeneralFallback();
       }
-      
-      document.getElementById('fallback').classList.remove('hidden');
     }
     
-    // NEW: Setup web profile button
+    // Setup web profile button
     function setupWebProfileButton() {
       const webProfileBtn = document.getElementById('webProfileBtn');
       
@@ -476,7 +546,6 @@
         
         webProfileBtn.href = webProfileUrl;
         webProfileBtn.onclick = (e) => {
-          // Track the web profile view
           console.log('User chose web profile view for shop:', decodedShopId);
         };
       } else {
@@ -493,7 +562,7 @@
       openAppOrRedirect();
     }
     
-    // Add some visual feedback for button interactions
+    // Add visual feedback for button interactions
     document.addEventListener('DOMContentLoaded', function() {
       const buttons = document.querySelectorAll('.btn');
       buttons.forEach(button => {
