@@ -251,17 +251,12 @@
         return;
       }
 
-      // ✅ NEW: Detect link type from URL path
-      const path = window.location.pathname;
-      let detectedType = 'unknown';
+      // ✅ NEW: Detect link type from query parameter
+      const query = new URLSearchParams(window.location.search);
+      const type = query.get("type");
       
-      if (path.endsWith('/redirect.html/shop')) {
-        detectedType = 'shop';
-      } else if (path.endsWith('/redirect.html/post')) {
-        detectedType = 'post';
-      }
-      
-      console.log('Detected link type from path:', detectedType);
+      let detectedType = type || 'unknown';
+      console.log('Detected link type from query parameter:', detectedType);
 
       // Try to decode and identify link type for preview
       try {
@@ -297,10 +292,16 @@
       }
     }
     
-    // ✅ UPDATED: Enhanced link type detection
-    function identifyAndDecodeLinkType(encodedData, pathHint = null) {
+    // ✅ UPDATED: Enhanced link type detection with query parameter
+    function identifyAndDecodeLinkType(encodedData, queryHint = null) {
       try {
-        // Decode base64 (handle URL-safe base64)
+        // Use query parameter hint first if available
+        if (queryHint) {
+          console.log('Using query parameter hint:', queryHint);
+          return { type: queryHint };
+        }
+        
+        // Decode base64 (handle URL-safe base64) as fallback
         const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
         
         if (decodedData.startsWith('shop:')) {
@@ -315,11 +316,6 @@
             postId: parts[0],
             shopId: parts[1]
           };
-        }
-        
-        // Use path hint if available
-        if (pathHint) {
-          return { type: pathHint };
         }
         
         return { type: 'unknown' };
