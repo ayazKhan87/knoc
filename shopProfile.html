@@ -68,6 +68,30 @@
             70% { transform: scale(0.9); }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        .category-section {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .view-toggle {
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle.active {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -183,11 +207,27 @@
             </div>
         </div>
 
-        <!-- Categories Filter -->
+        <!-- Products Section Header -->
         <div class="px-4 mb-6">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold text-gray-900">Products</h2>
                 <div class="flex items-center space-x-2">
+                    <!-- View Toggle -->
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button id="view-grouped" class="view-toggle px-3 py-1 rounded-md text-sm font-medium transition-all bg-red-500 text-white">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5m14 14H5"></path>
+                            </svg>
+                            Grouped
+                        </button>
+                        <button id="view-grid" class="view-toggle px-3 py-1 rounded-md text-sm font-medium transition-all text-gray-600">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                            Grid
+                        </button>
+                    </div>
+                    
                     <button class="p-2 bg-white border border-gray-200 rounded-lg">
                         <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -201,6 +241,7 @@
                 </div>
             </div>
             
+            <!-- Categories Filter -->
             <div id="categories-container" class="flex space-x-2 overflow-x-auto pb-2">
                 <button class="category-chip bg-red-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap font-medium" data-category="all">
                     All Products
@@ -208,9 +249,9 @@
             </div>
         </div>
 
-        <!-- Products Grid -->
+        <!-- Products Grid/Grouped View -->
         <div class="px-4 pb-20">
-            <div id="products-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div id="products-container">
                 <!-- Products will be loaded here -->
             </div>
             
@@ -291,6 +332,7 @@
     <script>
         let shopData = null;
         let currentCategory = 'all';
+        let currentView = 'grouped'; // 'grouped' or 'grid'
         let orderList = [];
 
         // Get shop ID from URL or use test ID
@@ -338,6 +380,25 @@
                 console.error('Error loading shop data:', error);
                 showError();
             }
+        }
+
+        // Group products by subcategory
+        function groupProductsBySubcategory(products) {
+            const grouped = {};
+            const uncategorized = [];
+            
+            products.forEach(product => {
+                if (product.subcategoryId && product.subcategoryName) {
+                    if (!grouped[product.subcategoryName]) {
+                        grouped[product.subcategoryName] = [];
+                    }
+                    grouped[product.subcategoryName].push(product);
+                } else {
+                    uncategorized.push(product);
+                }
+            });
+            
+            return { grouped, uncategorized };
         }
 
         // Add item to order
@@ -546,19 +607,41 @@
             banner.classList.remove('hidden');
         }
 
-        // Render categories
+        // Render categories with product counts
         function renderCategories(subcategories) {
             const container = document.getElementById('categories-container');
             
-            // Add subcategory filters
+            // Clear existing categories except "All Products"
+            const allButton = container.querySelector('[data-category="all"]');
+            container.innerHTML = '';
+            container.appendChild(allButton);
+            
+            // Add subcategory filters with counts
             subcategories.forEach(sub => {
+                const productCount = shopData.products.filter(p => p.subcategoryId === sub.id).length;
+                if (productCount > 0) {
+                    const button = document.createElement('button');
+                    button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
+                    button.textContent = `${sub.name} (${productCount})`;
+                    button.dataset.category = sub.id;
+                    button.onclick = () => filterProducts(sub.id);
+                    container.appendChild(button);
+                }
+            });
+            
+            // Add uncategorized filter if there are uncategorized products
+            const uncategorizedCount = shopData.products.filter(p => !p.subcategoryId).length;
+            if (uncategorizedCount > 0) {
                 const button = document.createElement('button');
                 button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
-                button.textContent = sub.name;
-                button.dataset.category = sub.id;
-                button.onclick = () => filterProducts(sub.id);
+                button.textContent = `Other (${uncategorizedCount})`;
+                button.dataset.category = 'uncategorized';
+                button.onclick = () => filterProducts('uncategorized');
                 container.appendChild(button);
-            });
+            }
+            
+            // Update "All Products" count
+            allButton.textContent = `All Products (${shopData.products.length})`;
         }
 
         // Filter products by category
@@ -575,39 +658,115 @@
             });
 
             // Filter and render products
-            const filteredProducts = categoryId === 'all' 
-                ? shopData.products 
-                : shopData.products.filter(p => p.subcategoryId === categoryId);
+            let filteredProducts;
+            
+            if (categoryId === 'all') {
+                filteredProducts = shopData.products;
+            } else if (categoryId === 'uncategorized') {
+                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
+            } else {
+                filteredProducts = shopData.products.filter(p => p.subcategoryId === categoryId);
+            }
             
             renderProducts(filteredProducts);
         }
 
-        // Render products grid
+        // Enhanced render products with grouping
         function renderProducts(products) {
-            const grid = document.getElementById('products-grid');
+            const container = document.getElementById('products-container');
             const emptyState = document.getElementById('empty-state');
             
-            grid.innerHTML = '';
+            container.innerHTML = '';
             
             if (products.length === 0) {
-                grid.classList.add('hidden');
+                container.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 return;
             }
             
-            grid.classList.remove('hidden');
+            container.classList.remove('hidden');
             emptyState.classList.add('hidden');
 
+            if (currentView === 'grouped' && currentCategory === 'all') {
+                // Show grouped view for "All Products"
+                renderGroupedProducts(products, container);
+            } else {
+                // Show regular grid view
+                renderGridProducts(products, container);
+            }
+        }
+
+        // Render products in grouped view
+        function renderGroupedProducts(products, container) {
+            const { grouped, uncategorized } = groupProductsBySubcategory(products);
+            
+            container.className = 'space-y-8';
+            
+            // Render each category group
+            Object.entries(grouped).forEach(([categoryName, categoryProducts]) => {
+                const categorySection = document.createElement('div');
+                categorySection.className = 'category-section';
+                categorySection.innerHTML = `
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-900">${categoryName}</h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${categoryProducts.length} products</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-${categoryName.replace(/\s+/g, '-')}">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(categorySection);
+                
+                // Add products to this category
+                const categoryGrid = categorySection.querySelector(`#category-${categoryName.replace(/\s+/g, '-')}`);
+                categoryProducts.forEach(product => {
+                    const productCard = createProductCard(product);
+                    categoryGrid.appendChild(productCard);
+                });
+            });
+            
+            // Add uncategorized products if any
+            if (uncategorized.length > 0) {
+                const uncategorizedSection = document.createElement('div');
+                uncategorizedSection.className = 'category-section';
+                uncategorizedSection.innerHTML = `
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-900">Other Products</h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${uncategorized.length} products</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-uncategorized">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(uncategorizedSection);
+                
+                const uncategorizedGrid = uncategorizedSection.querySelector('#category-uncategorized');
+                uncategorized.forEach(product => {
+                    const productCard = createProductCard(product);
+                    uncategorizedGrid.appendChild(productCard);
+                });
+            }
+        }
+
+        // Render products in grid view
+        function renderGridProducts(products, container) {
+            container.className = 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4';
+            
             products.forEach(product => {
                 const productCard = createProductCard(product);
-                grid.appendChild(productCard);
+                container.appendChild(productCard);
             });
         }
 
-        // Create product card element
+        // Create product card element - Updated to use thumbnails
         function createProductCard(product) {
             const { metadata = {} } = product;
             const media = product.media[0]; // First image
+            
+            // ✅ Use thumbnail URL instead of full resolution
+            const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
             
             // Calculate pricing
             const originalPrice = metadata.original_price || metadata.price || 299;
@@ -621,8 +780,8 @@
             
             card.innerHTML = `
                 <div class="relative aspect-square">
-                    ${media ? `
-                        <img src="${media.thumbnailUrl || media.url}" 
+                    ${imageUrl ? `
+                        <img src="${imageUrl}" 
                              alt="${product.content}" 
                              class="w-full h-full object-cover"
                              loading="lazy">
@@ -678,6 +837,33 @@
             `;
             
             return card;
+        }
+
+        // Toggle view functions
+        function toggleView(viewType) {
+            currentView = viewType;
+            
+            // Update button states
+            document.querySelectorAll('.view-toggle').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-gray-600');
+            });
+            
+            const activeBtn = document.getElementById(`view-${viewType}`);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-gray-600');
+            
+            // Re-render products with new view
+            let filteredProducts;
+            if (currentCategory === 'all') {
+                filteredProducts = shopData.products;
+            } else if (currentCategory === 'uncategorized') {
+                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
+            } else {
+                filteredProducts = shopData.products.filter(p => p.subcategoryId === currentCategory);
+            }
+            
+            renderProducts(filteredProducts);
         }
 
         // Utility functions
@@ -748,8 +934,10 @@
             }, 3000);
         }
 
-        // Order list button click handler
+        // Event Listeners
         document.getElementById('order-list-btn').addEventListener('click', openOrderModal);
+        document.getElementById('view-grouped').addEventListener('click', () => toggleView('grouped'));
+        document.getElementById('view-grid').addEventListener('click', () => toggleView('grid'));
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
