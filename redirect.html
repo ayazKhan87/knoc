@@ -176,16 +176,6 @@
       50% { opacity: 0.7; }
       100% { opacity: 1; }
     }
-    .debug-info {
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 20px 0;
-      font-size: 12px;
-      color: #6c757d;
-      text-align: left;
-    }
   </style>
 </head>
 <body>
@@ -197,27 +187,14 @@
     <div class="message" id="message">Opening Knoc App...</div>
     <div class="sub-message" id="subMessage">Please wait while we redirect you</div>
     
-    <!-- Debug Info -->
-    <div class="debug-info" id="debugInfo">
-      <strong>Debug Info:</strong><br>
-      <span id="debugText">Loading...</span>
-    </div>
-    
-    <!-- Shop Preview -->
+    <!-- Enhanced Shop Preview -->
     <div class="shop-preview hidden" id="shopPreview">
       <div class="preview-icon">🏪</div>
       <h3 id="shopName">Shop Profile</h3>
       <p id="shopDescription">Discover amazing products and deals!</p>
     </div>
     
-    <!-- Post Preview -->
-    <div class="shop-preview hidden" id="postPreview">
-      <div class="preview-icon">📦</div>
-      <h3 id="postName">Product Post</h3>
-      <p id="postDescription">Check out this amazing product!</p>
-    </div>
-    
-    <!-- Fallback Options -->
+    <!-- Enhanced Fallback Options -->
     <div class="fallback hidden" id="fallback">
       <p><strong>Choose how you'd like to continue:</strong></p>
       
@@ -250,45 +227,35 @@
     let originalData = null;
     let originalSig = null;
     
-    function updateDebugInfo(message) {
-      const debugEl = document.getElementById('debugText');
-      const timestamp = new Date().toLocaleTimeString();
-      debugEl.innerHTML += `<br>[${timestamp}] ${message}`;
-      console.log(`[${timestamp}] ${message}`);
-    }
-    
     function openAppOrRedirect() {
-      updateDebugInfo('Starting app redirect process...');
+      console.log('Starting app redirect process...');
       
       const query = new URLSearchParams(window.location.search);
       const data = query.get("data");
       const sig = query.get("sig");
-      const type = query.get("type");
       
-      updateDebugInfo(`URL Parameters - data: ${data ? 'present' : 'missing'}, sig: ${sig ? 'present' : 'missing'}, type: ${type || 'not specified'}`);
+      console.log('URL Parameters:', { data: data ? 'present' : 'missing', sig: sig ? 'present' : 'missing' });
       
-      // Store original parameters
+      // Store original parameters for web profile fallback
       originalData = data;
       originalSig = sig;
       
       if (!data || !sig) {
-        updateDebugInfo('No valid deep link data found, redirecting to main website');
+        console.log('No valid deep link data, redirecting to main website');
+        // No valid deep link data, redirect to main website
         setTimeout(() => {
           window.location.href = "https://www.knoc.in";
         }, 2000);
         return;
       }
 
-      let detectedType = type || 'unknown';
-      updateDebugInfo(`Detected link type: ${detectedType}`);
-
       // Try to decode and identify link type for preview
       try {
-        const linkInfo = identifyAndDecodeLinkType(data, detectedType);
+        const linkInfo = identifyAndDecodeLinkType(data);
         linkType = linkInfo.type;
         decodedShopId = linkInfo.shopId;
         
-        updateDebugInfo(`Link info - type: ${linkType}, shopId: ${decodedShopId || 'none'}`);
+        console.log('Link info:', { type: linkType, shopId: decodedShopId });
         
         if (linkType === 'shop') {
           showShopPreview(linkInfo.shopId);
@@ -296,7 +263,7 @@
           showPostPreview(linkInfo.postId, linkInfo.shopId);
         }
       } catch (e) {
-        updateDebugInfo(`Could not decode link for preview: ${e.message}`);
+        console.log('Could not decode link for preview:', e);
       }
 
       // Detect device type
@@ -304,7 +271,7 @@
       const isAndroid = /android/.test(userAgent);
       const isMobile = /android|iphone|ipad|ipod|mobile/.test(userAgent);
       
-      updateDebugInfo(`Device detection - Android: ${isAndroid}, Mobile: ${isMobile}, UserAgent: ${userAgent}`);
+      console.log('Device detection:', { isAndroid, isMobile, userAgent });
       
       if (!isMobile) {
         showDesktopMessage();
@@ -312,6 +279,7 @@
       }
 
       if (isAndroid) {
+        // Try to open the app immediately for Android
         attemptAppOpen(data, sig);
       } else {
         // For iOS users, show not available message
@@ -319,17 +287,12 @@
       }
     }
     
-    function identifyAndDecodeLinkType(encodedData, queryHint = null) {
+    // Enhanced function to identify and decode link type
+    function identifyAndDecodeLinkType(encodedData) {
       try {
-        // Use query parameter hint first if available
-        if (queryHint && queryHint !== 'unknown') {
-          updateDebugInfo(`Using query parameter hint: ${queryHint}`);
-          return { type: queryHint };
-        }
-        
-        // Decode base64 (handle URL-safe base64) as fallback
+        // Decode base64 (handle URL-safe base64)
         const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
-        updateDebugInfo(`Decoded data: ${decodedData}`);
+        console.log('Decoded data:', decodedData);
         
         if (decodedData.startsWith('shop:')) {
           return {
@@ -347,11 +310,12 @@
         
         return { type: 'unknown' };
       } catch (e) {
-        updateDebugInfo(`Error decoding link type: ${e.message}`);
+        console.log('Error decoding:', e);
         return { type: 'unknown' };
       }
     }
     
+    // Enhanced shop preview
     function showShopPreview(shopId) {
       const previewEl = document.getElementById('shopPreview');
       const nameEl = document.getElementById('shopName');
@@ -366,14 +330,17 @@
       document.getElementById('message').textContent = 'Opening shop profile...';
       document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
       
-      updateDebugInfo('Showing shop preview');
+      console.log('Showing shop preview');
     }
     
+    // Show post preview
     function showPostPreview(postId, shopId) {
-      const previewEl = document.getElementById('postPreview');
-      const nameEl = document.getElementById('postName');
-      const descEl = document.getElementById('postDescription');
+      const previewEl = document.getElementById('shopPreview');
+      const nameEl = document.getElementById('shopName');
+      const descEl = document.getElementById('shopDescription');
       
+      // Update preview for post
+      previewEl.querySelector('.preview-icon').textContent = '📦';
       nameEl.textContent = 'Product Post';
       descEl.textContent = 'Check out this amazing product!';
       
@@ -383,30 +350,26 @@
       document.getElementById('message').textContent = 'Opening product...';
       document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
       
-      updateDebugInfo('Showing post preview');
+      console.log('Showing post preview');
     }
     
     function attemptAppOpen(data, sig) {
-      updateDebugInfo('Attempting to open app...');
+      console.log('Attempting to open app with data:', data, 'sig:', sig);
       
-      // Create the app URL based on detected link type
+      // Create the app URL based on link type
       let appUrl;
       let intentUrl;
       
       if (linkType === 'shop') {
         appUrl = `knoc://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
         intentUrl = `intent://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
-      } else if (linkType === 'post') {
-        appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-        intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
       } else {
-        // Default to post format
         appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
         intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
       }
       
-      updateDebugInfo(`App URL: ${appUrl}`);
-      updateDebugInfo(`Intent URL: ${intentUrl}`);
+      console.log('App URL:', appUrl);
+      console.log('Intent URL:', intentUrl);
       
       // Set up visibility change listener to detect if app opened
       let isPageVisible = true;
@@ -414,30 +377,31 @@
       const handleVisibilityChange = () => {
         if (document.hidden) {
           appOpened = true;
-          updateDebugInfo('Page became hidden - app likely opened');
+          console.log('Page became hidden - app likely opened');
           clearTimeout(redirectTimer);
         } else {
           isPageVisible = true;
-          updateDebugInfo('Page became visible');
+          console.log('Page became visible');
         }
       };
       
       // Listen for page visibility changes
       document.addEventListener('visibilitychange', handleVisibilityChange);
       
-      // Listen for page focus events
+      // Listen for page focus events (additional detection)
       const handleBlur = () => {
         appOpened = true;
-        updateDebugInfo('Page lost focus - app likely opened');
+        console.log('Page lost focus - app likely opened');
       };
       
       const handleFocus = () => {
-        updateDebugInfo('Page gained focus');
+        console.log('Page gained focus');
         if (!appOpened) {
+          // If we get focus back quickly, app probably didn't open
           setTimeout(() => {
             if (!appOpened && isPageVisible) {
-              updateDebugInfo('App did not open - showing fallback');
-              handleAppNotInstalled();
+              console.log('App did not open - showing fallback');
+              showFallbackOptions();
             }
           }, 1500);
         }
@@ -449,135 +413,82 @@
       // Set a timer to show fallback options if app doesn't open
       redirectTimer = setTimeout(() => {
         if (!appOpened && !document.hidden) {
-          updateDebugInfo('Timer expired - app did not open');
-          handleAppNotInstalled();
+          console.log('Timer expired - app did not open');
+          showFallbackOptions();
         }
       }, 3000);
       
-      // Try to open the app
+      // Try to open the app using multiple methods
       try {
-        updateDebugInfo('Creating iframe with intent URL...');
+        console.log('Trying to open app...');
         
-        // Create a hidden iframe to trigger the intent
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.style.width = '1px';
-        iframe.style.height = '1px';
-        iframe.src = intentUrl;
-        document.body.appendChild(iframe);
-        
-        // Also try the custom scheme as fallback
+        // Method 1: Try direct URL change first
         setTimeout(() => {
           if (!appOpened) {
-            updateDebugInfo('Trying custom scheme URL...');
+            console.log('Trying direct URL change...');
             window.location.href = appUrl;
           }
-        }, 800);
+        }, 100);
         
-        // Remove iframe after some time
+        // Method 2: Create hidden iframe with intent URL
         setTimeout(() => {
-          if (iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
+          if (!appOpened) {
+            console.log('Trying iframe method...');
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
+            iframe.src = intentUrl;
+            document.body.appendChild(iframe);
+            
+            // Remove iframe after some time
+            setTimeout(() => {
+              if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+              }
+            }, 2000);
           }
-        }, 2000);
+        }, 500);
+        
+        // Method 3: Try creating a link and clicking it
+        setTimeout(() => {
+          if (!appOpened) {
+            console.log('Trying link click method...');
+            const link = document.createElement('a');
+            link.href = appUrl;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        }, 1000);
         
       } catch (error) {
-        updateDebugInfo(`Error opening app: ${error.message}`);
-        handleAppNotInstalled();
-      }
-    }
-    
-    function handleAppNotInstalled() {
-      if (appOpened) return;
-      
-      updateDebugInfo(`App not installed, handling fallback for link type: ${linkType}`);
-      
-      if (linkType === 'shop') {
-        // For shop links: offer web profile view
-        showShopWebFallback();
-      } else if (linkType === 'post') {
-        // For post links: redirect to Play Store
-        redirectToPlayStore();
-      } else {
-        // Unknown type: show general fallback
-        showGeneralFallback();
-      }
-    }
-    
-    function showShopWebFallback() {
-      updateDebugInfo('Showing shop web fallback');
-      document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('message').textContent = 'Opening shop profile...';
-      document.getElementById('subMessage').textContent = 'Redirecting to web view';
-      
-      // Direct redirect to web profile
-      if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
-        const webProfileUrl = `https://www.knoc.in/shopProfile.html?data=${encodeURIComponent(originalData)}&sig=${encodeURIComponent(originalSig)}`;
-        updateDebugInfo(`Redirecting to: ${webProfileUrl}`);
-        
-        setTimeout(() => {
-          window.location.href = webProfileUrl;
-        }, 1500);
-      } else {
-        // Fallback to main website if we can't construct proper URL
-        updateDebugInfo('Fallback to main website');
-        setTimeout(() => {
-          window.location.href = 'https://www.knoc.in';
-        }, 1500);
-      }
-    }
-    
-    function redirectToPlayStore() {
-      updateDebugInfo('Redirecting to Play Store');
-      document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('message').textContent = 'Redirecting to Play Store...';
-      document.getElementById('subMessage').textContent = 'Install the Knoc app to view this post';
-      
-      // Redirect to Play Store after a short delay
-      setTimeout(() => {
-        window.location.href = 'https://play.google.com/store/apps/details?id=com.knoc.app';
-      }, 2000);
-    }
-    
-    function showGeneralFallback() {
-      updateDebugInfo('Showing general fallback options');
-      document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('message').textContent = 'Unable to open in app?';
-      document.getElementById('subMessage').textContent = 'Choose how you\'d like to continue';
-      document.getElementById('fallback').classList.remove('hidden');
-      
-      // Show web profile option for shop links
-      if (linkType === 'shop') {
-        document.getElementById('webProfileOption').classList.remove('hidden');
-        setupWebProfileButton();
+        console.error('Error opening app:', error);
+        showFallbackOptions();
       }
     }
     
     function showDesktopMessage() {
-      updateDebugInfo('Showing desktop message');
+      console.log('Showing desktop message');
       document.getElementById('spinner').classList.add('hidden');
       const messageEl = document.getElementById('message');
       const subMessageEl = document.getElementById('subMessage');
       messageEl.classList.add('desktop-message');
       
       if (linkType === 'shop') {
-        messageEl.innerHTML = '<strong>Shop Profile Link</strong>';
-        subMessageEl.textContent = 'Redirecting to web view...';
-        // Direct redirect for desktop shop links too
-        showShopWebFallback();
-      } else if (linkType === 'post') {
-        messageEl.innerHTML = '<strong>Product Link</strong>';
-        subMessageEl.textContent = 'Download the Knoc app to view this product';
-        showGeneralFallback();
-      } else {
-        messageEl.innerHTML = '<strong>Knoc Link</strong>';
+        messageEl.innerHTML = '<strong>Shop Profile Link Detected</strong>';
         subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
-        showGeneralFallback();
+      } else {
+        messageEl.innerHTML = '<strong>Product Link Detected</strong>';
+        subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
       }
+      
+      showFallbackOptions();
     }
     
     function showIOSMessage() {
-      updateDebugInfo('Showing iOS message');
+      console.log('Showing iOS message');
       document.getElementById('spinner').classList.add('hidden');
       const messageEl = document.getElementById('message');
       const subMessageEl = document.getElementById('subMessage');
@@ -585,14 +496,32 @@
       messageEl.innerHTML = '<strong>Knoc app is not yet available for iOS</strong>';
       subMessageEl.textContent = "We're working on bringing Knoc to iOS devices soon!";
       
-      if (linkType === 'shop') {
-        // Direct redirect for iOS shop links too
-        setTimeout(() => {
-          showShopWebFallback();
-        }, 2000);
-      } else {
-        showGeneralFallback();
+      showFallbackOptions();
+    }
+    
+    function showFallbackOptions() {
+      if (appOpened) {
+        console.log('App already opened, not showing fallback');
+        return;
       }
+      
+      console.log('Showing fallback options');
+      document.getElementById('spinner').classList.add('hidden');
+      
+      // Update main message
+      if (linkType === 'shop') {
+        document.getElementById('message').textContent = 'Unable to open shop in app?';
+        document.getElementById('subMessage').textContent = 'No worries! You can still view the shop profile';
+        
+        // Show web profile option for shop links
+        setupWebProfileButton();
+        document.getElementById('webProfileOption').classList.remove('hidden');
+      } else {
+        document.getElementById('message').textContent = 'Unable to open product in app?';
+        document.getElementById('subMessage').textContent = 'Download the app to see the full product details';
+      }
+      
+      document.getElementById('fallback').classList.remove('hidden');
     }
     
     // Setup web profile button
@@ -605,7 +534,8 @@
         
         webProfileBtn.href = webProfileUrl;
         webProfileBtn.onclick = (e) => {
-          updateDebugInfo(`User chose web profile view for shop: ${decodedShopId}`);
+          // Track the web profile view
+          console.log('User chose web profile view for shop:', decodedShopId);
         };
       } else {
         // Fallback if we can't construct the proper URL
@@ -613,26 +543,11 @@
       }
     }
     
-    // Start the process when page loads
-    window.addEventListener('load', () => {
-      updateDebugInfo('Page loaded, starting process...');
-      openAppOrRedirect();
-    });
-    
-    // Also try immediately in case load event already fired
-    if (document.readyState === 'complete') {
-      updateDebugInfo('Page already loaded, starting process...');
-      openAppOrRedirect();
-    } else if (document.readyState === 'loading') {
-      updateDebugInfo('Page still loading...');
-    } else {
-      updateDebugInfo('Page interactive, starting process...');
-      openAppOrRedirect();
-    }
-    
-    // Add visual feedback for button interactions
-    document.addEventListener('DOMContentLoaded', function() {
-      updateDebugInfo('DOM content loaded');
+    // Initialize the app when DOM is ready
+    function initializeApp() {
+      console.log('Initializing app...');
+      
+      // Add some visual feedback for button interactions
       const buttons = document.querySelectorAll('.btn');
       buttons.forEach(button => {
         button.addEventListener('mouseenter', function() {
@@ -642,15 +557,37 @@
           this.style.transform = 'translateY(0)';
         });
       });
+      
+      // Start the main process
+      openAppOrRedirect();
+    }
+    
+    // Start the process when page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      // DOM is already ready
+      initializeApp();
+    }
+    
+    // Also listen for the load event as a fallback
+    window.addEventListener('load', () => {
+      console.log('Window loaded');
+      if (!appOpened) {
+        // If we haven't started the process yet, start it now
+        setTimeout(openAppOrRedirect, 100);
+      }
     });
     
-    // Add error handling for uncaught errors
+    // Add error handling for any uncaught errors
     window.addEventListener('error', function(e) {
-      updateDebugInfo(`JavaScript error: ${e.message} at line ${e.lineno}`);
+      console.error('JavaScript error:', e.message, 'at line', e.lineno);
     });
     
-    // Initial debug info
-    updateDebugInfo('Script loaded and ready');
+    // Add unhandled promise rejection handling
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Unhandled promise rejection:', e.reason);
+    });
   </script>
 </body>
 </html>
