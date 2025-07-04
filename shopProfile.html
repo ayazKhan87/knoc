@@ -212,7 +212,7 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex space-x-3 justify-center mb-6">
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors">
+                        <button onclick="downloadApp()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors">
                             Download App
                         </button>
                         <button id="share-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors">
@@ -374,82 +374,68 @@
         let currentView = 'grouped';
         let orderList = [];
 
-        // Enhanced load function with URL parameter handling
+        // Load shop data with new simple parameter format
         async function loadShopData() {
             const urlParams = new URLSearchParams(window.location.search);
             
             try {
-                let apiUrl;
-                
-                // Check for hashed link (data + sig parameters)
-                let data = urlParams.get('data');
-                let sig = urlParams.get('sig');
+                // Get parameters from URL
                 const type = urlParams.get('type');
+                const shopId = urlParams.get('shopId');
+                const postId = urlParams.get('postId');
                 
-                // Handle URL decoding issues if needed
-                if (!data || !sig) {
-                    // Try manual parsing from URL
-                    const searchParams = window.location.search;
-                    const dataMatch = searchParams.match(/[?&]data=([^&]+)/);
-                    const sigMatch = searchParams.match(/[?&]sig=([^&]+)/);
-                    
-                    if (dataMatch) {
-                        data = decodeURIComponent(dataMatch[1]);
-                    }
-                    if (sigMatch) {
-                        sig = decodeURIComponent(sigMatch[1]);
-                    }
+                console.log('URL Parameters:', { type, shopId, postId });
+                
+                if (!type || !shopId) {
+                    console.log('Missing required parameters');
+                    showError();
+                    return;
+                }
+
+                // Validate UUID format
+                if (!isValidUUID(shopId) || (postId && !isValidUUID(postId))) {
+                    console.log('Invalid UUID format');
+                    showError();
+                    return;
+                }
+
+                // Build API URL with simple parameters
+                let apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?type=${type}&shopId=${shopId}`;
+                if (postId) {
+                    apiUrl += `&postId=${postId}`;
                 }
                 
-                if (data && sig) {
-                    // Hashed link
-                    apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-                    if (type) {
-                        apiUrl += `&type=${encodeURIComponent(type)}`;
-                    }
-                } else {
-                    // Direct shop ID fallback
-                    const shopId = getShopIdFromUrl();
-                    if (!shopId) {
-                        showError();
-                        return;
-                    }
-                    apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView/${shopId}`;
-                }
+                console.log('API URL:', apiUrl);
                 
                 const response = await fetch(apiUrl);
                 
                 if (!response.ok) {
-                    throw new Error('Invalid link');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 shopData = await response.json();
                 
                 if (shopData.error) {
+                    console.log('API Error:', shopData.error);
                     showError();
                     return;
                 }
+                
+                console.log('Shop data loaded:', shopData);
                 
                 renderShopProfile();
                 hideLoading();
                 
             } catch (error) {
+                console.error('Error loading shop data:', error);
                 showError();
             }
         }
 
-        // Simple shop ID extraction for backward compatibility
-        function getShopIdFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const shopFromUrl = urlParams.get('shop');
-            if (shopFromUrl) return shopFromUrl;
-            
-            const path = window.location.pathname;
-            const parts = path.split('/');
-            const shopFromPath = parts[parts.length - 1];
-            if (shopFromPath && shopFromPath !== 'shopProfile.html') return shopFromPath;
-            
-            return null;
+        // Validate UUID format
+        function isValidUUID(uuid) {
+            const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            return uuidPattern.test(uuid);
         }
 
         // Group products by subcategory
@@ -611,7 +597,7 @@
 
         // Render shop profile
         function renderShopProfile() {
-            const { shop, products, discounts, subcategories, stats } = shopData;
+            const { shop, products = [], discounts = [], subcategories = [], stats } = shopData;
 
             document.title = `${shop.name} - Knoc`;
             const metaDesc = document.querySelector('meta[name="description"]');
@@ -625,14 +611,14 @@
             }
 
             const profileImg = document.getElementById('profile-image');
-            profileImg.src = shop.profileImage || '/default-shop-avatar.png';
+            profileImg.src = shop.profileImage || 'https://www.knoc.in/knoc_logo.png';
 
             // Update shop info
             document.getElementById('shop-name').textContent = shop.name;
-            document.getElementById('shop-description').textContent = shop.description;
-            document.getElementById('shop-rating').textContent = shop.rating.toFixed(1);
-            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount);
-            document.getElementById('product-count').textContent = formatNumber(stats.totalProducts);
+            document.getElementById('shop-description').textContent = shop.description || 'Welcome to our shop!';
+            document.getElementById('shop-rating').textContent = (shop.rating || 4.5).toFixed(1);
+            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount || 0);
+            document.getElementById('product-count').textContent = formatNumber(stats?.totalProducts || products.length);
 
             if (shop.verifiedAt) {
                 document.getElementById('verified-badge').classList.remove('hidden');
@@ -804,7 +790,7 @@
         // Create product card
         function createProductCard(product) {
             const { metadata = {} } = product;
-            const media = product.media[0];
+            const media = product.media && product.media.length > 0 ? product.media[0] : null;
             const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
             
             const originalPrice = metadata.original_price || metadata.price || 299;
@@ -929,7 +915,10 @@
             if (orderList.length === 0) return;
 
             const shopContact = shopData.shop.contact?.phone;
-            if (!shopContact) return;
+            if (!shopContact) {
+                alert('Shop contact information not available. Please try again later.');
+                return;
+            }
 
             try {
                 const orderButton = document.querySelector('[onclick="placeWhatsAppOrder()"]');
@@ -973,8 +962,28 @@
                     }, 2000);
                 }
 
+                orderButton.innerHTML = originalText;
+                orderButton.disabled = false;
+
             } catch (error) {
-                // Silent error handling
+                console.error('Error placing order:', error);
+                const orderButton = document.querySelector('[onclick="placeWhatsAppOrder()"]');
+                orderButton.innerHTML = originalText;
+                orderButton.disabled = false;
+            }
+        }
+
+        // Download app function
+        function downloadApp() {
+            // Check if it's Android
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isAndroid = /android/.test(userAgent);
+            
+            if (isAndroid) {
+                window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
+            } else {
+                // For iOS and desktop users
+                alert('Knoc app is currently available for Android. iOS version coming soon!');
             }
         }
 
@@ -1010,15 +1019,17 @@
                     });
                 } catch (err) {
                     copyToClipboard(window.location.href);
+                    alert('Link copied to clipboard!');
                 }
             } else {
                 copyToClipboard(window.location.href);
+                alert('Link copied to clipboard!');
             }
         });
 
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                // Silent success
+                // Success
             }).catch(() => {
                 const textArea = document.createElement('textarea');
                 textArea.value = text;
