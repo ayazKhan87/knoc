@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Profile - Knoc</title>
+    <title>Shop Profile - Knoc (Debug)</title>
     <meta name="description" content="Shop profile and products on Knoc">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Custom CSS for animations and gradients -->
+    <!-- Custom CSS -->
     <style>
         .loading-shimmer {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -20,6 +20,69 @@
         @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
+        }
+        
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #1f2937;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-width: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .debug-panel.hidden {
+            display: none;
+        }
+        
+        .debug-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 10000;
+        }
+        
+        .debug-section {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .debug-section:last-child {
+            border-bottom: none;
+        }
+        
+        .debug-title {
+            color: #60a5fa;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .debug-success {
+            color: #10b981;
+        }
+        
+        .debug-error {
+            color: #ef4444;
+        }
+        
+        .debug-warning {
+            color: #f59e0b;
         }
         
         .gradient-bg {
@@ -34,97 +97,30 @@
             transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        
-        .category-chip {
-            transition: all 0.2s ease;
-        }
-        
-        .category-chip:hover {
-            transform: scale(1.05);
-        }
-
-        .order-item {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .floating-cart {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            transform: scale(1);
-        }
-
-        .floating-cart:hover {
-            transform: scale(1.1);
-        }
-
-        .floating-cart.pulse {
-            animation: pulse 0.6s ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            border: 2px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .category-section {
-            animation: fadeInUp 0.4s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .view-toggle {
-            transition: all 0.3s ease;
-        }
-
-        .view-toggle.active {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Debug Panel -->
+    <button class="debug-toggle" onclick="toggleDebugPanel()">🐛 Debug</button>
+    <div id="debug-panel" class="debug-panel hidden">
+        <div class="debug-section">
+            <div class="debug-title">URL Parameters</div>
+            <div id="debug-params"></div>
+        </div>
+        <div class="debug-section">
+            <div class="debug-title">API Request</div>
+            <div id="debug-api"></div>
+        </div>
+        <div class="debug-section">
+            <div class="debug-title">Response</div>
+            <div id="debug-response"></div>
+        </div>
+        <div class="debug-section">
+            <div class="debug-title">Errors</div>
+            <div id="debug-errors"></div>
+        </div>
+    </div>
+
     <!-- Loading State -->
     <div id="loading" class="min-h-screen">
         <div class="loading-shimmer h-48 w-full"></div>
@@ -132,23 +128,7 @@
             <div class="loading-shimmer h-20 w-20 rounded-full mx-auto"></div>
             <div class="loading-shimmer h-6 w-48 mx-auto rounded"></div>
             <div class="loading-shimmer h-4 w-64 mx-auto rounded"></div>
-            <div class="loading-shimmer h-4 w-32 mx-auto rounded"></div>
         </div>
-        <div class="p-4 space-y-3">
-            <div class="loading-shimmer h-32 w-full rounded-lg"></div>
-            <div class="loading-shimmer h-32 w-full rounded-lg"></div>
-            <div class="loading-shimmer h-32 w-full rounded-lg"></div>
-        </div>
-    </div>
-
-    <!-- Floating Cart Button -->
-    <div id="floating-cart" class="floating-cart hidden">
-        <button onclick="openOrderModal()" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-4 shadow-lg transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
-            </svg>
-            <span id="floating-cart-count" class="cart-count">0</span>
-        </button>
     </div>
 
     <!-- Main Content -->
@@ -180,23 +160,8 @@
                 
                 <!-- Shop Info -->
                 <div class="pt-12 text-center">
-                    <div class="flex items-center justify-center space-x-2 mb-2">
-                        <div class="flex items-center text-yellow-500">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <span id="shop-rating" class="ml-1 font-semibold">4.9</span>
-                        </div>
-                        <span id="verified-badge" class="hidden bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
-                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                            </svg>
-                            Verified
-                        </span>
-                    </div>
-                    
-                    <h1 id="shop-name" class="text-2xl font-bold text-gray-900 mb-2">Shop Name</h1>
-                    <p id="shop-description" class="text-gray-600 text-sm mb-4 max-w-md mx-auto">Shop description goes here...</p>
+                    <h1 id="shop-name" class="text-2xl font-bold text-gray-900 mb-2">Loading...</h1>
+                    <p id="shop-description" class="text-gray-600 text-sm mb-4 max-w-md mx-auto">Loading...</p>
                     
                     <!-- Stats -->
                     <div class="flex justify-center space-x-8 mb-6">
@@ -209,85 +174,14 @@
                             <div class="text-sm text-gray-500">Products</div>
                         </div>
                     </div>
-                    
-                    <!-- Action Buttons -->
-                    <div class="flex space-x-3 justify-center mb-6">
-                        <button class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors">
-                            Download App
-                        </button>
-                        <button id="share-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors">
-                            Share
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Promotion Banner -->
-        <div id="promotion-banner" class="hidden mx-4 mb-6 p-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl text-white shadow-lg">
-            <div class="flex items-center justify-between">
-                <div>
-                    <div class="flex items-center mb-2">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-sm font-bold">SPECIAL OFFER</span>
-                    </div>
-                    <h3 id="promotion-title" class="text-lg font-bold">Limited Time Deal</h3>
-                    <p id="promotion-description" class="text-sm opacity-90"></p>
-                </div>
-                <div class="text-center">
-                    <div id="promotion-percent" class="text-2xl font-bold">20%</div>
-                    <div class="text-sm font-bold">OFF</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Products Section Header -->
-        <div class="px-4 mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-bold text-gray-900">Products</h2>
-                <div class="flex items-center space-x-2">
-                    <!-- View Toggle -->
-                    <div class="flex bg-gray-100 rounded-lg p-1">
-                        <button id="view-grouped" class="view-toggle px-3 py-1 rounded-md text-sm font-medium transition-all bg-red-500 text-white">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5m14 14H5"></path>
-                            </svg>
-                            Grouped
-                        </button>
-                        <button id="view-grid" class="view-toggle px-3 py-1 rounded-md text-sm font-medium transition-all text-gray-600">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                            </svg>
-                            Grid
-                        </button>
-                    </div>
-                    
-                    <button class="p-2 bg-white border border-gray-200 rounded-lg">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
-                    <button class="p-2 bg-white border border-gray-200 rounded-lg">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Categories Filter -->
-            <div id="categories-container" class="flex space-x-2 overflow-x-auto pb-2">
-                <button class="category-chip bg-red-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap font-medium" data-category="all">
-                    All Products
-                </button>
-            </div>
-        </div>
-
-        <!-- Products Grid/Grouped View -->
+        <!-- Products Section -->
         <div class="px-4 pb-20">
-            <div id="products-container">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">Products</h2>
+            <div id="products-container" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 <!-- Products will be loaded here -->
             </div>
             
@@ -314,299 +208,197 @@
             </div>
             <h2 class="text-xl font-bold text-gray-800 mb-2">Invalid Link</h2>
             <p class="text-gray-600 mb-4">The link you're trying to access is invalid or has expired.</p>
+            <div id="error-details" class="text-left bg-red-50 p-4 rounded-lg text-sm text-red-700 mb-4"></div>
             <button onclick="window.location.href='https://www.knoc.in'" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
                 Go Home
             </button>
         </div>
     </div>
 
-    <!-- Order List Modal -->
-    <div id="order-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeOrderModal()"></div>
-            
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-gray-900">Your Order</h3>
-                        <button onclick="closeOrderModal()" class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <div id="order-list" class="space-y-3 max-h-96 overflow-y-auto">
-                        <!-- Order items will be shown here -->
-                    </div>
-                    
-                    <div id="order-empty" class="hidden text-center py-8">
-                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
-                            </svg>
-                        </div>
-                        <p class="text-gray-500">Your order is empty</p>
-                    </div>
-                </div>
-                
-                <div id="order-footer" class="hidden bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <div class="w-full">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-lg font-bold">Total:</span>
-                            <span id="order-total" class="text-lg font-bold text-red-600">₹0</span>
-                        </div>
-                        <button onclick="placeWhatsAppOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.515"/>
-                            </svg>
-                            Order via WhatsApp
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         let shopData = null;
-        let currentCategory = 'all';
-        let currentView = 'grouped';
-        let orderList = [];
+        let debugInfo = {
+            urlParams: {},
+            apiUrl: '',
+            apiResponse: null,
+            errors: []
+        };
 
-        // Clean, simple load function
-async function loadShopData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    try {
-        let apiUrl;
-        
-        // Check for hashed link (data + sig parameters)
-        const data = urlParams.get('data');
-        const sig = urlParams.get('sig');
-        
-        if (data && sig) {
-            // ✅ FIXED: Use hashed link endpoint
-            console.log('Using hashed link with data:', data, 'sig:', sig);
-            apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-        } else {
-            // Direct shop ID fallback
-            const shopId = getShopIdFromUrl();
-            if (!shopId) {
-                console.error('No shop ID found');
-                showError();
-                return;
-            }
-            console.log('Using direct shop ID:', shopId);
-            apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView/${shopId}`;
-        }
-        
-        console.log('API URL:', apiUrl);
-        
-        const response = await fetch(apiUrl);
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('API error:', errorText);
-            throw new Error(`API error: ${response.status} - ${errorText}`);
+        // Debug panel functions
+        function toggleDebugPanel() {
+            const panel = document.getElementById('debug-panel');
+            panel.classList.toggle('hidden');
+            updateDebugPanel();
         }
 
-        shopData = await response.json();
-        console.log('Shop data loaded:', shopData);
-        
-        renderShopProfile();
-        hideLoading();
-        
-    } catch (error) {
-        console.error('Error loading shop data:', error);
-        showError();
-    }
-}
-        // Simple shop ID extraction for backward compatibility
-function getShopIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Check for direct shop parameter
-    const shopFromUrl = urlParams.get('shop');
-    if (shopFromUrl) return shopFromUrl;
-    
-    // Check URL path
-    const path = window.location.pathname;
-    const parts = path.split('/');
-    const shopFromPath = parts[parts.length - 1];
-    if (shopFromPath && shopFromPath !== 'shopProfile.html') {
-        return shopFromPath;
-    }
-    
-    // No shop ID found
-    return null;
-}
-        
-        // Group products by subcategory
-        function groupProductsBySubcategory(products) {
-            const grouped = {};
-            const uncategorized = [];
+        function updateDebugPanel() {
+            // Update URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramsHtml = Object.fromEntries(urlParams.entries());
+            document.getElementById('debug-params').innerHTML = `
+                <div>data: ${paramsHtml.data ? '✓ Present' : '✗ Missing'}</div>
+                <div>sig: ${paramsHtml.sig ? '✓ Present' : '✗ Missing'}</div>
+                <div>type: ${paramsHtml.type || 'Not set'}</div>
+                <div>Full URL: ${window.location.href}</div>
+            `;
             
-            products.forEach(product => {
-                if (product.subcategoryId && product.subcategoryName) {
-                    if (!grouped[product.subcategoryName]) {
-                        grouped[product.subcategoryName] = [];
-                    }
-                    grouped[product.subcategoryName].push(product);
-                } else {
-                    uncategorized.push(product);
-                }
-            });
+            // Update API info
+            document.getElementById('debug-api').innerHTML = `
+                <div>API URL: ${debugInfo.apiUrl}</div>
+                <div>Request Status: ${debugInfo.apiResponse ? 'Completed' : 'Pending'}</div>
+            `;
             
-            return { grouped, uncategorized };
-        }
-
-        // Add item to order
-        async function addToOrder(product) {
-            const { metadata = {} } = product;
-            const originalPrice = metadata.original_price || metadata.price || 299;
-            const discountedPrice = metadata.discounted_price;
-            const displayPrice = discountedPrice || originalPrice;
-
-            const orderItem = {
-                id: product.id,
-                name: product.content,
-                price: displayPrice,
-                quantity: 1
-            };
-
-            const existingIndex = orderList.findIndex(item => item.id === product.id);
-            
-            if (existingIndex !== -1) {
-                orderList[existingIndex].quantity++;
+            // Update response info
+            if (debugInfo.apiResponse) {
+                document.getElementById('debug-response').innerHTML = `
+                    <div class="debug-success">✓ Response received</div>
+                    <div>Shop ID: ${debugInfo.apiResponse.shop?.id || 'Not found'}</div>
+                    <div>Shop Name: ${debugInfo.apiResponse.shop?.name || 'Not found'}</div>
+                    <div>Products: ${debugInfo.apiResponse.products?.length || 0}</div>
+                    <div>Link Type: ${debugInfo.apiResponse.meta?.linkType || 'Unknown'}</div>
+                    <div>Verified: ${debugInfo.apiResponse.meta?.verified ? 'Yes' : 'No'}</div>
+                `;
             } else {
-                orderList.push(orderItem);
+                document.getElementById('debug-response').innerHTML = '<div class="debug-warning">No response yet</div>';
             }
+            
+            // Update errors
+            if (debugInfo.errors.length > 0) {
+                document.getElementById('debug-errors').innerHTML = debugInfo.errors.map(error => 
+                    `<div class="debug-error">• ${error}</div>`
+                ).join('');
+            } else {
+                document.getElementById('debug-errors').innerHTML = '<div class="debug-success">No errors</div>';
+            }
+        }
 
-            // Record in database
+        // Enhanced load function with debug logging
+        async function loadShopData() {
+            console.log('🚀 Starting loadShopData...');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            debugInfo.urlParams = Object.fromEntries(urlParams.entries());
+            
+            console.log('📋 URL Parameters:', debugInfo.urlParams);
+            
             try {
-                await fetch('https://rtwtkapynafirwixyeal.supabase.co/functions/v1/Food-AddItem', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        shop_id: shopData.shop.id,
-                        product_name: product.content,
-                        price: displayPrice
-                    })
-                });
-            } catch (error) {
-                // Continue anyway, don't block the UI
-            }
-
-            updateOrderUI();
-        }
-
-        // Remove item from order
-        function removeFromOrder(productId) {
-            const index = orderList.findIndex(item => item.id === productId);
-            if (index !== -1) {
-                if (orderList[index].quantity > 1) {
-                    orderList[index].quantity--;
+                let apiUrl;
+                
+                // Check for hashed link (data + sig parameters)
+                const data = urlParams.get('data');
+                const sig = urlParams.get('sig');
+                const type = urlParams.get('type');
+                
+                if (data && sig) {
+                    // Hashed link
+                    console.log('🔗 Detected hashed link');
+                    console.log('- Data:', data);
+                    console.log('- Signature:', sig);
+                    console.log('- Type:', type);
+                    
+                    apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
+                    if (type) {
+                        apiUrl += `&type=${encodeURIComponent(type)}`;
+                    }
                 } else {
-                    orderList.splice(index, 1);
+                    // Direct shop ID fallback
+                    console.log('🔗 Detected direct link');
+                    const shopId = getShopIdFromUrl();
+                    if (!shopId) {
+                        console.error('❌ No shop ID found');
+                        debugInfo.errors.push('No shop ID found in URL');
+                        showError('No shop ID found in URL');
+                        return;
+                    }
+                    console.log('- Shop ID:', shopId);
+                    apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView/${shopId}`;
                 }
-                updateOrderUI();
+                
+                debugInfo.apiUrl = apiUrl;
+                console.log('🌐 API URL:', apiUrl);
+                
+                // Make API request
+                console.log('📡 Making API request...');
+                const response = await fetch(apiUrl);
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ API error:', errorText);
+                    debugInfo.errors.push(`API error: ${response.status} - ${errorText}`);
+                    
+                    // Try to parse error as JSON for better display
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        showError(errorData.error || 'API request failed', errorData);
+                    } catch (e) {
+                        showError(`API request failed: ${response.status}`, { details: errorText });
+                    }
+                    return;
+                }
+
+                shopData = await response.json();
+                debugInfo.apiResponse = shopData;
+                console.log('✅ Shop data loaded:', shopData);
+                
+                if (shopData.error) {
+                    console.error('❌ API returned error:', shopData.error);
+                    debugInfo.errors.push(`API error: ${shopData.error}`);
+                    showError(shopData.error, shopData.debug);
+                    return;
+                }
+                
+                renderShopProfile();
+                hideLoading();
+                
+            } catch (error) {
+                console.error('💥 Error loading shop data:', error);
+                debugInfo.errors.push(`JavaScript error: ${error.message}`);
+                showError(`Network error: ${error.message}`);
             }
         }
 
-        // Update order UI elements
-        function updateOrderUI() {
-            const orderCount = orderList.reduce((total, item) => total + item.quantity, 0);
-            const floatingCart = document.getElementById('floating-cart');
-            const floatingCartCount = document.getElementById('floating-cart-count');
+        // Simple shop ID extraction for direct links
+        function getShopIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
             
-            if (orderCount > 0) {
-                floatingCart.classList.remove('hidden');
-                floatingCartCount.textContent = orderCount;
-                floatingCart.classList.add('pulse');
-                setTimeout(() => {
-                    floatingCart.classList.remove('pulse');
-                }, 600);
-            } else {
-                floatingCart.classList.add('hidden');
+            // Check for direct shop parameter
+            const shopFromUrl = urlParams.get('shop');
+            if (shopFromUrl) return shopFromUrl;
+            
+            // Check URL path
+            const path = window.location.pathname;
+            const parts = path.split('/');
+            const shopFromPath = parts[parts.length - 1];
+            if (shopFromPath && shopFromPath !== 'shopProfile.html') {
+                return shopFromPath;
             }
-
-            updateOrderModal();
-        }
-
-        // Update order modal content
-        function updateOrderModal() {
-            const orderListEl = document.getElementById('order-list');
-            const orderEmpty = document.getElementById('order-empty');
-            const orderFooter = document.getElementById('order-footer');
-            const orderTotal = document.getElementById('order-total');
-
-            if (orderList.length === 0) {
-                orderListEl.innerHTML = '';
-                orderEmpty.classList.remove('hidden');
-                orderFooter.classList.add('hidden');
-                return;
-            }
-
-            orderEmpty.classList.add('hidden');
-            orderFooter.classList.remove('hidden');
-
-            const total = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            orderTotal.textContent = `₹${Math.round(total)}`;
-
-            orderListEl.innerHTML = orderList.map(item => `
-                <div class="order-item flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex-1">
-                        <h4 class="font-medium text-gray-900 text-sm">${item.name}</h4>
-                        <p class="text-red-600 font-bold">₹${Math.round(item.price)}</p>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <div class="flex items-center space-x-2">
-                            <button onclick="removeFromOrder('${item.id}')" class="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                                </svg>
-                            </button>
-                            <span class="font-bold text-gray-900 min-w-[20px] text-center">${item.quantity}</span>
-                            <button onclick="addToOrderFromModal('${item.id}')" class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Add to order from modal
-        async function addToOrderFromModal(productId) {
-            const product = shopData.products.find(p => p.id === productId);
-            if (product) {
-                await addToOrder(product);
-            }
-        }
-
-        // Open/close order modal
-        function openOrderModal() {
-            document.getElementById('order-modal').classList.remove('hidden');
-            updateOrderModal();
-        }
-
-        function closeOrderModal() {
-            document.getElementById('order-modal').classList.add('hidden');
+            
+            return null;
         }
 
         // Render shop profile
         function renderShopProfile() {
-            const { shop, products, discounts, subcategories, stats } = shopData;
-
+            console.log('🎨 Rendering shop profile...');
+            
+            if (!shopData || !shopData.shop) {
+                console.error('❌ No shop data to render');
+                debugInfo.errors.push('No shop data received');
+                showError('No shop data received');
+                return;
+            }
+            
+            const { shop, products, stats } = shopData;
+            
+            console.log('- Shop:', shop.name);
+            console.log('- Products:', products?.length || 0);
+            
+            // Update page title and meta
             document.title = `${shop.name} - Knoc`;
             const metaDesc = document.querySelector('meta[name="description"]');
-            metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
+            if (metaDesc) {
+                metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
+            }
 
             // Set images
             if (shop.coverImage) {
@@ -617,105 +409,31 @@ function getShopIdFromUrl() {
 
             const profileImg = document.getElementById('profile-image');
             profileImg.src = shop.profileImage || '/default-shop-avatar.png';
+            profileImg.onerror = function() {
+                this.src = 'https://via.placeholder.com/80x80/ef4444/ffffff?text=' + (shop.name ? shop.name.charAt(0) : 'S');
+            };
 
             // Update shop info
-            document.getElementById('shop-name').textContent = shop.name;
-            document.getElementById('shop-description').textContent = shop.description;
-            document.getElementById('shop-rating').textContent = shop.rating.toFixed(1);
-            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount);
-            document.getElementById('product-count').textContent = formatNumber(stats.totalProducts);
+            document.getElementById('shop-name').textContent = shop.name || 'Unknown Shop';
+            document.getElementById('shop-description').textContent = shop.description || 'No description available';
+            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount || 0);
+            document.getElementById('product-count').textContent = formatNumber(stats?.totalProducts || 0);
 
-            if (shop.verifiedAt) {
-                document.getElementById('verified-badge').classList.remove('hidden');
-            }
-
-            // Show promotion banner if discounts available
-            if (discounts.length > 0) {
-                showPromotionBanner(discounts[0]);
-            }
-
-            // Render categories and products
-            renderCategories(subcategories);
-            renderProducts(products);
-        }
-
-        // Show promotion banner
-        function showPromotionBanner(discount) {
-            const banner = document.getElementById('promotion-banner');
-            document.getElementById('promotion-title').textContent = discount.title || 'Special Offer';
-            document.getElementById('promotion-description').textContent = discount.description || '';
+            // Render products
+            renderProducts(products || []);
             
-            if (discount.discount_percent) {
-                document.getElementById('promotion-percent').textContent = `${Math.round(discount.discount_percent)}%`;
-            }
-            
-            banner.classList.remove('hidden');
-        }
-
-        // Render categories
-        function renderCategories(subcategories) {
-            const container = document.getElementById('categories-container');
-            const allButton = container.querySelector('[data-category="all"]');
-            container.innerHTML = '';
-            container.appendChild(allButton);
-            
-            subcategories.forEach(sub => {
-                const productCount = shopData.products.filter(p => p.subcategoryId === sub.id).length;
-                if (productCount > 0) {
-                    const button = document.createElement('button');
-                    button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
-                    button.textContent = `${sub.name} (${productCount})`;
-                    button.dataset.category = sub.id;
-                    button.onclick = () => filterProducts(sub.id);
-                    container.appendChild(button);
-                }
-            });
-            
-            const uncategorizedCount = shopData.products.filter(p => !p.subcategoryId).length;
-            if (uncategorizedCount > 0) {
-                const button = document.createElement('button');
-                button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
-                button.textContent = `Other (${uncategorizedCount})`;
-                button.dataset.category = 'uncategorized';
-                button.onclick = () => filterProducts('uncategorized');
-                container.appendChild(button);
-            }
-            
-            allButton.textContent = `All Products (${shopData.products.length})`;
-        }
-
-        // Filter products by category
-        function filterProducts(categoryId) {
-            currentCategory = categoryId;
-            
-            document.querySelectorAll('.category-chip').forEach(chip => {
-                if (chip.dataset.category === categoryId) {
-                    chip.className = 'category-chip bg-red-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap font-medium';
-                } else {
-                    chip.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
-                }
-            });
-
-            let filteredProducts;
-            if (categoryId === 'all') {
-                filteredProducts = shopData.products;
-            } else if (categoryId === 'uncategorized') {
-                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
-            } else {
-                filteredProducts = shopData.products.filter(p => p.subcategoryId === categoryId);
-            }
-            
-            renderProducts(filteredProducts);
+            console.log('✅ Shop profile rendered successfully');
         }
 
         // Render products
         function renderProducts(products) {
+            console.log('📦 Rendering products...', products.length);
+            
             const container = document.getElementById('products-container');
             const emptyState = document.getElementById('empty-state');
             
-            container.innerHTML = '';
-            
             if (products.length === 0) {
+                console.log('📦 No products to display');
                 container.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 return;
@@ -723,79 +441,16 @@ function getShopIdFromUrl() {
             
             container.classList.remove('hidden');
             emptyState.classList.add('hidden');
-
-            if (currentView === 'grouped' && currentCategory === 'all') {
-                renderGroupedProducts(products, container);
-            } else {
-                renderGridProducts(products, container);
-            }
-        }
-
-        // Render grouped products
-        function renderGroupedProducts(products, container) {
-            const { grouped, uncategorized } = groupProductsBySubcategory(products);
             
-            container.className = 'space-y-8';
+            container.innerHTML = products.map(product => createProductCard(product)).join('');
             
-            Object.entries(grouped).forEach(([categoryName, categoryProducts]) => {
-                const categorySection = document.createElement('div');
-                categorySection.className = 'category-section';
-                categorySection.innerHTML = `
-                    <div class="mb-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-lg font-bold text-gray-900">${categoryName}</h3>
-                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${categoryProducts.length} products</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-${categoryName.replace(/\s+/g, '-')}">
-                        </div>
-                    </div>
-                `;
-                container.appendChild(categorySection);
-                
-                const categoryGrid = categorySection.querySelector(`#category-${categoryName.replace(/\s+/g, '-')}`);
-                categoryProducts.forEach(product => {
-                    const productCard = createProductCard(product);
-                    categoryGrid.appendChild(productCard);
-                });
-            });
-            
-            if (uncategorized.length > 0) {
-                const uncategorizedSection = document.createElement('div');
-                uncategorizedSection.className = 'category-section';
-                uncategorizedSection.innerHTML = `
-                    <div class="mb-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-lg font-bold text-gray-900">Other Products</h3>
-                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${uncategorized.length} products</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-uncategorized">
-                        </div>
-                    </div>
-                `;
-                container.appendChild(uncategorizedSection);
-                
-                const uncategorizedGrid = uncategorizedSection.querySelector('#category-uncategorized');
-                uncategorized.forEach(product => {
-                    const productCard = createProductCard(product);
-                    uncategorizedGrid.appendChild(productCard);
-                });
-            }
-        }
-
-        // Render grid products
-        function renderGridProducts(products, container) {
-            container.className = 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4';
-            
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                container.appendChild(productCard);
-            });
+            console.log('✅ Products rendered successfully');
         }
 
         // Create product card
         function createProductCard(product) {
             const { metadata = {} } = product;
-            const media = product.media[0];
+            const media = product.media && product.media[0];
             const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
             
             const originalPrice = metadata.original_price || metadata.price || 299;
@@ -804,169 +459,49 @@ function getShopIdFromUrl() {
             const hasDiscount = discountedPrice && discountedPrice < originalPrice;
             const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
 
-            const card = document.createElement('div');
-            card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden';
-            
-            card.innerHTML = `
-                <div class="relative aspect-square">
-                    ${imageUrl ? `
-                        <img src="${imageUrl}" 
-                             alt="${product.content}" 
-                             class="w-full h-full object-cover"
-                             loading="lazy">
-                    ` : `
-                        <div class="w-full h-full bg-gray-100 flex items-center justify-center">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
-                            </svg>
-                        </div>
-                    `}
-                    
-                    ${hasDiscount ? `
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
-                            ${discountPercent}% OFF
-                        </div>
-                    ` : ''}
-                    
-                    <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
+            return `
+                <div class="product-card bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="relative aspect-square">
+                        ${imageUrl ? `
+                            <img src="${imageUrl}" 
+                                 alt="${product.content}" 
+                                 class="w-full h-full object-cover"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/300x300/f3f4f6/6b7280?text=No+Image';">
+                        ` : `
+                            <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
+                                </svg>
+                            </div>
+                        `}
+                        
+                        ${hasDiscount ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                                ${discountPercent}% OFF
+                            </div>
+                        ` : ''}
                     </div>
-                </div>
-                
-                <div class="p-3">
-                    <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${product.content}</h3>
                     
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
-                            ${hasDiscount ? `
-                                <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
-                            ` : ''}
+                    <div class="p-3">
+                        <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${product.content || 'Untitled Product'}</h3>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
+                                ${hasDiscount ? `
+                                    <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
+                                ` : ''}
+                            </div>
+                            <button class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
+                                </svg>
+                            </button>
                         </div>
-                        <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"></path>
-                            </svg>
-                        </button>
                     </div>
                 </div>
             `;
-            
-            return card;
-        }
-
-        // Toggle view
-        function toggleView(viewType) {
-            currentView = viewType;
-            
-            document.querySelectorAll('.view-toggle').forEach(btn => {
-                btn.classList.remove('active');
-                btn.classList.add('text-gray-600');
-            });
-            
-            const activeBtn = document.getElementById(`view-${viewType}`);
-            activeBtn.classList.add('active');
-            activeBtn.classList.remove('text-gray-600');
-            
-            let filteredProducts;
-            if (currentCategory === 'all') {
-                filteredProducts = shopData.products;
-            } else if (currentCategory === 'uncategorized') {
-                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
-            } else {
-                filteredProducts = shopData.products.filter(p => p.subcategoryId === currentCategory);
-            }
-            
-            renderProducts(filteredProducts);
-        }
-
-        // WhatsApp order
-        function generateOrderMessage() {
-            if (orderList.length === 0) return '';
-            
-            const shopName = shopData.shop.name;
-            const total = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            
-            let message = `🛍️ *New Order from ${shopName}*\n\n`;
-            message += `📝 *Order Details:*\n`;
-            message += `${'-'.repeat(30)}\n`;
-            
-            orderList.forEach((item, index) => {
-                message += `${index + 1}. *${item.name}*\n`;
-                message += `   Quantity: ${item.quantity}\n`;
-                message += `   Price: ₹${Math.round(item.price)} each\n`;
-                message += `   Subtotal: ₹${Math.round(item.price * item.quantity)}\n\n`;
-            });
-            
-            message += `${'-'.repeat(30)}\n`;
-            message += `💰 *Total Amount: ₹${Math.round(total)}*\n\n`;
-            
-            message += `📍 *Customer Details:*\n`;
-            message += `• Please provide your delivery address\n`;
-            message += `• Contact number: [Your Phone]\n`;
-            message += `• Preferred delivery time: [Your Preference]\n\n`;
-            
-            message += `📱 *Order placed via:* ${window.location.href}\n`;
-            message += `🕒 *Order time:* ${new Date().toLocaleString()}\n\n`;
-            
-            message += `✨ Thank you for choosing ${shopName}! 🙏`;
-            
-            return encodeURIComponent(message);
-        }
-
-        async function placeWhatsAppOrder() {
-            if (orderList.length === 0) return;
-
-            const shopContact = shopData.shop.contact?.phone;
-            if (!shopContact) return;
-
-            try {
-                const orderButton = document.querySelector('[onclick="placeWhatsAppOrder()"]');
-                const originalText = orderButton.innerHTML;
-                orderButton.innerHTML = `
-                    <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Preparing Order...
-                `;
-                orderButton.disabled = true;
-
-                const message = generateOrderMessage();
-                const cleanPhone = shopContact.replace(/[^\d+]/g, '');
-                
-                let whatsappUrl;
-                if (cleanPhone.startsWith('+')) {
-                    whatsappUrl = `https://wa.me/${cleanPhone.substring(1)}?text=${message}`;
-                } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
-                    whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
-                } else if (cleanPhone.length === 10) {
-                    whatsappUrl = `https://wa.me/91${cleanPhone}?text=${message}`;
-                } else {
-                    whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
-                }
-
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                const whatsappWindow = window.open(whatsappUrl, '_blank');
-                
-                if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
-                    window.location.href = whatsappUrl;
-                } else {
-                    setTimeout(() => {
-                        if (confirm('Order sent to WhatsApp! Would you like to clear your cart?')) {
-                            orderList = [];
-                            updateOrderUI();
-                            closeOrderModal();
-                        }
-                    }, 2000);
-                }
-
-            } catch (error) {
-                // Silent error handling
-            }
         }
 
         // Utility functions
@@ -985,56 +520,42 @@ function getShopIdFromUrl() {
             document.getElementById('content').classList.remove('hidden');
         }
 
-        function showError() {
+        function showError(message, details = null) {
+            console.error('❌ Showing error:', message, details);
+            
             document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.add('hidden');
             document.getElementById('error').classList.remove('hidden');
-        }
-
-        // Share functionality
-        document.getElementById('share-btn').addEventListener('click', async () => {
-            if (navigator.share && shopData) {
-                try {
-                    await navigator.share({
-                        title: shopData.shop.name,
-                        text: shopData.shop.description,
-                        url: window.location.href
-                    });
-                } catch (err) {
-                    copyToClipboard(window.location.href);
-                }
+            
+            // Update error details
+            const errorDetailsEl = document.getElementById('error-details');
+            if (details) {
+                errorDetailsEl.innerHTML = `
+                    <div class="font-bold mb-2">Error Details:</div>
+                    <div class="space-y-1">
+                        ${typeof details === 'string' ? details : JSON.stringify(details, null, 2)}
+                    </div>
+                `;
+                errorDetailsEl.classList.remove('hidden');
             } else {
-                copyToClipboard(window.location.href);
+                errorDetailsEl.classList.add('hidden');
             }
-        });
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Silent success
-            }).catch(() => {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-            });
         }
-
-        // Event Listeners
-        document.getElementById('view-grouped').addEventListener('click', () => toggleView('grouped'));
-        document.getElementById('view-grid').addEventListener('click', () => toggleView('grid'));
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🌟 DOM Content Loaded - Starting app...');
+            console.log('🌐 Current URL:', window.location.href);
+            
+            // Show debug panel by default for testing
+            const debugPanel = document.getElementById('debug-panel');
+            debugPanel.classList.remove('hidden');
+            
             loadShopData();
         });
 
-        // Close modal when clicking outside
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'order-modal') {
-                closeOrderModal();
-            }
-        });
+        // Update debug panel every 2 seconds
+        setInterval(updateDebugPanel, 2000);
     </script>
 </body>
 </html>
