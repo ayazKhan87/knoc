@@ -525,24 +525,37 @@
     }
     
     // Setup web profile button
-    function setupWebProfileButton() {
-      const webProfileBtn = document.getElementById('webProfileBtn');
-      
-      if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
-        // Create URL for the web profile page
-        const webProfileUrl = `https://www.knoc.in/shopProfile.html?data=${encodeURIComponent(originalData)}&sig=${encodeURIComponent(originalSig)}`;
+// Safer setupWebProfileButton function that handles encoding properly
+function setupWebProfileButton() {
+    const webProfileBtn = document.getElementById('webProfileBtn');
+    
+    if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
+        // ✅ SAFER: Decode first, then encode to ensure consistent encoding
+        let cleanData, cleanSig;
+        
+        try {
+            // Try to decode in case it's already encoded
+            cleanData = decodeURIComponent(originalData);
+            cleanSig = decodeURIComponent(originalSig);
+        } catch (e) {
+            // If decoding fails, use original values
+            cleanData = originalData;
+            cleanSig = originalSig;
+        }
+        
+        // Now encode properly for the URL
+        const webProfileUrl = `https://www.knoc.in/shopProfile.html?data=${encodeURIComponent(cleanData)}&sig=${encodeURIComponent(cleanSig)}`;
         
         webProfileBtn.href = webProfileUrl;
         webProfileBtn.onclick = (e) => {
-          // Track the web profile view
-          console.log('User chose web profile view for shop:', decodedShopId);
+            console.log('User chose web profile view for shop:', decodedShopId);
         };
-      } else {
-        // Fallback if we can't construct the proper URL
+        
+        console.log('Web profile URL:', webProfileUrl);
+    } else {
         webProfileBtn.href = 'https://www.knoc.in';
-      }
     }
-    
+}    
     // Initialize the app when DOM is ready
     function initializeApp() {
       console.log('Initializing app...');
