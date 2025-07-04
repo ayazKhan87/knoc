@@ -223,24 +223,21 @@
     let appOpened = false;
     let redirectTimer = null;
     let linkType = 'unknown';
-    let decodedShopId = null;
-    let originalData = null;
-    let originalSig = null;
+    let shopId = null;
+    let postId = null;
     
     function openAppOrRedirect() {
       console.log('Starting app redirect process...');
       
       const query = new URLSearchParams(window.location.search);
-      const data = query.get("data");
-      const sig = query.get("sig");
+      const type = query.get("type");
+      shopId = query.get("shopId");
+      postId = query.get("postId");
       
-      console.log('URL Parameters:', { data: data ? 'present' : 'missing', sig: sig ? 'present' : 'missing' });
+      console.log('URL Parameters:', { type, shopId, postId });
       
-      // Store original parameters for web profile fallback
-      originalData = data;
-      originalSig = sig;
-      
-      if (!data || !sig) {
+      // Validate the link format
+      if (!type || !shopId) {
         console.log('No valid deep link data, redirecting to main website');
         // No valid deep link data, redirect to main website
         setTimeout(() => {
@@ -249,21 +246,23 @@
         return;
       }
 
-      // Try to decode and identify link type for preview
-      try {
-        const linkInfo = identifyAndDecodeLinkType(data);
-        linkType = linkInfo.type;
-        decodedShopId = linkInfo.shopId;
-        
-        console.log('Link info:', { type: linkType, shopId: decodedShopId });
-        
-        if (linkType === 'shop') {
-          showShopPreview(linkInfo.shopId);
-        } else if (linkType === 'post') {
-          showPostPreview(linkInfo.postId, linkInfo.shopId);
-        }
-      } catch (e) {
-        console.log('Could not decode link for preview:', e);
+      // Validate UUID format
+      if (!isValidUUID(shopId) || (postId && !isValidUUID(postId))) {
+        console.log('Invalid UUID format, redirecting to main website');
+        setTimeout(() => {
+          window.location.href = "https://www.knoc.in";
+        }, 2000);
+        return;
+      }
+
+      linkType = type;
+      
+      console.log('Link info:', { type: linkType, shopId, postId });
+      
+      if (linkType === 'shop') {
+        showShopPreview(shopId);
+      } else if (linkType === 'post') {
+        showPostPreview(postId, shopId);
       }
 
       // Detect device type
@@ -280,39 +279,17 @@
 
       if (isAndroid) {
         // Try to open the app immediately for Android
-        attemptAppOpen(data, sig);
+        attemptAppOpen();
       } else {
         // For iOS users, show not available message
         showIOSMessage();
       }
     }
     
-    // Enhanced function to identify and decode link type
-    function identifyAndDecodeLinkType(encodedData) {
-      try {
-        // Decode base64 (handle URL-safe base64)
-        const decodedData = atob(encodedData.replace(/-/g, '+').replace(/_/g, '/'));
-        console.log('Decoded data:', decodedData);
-        
-        if (decodedData.startsWith('shop:')) {
-          return {
-            type: 'shop',
-            shopId: decodedData.substring(5)
-          };
-        } else if (decodedData.includes(':')) {
-          const parts = decodedData.split(':');
-          return {
-            type: 'post',
-            postId: parts[0],
-            shopId: parts[1]
-          };
-        }
-        
-        return { type: 'unknown' };
-      } catch (e) {
-        console.log('Error decoding:', e);
-        return { type: 'unknown' };
-      }
+    // Validate UUID format
+    function isValidUUID(uuid) {
+      const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      return uuidPattern.test(uuid);
     }
     
     // Enhanced shop preview
@@ -353,19 +330,23 @@
       console.log('Showing post preview');
     }
     
-    function attemptAppOpen(data, sig) {
-      console.log('Attempting to open app with data:', data, 'sig:', sig);
+    function attemptAppOpen() {
+      console.log('Attempting to open app with type:', linkType, 'shopId:', shopId, 'postId:', postId);
       
-      // Create the app URL based on link type
+      // Create the app URL based on link type - using simple query parameters
       let appUrl;
       let intentUrl;
       
       if (linkType === 'shop') {
-        appUrl = `knoc://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-        intentUrl = `intent://shop?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+        appUrl = `knoc://shop?shopId=${shopId}`;
+        intentUrl = `intent://shop?shopId=${shopId}#Intent;scheme=knoc;package=com.knoc.app;end`;
+      } else if (linkType === 'post') {
+        appUrl = `knoc://post?postId=${postId}&shopId=${shopId}`;
+        intentUrl = `intent://post?postId=${postId}&shopId=${shopId}#Intent;scheme=knoc;package=com.knoc.app;end`;
       } else {
-        appUrl = `knoc://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-        intentUrl = `intent://post?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}#Intent;scheme=knoc;package=com.knoc.app;end`;
+        console.log('Unknown link type:', linkType);
+        showFallbackOptions();
+        return;
       }
       
       console.log('App URL:', appUrl);
@@ -524,38 +505,36 @@
       document.getElementById('fallback').classList.remove('hidden');
     }
     
-    // Setup web profile button
-// Safer setupWebProfileButton function that handles encoding properly
-function setupWebProfileButton() {
-    const webProfileBtn = document.getElementById('webProfileBtn');
-    
-    if (linkType === 'shop' && decodedShopId && originalData && originalSig) {
-        // ✅ SAFER: Decode first, then encode to ensure consistent encoding
-        let cleanData, cleanSig;
-        
-        try {
-            // Try to decode in case it's already encoded
-            cleanData = decodeURIComponent(originalData);
-            cleanSig = decodeURIComponent(originalSig);
-        } catch (e) {
-            // If decoding fails, use original values
-            cleanData = originalData;
-            cleanSig = originalSig;
-        }
-        
-        // Now encode properly for the URL
-        const webProfileUrl = `https://www.knoc.in/shopProfile.html?data=${encodeURIComponent(cleanData)}&sig=${encodeURIComponent(cleanSig)}`;
+    // Setup web profile button for simple deep links
+    function setupWebProfileButton() {
+      const webProfileBtn = document.getElementById('webProfileBtn');
+      
+      if (linkType === 'shop' && shopId) {
+        // Create web profile URL with simple query parameters
+        const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
         
         webProfileBtn.href = webProfileUrl;
         webProfileBtn.onclick = (e) => {
-            console.log('User chose web profile view for shop:', decodedShopId);
+          console.log('User chose web profile view for shop:', shopId);
         };
         
         console.log('Web profile URL:', webProfileUrl);
-    } else {
+      } else if (linkType === 'post' && postId && shopId) {
+        // For posts, redirect to shop profile for now (or create a post-specific web view)
+        const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=post&postId=${encodeURIComponent(postId)}&shopId=${encodeURIComponent(shopId)}`;
+        
+        webProfileBtn.href = webProfileUrl;
+        webProfileBtn.textContent = '🌐 View Product';
+        webProfileBtn.onclick = (e) => {
+          console.log('User chose web profile view for post:', postId, 'shop:', shopId);
+        };
+        
+        console.log('Web profile URL:', webProfileUrl);
+      } else {
         webProfileBtn.href = 'https://www.knoc.in';
+      }
     }
-}    
+    
     // Initialize the app when DOM is ready
     function initializeApp() {
       console.log('Initializing app...');
