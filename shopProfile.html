@@ -280,14 +280,40 @@
             debugInfo.urlParams = Object.fromEntries(urlParams.entries());
             
             console.log('📋 URL Parameters:', debugInfo.urlParams);
+            console.log('📋 Raw URL:', window.location.href);
+            console.log('📋 Search string:', window.location.search);
             
             try {
                 let apiUrl;
                 
                 // Check for hashed link (data + sig parameters)
-                const data = urlParams.get('data');
-                const sig = urlParams.get('sig');
+                let data = urlParams.get('data');
+                let sig = urlParams.get('sig');
                 const type = urlParams.get('type');
+                
+                // ✅ FIX: Handle URL decoding issues
+                if (!data || !sig) {
+                    console.log('⚠️ Parameters missing, trying manual parsing...');
+                    
+                    // Try manual parsing from URL
+                    const searchParams = window.location.search;
+                    const dataMatch = searchParams.match(/[?&]data=([^&]+)/);
+                    const sigMatch = searchParams.match(/[?&]sig=([^&]+)/);
+                    
+                    if (dataMatch) {
+                        data = decodeURIComponent(dataMatch[1]);
+                        console.log('📋 Manual data parse:', data);
+                    }
+                    if (sigMatch) {
+                        sig = decodeURIComponent(sigMatch[1]);
+                        console.log('📋 Manual sig parse:', sig);
+                    }
+                }
+                
+                console.log('📋 Final parameters:');
+                console.log('- Data:', data);
+                console.log('- Sig:', sig);
+                console.log('- Type:', type);
                 
                 if (data && sig) {
                     // Hashed link
