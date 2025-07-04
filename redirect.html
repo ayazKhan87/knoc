@@ -273,7 +273,18 @@
       console.log('Device detection:', { isAndroid, isMobile, userAgent });
       
       if (!isMobile) {
-        showDesktopMessage();
+        // Desktop/Laptop handling
+        if (linkType === 'shop') {
+          // For shop links on desktop, redirect to web profile after 2 seconds
+          setTimeout(() => {
+            const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
+            console.log('Desktop shop link - redirecting to web profile:', webProfileUrl);
+            window.location.href = webProfileUrl;
+          }, 2000);
+        } else if (linkType === 'post') {
+          // For post links on desktop, show desktop message with options
+          showDesktopMessage();
+        }
         return;
       }
 
@@ -330,10 +341,41 @@
       console.log('Showing post preview');
     }
     
-    function attemptAppOpen() {
+    // Check if app is installed (Android only)
+    function checkAppInstalled() {
+      return new Promise((resolve) => {
+        let appUrl;
+        
+        if (linkType === 'shop') {
+          appUrl = `knoc://shop?shopId=${shopId}`;
+        } else if (linkType === 'post') {
+          appUrl = `knoc://post?postId=${postId}&shopId=${shopId}`;
+        } else {
+          resolve(false);
+          return;
+        }
+        
+        const startTime = Date.now();
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = appUrl;
+        document.body.appendChild(iframe);
+        
+        // Check if we're still on the page after attempting to open
+        setTimeout(() => {
+          const timeElapsed = Date.now() - startTime;
+          const isInstalled = timeElapsed < 100 || document.hidden;
+          
+          document.body.removeChild(iframe);
+          resolve(isInstalled);
+        }, 500);
+      });
+    }
+    
+    async function attemptAppOpen() {
       console.log('Attempting to open app with type:', linkType, 'shopId:', shopId, 'postId:', postId);
       
-      // Create the app URL based on link type - using simple query parameters
+      // Create the app URL based on link type
       let appUrl;
       let intentUrl;
       
@@ -381,8 +423,8 @@
           // If we get focus back quickly, app probably didn't open
           setTimeout(() => {
             if (!appOpened && isPageVisible) {
-              console.log('App did not open - showing fallback');
-              showFallbackOptions();
+              console.log('App did not open - handling fallback');
+              handleAppNotInstalled();
             }
           }, 1500);
         }
@@ -391,11 +433,11 @@
       window.addEventListener('blur', handleBlur);
       window.addEventListener('focus', handleFocus);
       
-      // Set a timer to show fallback options if app doesn't open
+      // Set a timer to handle fallback if app doesn't open
       redirectTimer = setTimeout(() => {
         if (!appOpened && !document.hidden) {
           console.log('Timer expired - app did not open');
-          showFallbackOptions();
+          handleAppNotInstalled();
         }
       }, 3000);
       
@@ -446,6 +488,29 @@
         
       } catch (error) {
         console.error('Error opening app:', error);
+        handleAppNotInstalled();
+      }
+    }
+    
+    // Handle when app is not installed
+    function handleAppNotInstalled() {
+      if (appOpened) {
+        console.log('App already opened, not handling not installed');
+        return;
+      }
+      
+      console.log('App not installed, handling based on link type');
+      
+      if (linkType === 'post') {
+        // For post links, redirect directly to Play Store
+        console.log('Post link - redirecting to Play Store');
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.knoc.app';
+      } else if (linkType === 'shop') {
+        // For shop links, show web profile option
+        console.log('Shop link - showing web profile option');
+        showFallbackOptions();
+      } else {
+        // Default fallback
         showFallbackOptions();
       }
     }
