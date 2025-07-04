@@ -375,60 +375,74 @@
         let orderList = [];
 
         // Clean, simple load function
-        async function loadShopData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            try {
-                let apiUrl;
-                
-                // Check for hashed link
-                const data = urlParams.get('data');
-                const sig = urlParams.get('sig');
-                
-                if (data && sig) {
-                    // Hashed link
-                    apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
-                } else {
-                    // Direct shop ID
-                    const shopId = getShopIdFromUrl();
-                    if (!shopId) {
-                        showError();
-                        return;
-                    }
-                    apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView/${shopId}`;
-                }
-                
-                const response = await fetch(apiUrl);
-                
-                if (!response.ok) {
-                    throw new Error('Invalid link');
-                }
-
-                shopData = await response.json();
-                renderShopProfile();
-                hideLoading();
-                
-            } catch (error) {
+async function loadShopData() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    try {
+        let apiUrl;
+        
+        // Check for hashed link (data + sig parameters)
+        const data = urlParams.get('data');
+        const sig = urlParams.get('sig');
+        
+        if (data && sig) {
+            // ✅ FIXED: Use hashed link endpoint
+            console.log('Using hashed link with data:', data, 'sig:', sig);
+            apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?data=${encodeURIComponent(data)}&sig=${encodeURIComponent(sig)}`;
+        } else {
+            // Direct shop ID fallback
+            const shopId = getShopIdFromUrl();
+            if (!shopId) {
+                console.error('No shop ID found');
                 showError();
+                return;
             }
+            console.log('Using direct shop ID:', shopId);
+            apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView/${shopId}`;
+        }
+        
+        console.log('API URL:', apiUrl);
+        
+        const response = await fetch(apiUrl);
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API error:', errorText);
+            throw new Error(`API error: ${response.status} - ${errorText}`);
         }
 
+        shopData = await response.json();
+        console.log('Shop data loaded:', shopData);
+        
+        renderShopProfile();
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Error loading shop data:', error);
+        showError();
+    }
+}
         // Simple shop ID extraction for backward compatibility
-        function getShopIdFromUrl() {
-            const testShopId = '3f270e3f-73f7-4b16-b6b8-37c5bcb89305';
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const shopFromUrl = urlParams.get('shop');
-            if (shopFromUrl) return shopFromUrl;
-            
-            const path = window.location.pathname;
-            const parts = path.split('/');
-            const shopFromPath = parts[parts.length - 1];
-            if (shopFromPath && shopFromPath !== 'shopProfile.html') return shopFromPath;
-            
-            return testShopId;
-        }
-
+function getShopIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check for direct shop parameter
+    const shopFromUrl = urlParams.get('shop');
+    if (shopFromUrl) return shopFromUrl;
+    
+    // Check URL path
+    const path = window.location.pathname;
+    const parts = path.split('/');
+    const shopFromPath = parts[parts.length - 1];
+    if (shopFromPath && shopFromPath !== 'shopProfile.html') {
+        return shopFromPath;
+    }
+    
+    // No shop ID found
+    return null;
+}
+        
         // Group products by subcategory
         function groupProductsBySubcategory(products) {
             const grouped = {};
