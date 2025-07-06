@@ -657,6 +657,12 @@
             pointer-events: none;
             z-index: 1;
         }
+
+        /* Spin animation for loading */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -1174,13 +1180,10 @@
             }
         }
 
-        // Handle blur
+        // Handle blur - Updated to remove delay
         function handleBlur() {
-            // Delay hiding to allow clicking on suggestions
-            setTimeout(() => {
-                hideSuggestions();
-                selectedIndex = -1;
-            }, 200);
+            hideSuggestions();
+            selectedIndex = -1;
         }
 
         // Update search icon
@@ -1220,7 +1223,7 @@
             dropdown.classList.add('show');
         }
 
-        // Show suggestions
+        // Show suggestions - Updated with proper event listeners
         function showSuggestions() {
             const dropdown = document.getElementById('suggestionsDropdown');
             
@@ -1240,7 +1243,7 @@
                         Found ${suggestions.length} shop${suggestions.length !== 1 ? 's' : ''}
                     </div>
                     ${suggestions.map((shop, index) => `
-                        <div class="suggestion-item" onclick="selectShop(suggestions[${index}])">
+                        <div class="suggestion-item" data-index="${index}">
                             <div style="display: flex; align-items: center; gap: 16px;">
                                 <div style="width: 48px; height: 48px; border-radius: 12px; overflow: hidden; background: rgba(255, 255, 255, 0.1); flex-shrink: 0;">
                                     ${shop.image ? 
@@ -1276,6 +1279,16 @@
                         </div>
                     `).join('')}
                 `;
+
+                // Add event listeners to suggestion items
+                const suggestionItems = dropdown.querySelectorAll('.suggestion-item');
+                suggestionItems.forEach((item, index) => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        selectShop(suggestions[index]);
+                    });
+                });
             }
             
             dropdown.classList.add('show');
@@ -1299,15 +1312,15 @@
             });
         }
 
-        // Select shop
+        // Select shop - Updated to use location.href instead of window.open
         function selectShop(shop) {
             document.getElementById('searchInput').value = shop.name;
             hideSuggestions();
             selectedIndex = -1;
             
-            // Construct the profile URL using the shop ID
+            // Use location.href instead of window.open
             const profileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${shop.id}`;
-            window.open(profileUrl, '_blank');
+            window.location.href = profileUrl;
         }
 
         // Privacy policy functions
@@ -1365,16 +1378,6 @@
                 }
             });
         });
-
-        // Add CSS animation for spin
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
