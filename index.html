@@ -1304,7 +1304,10 @@
             document.getElementById('searchInput').value = shop.name;
             hideSuggestions();
             selectedIndex = -1;
-            window.open(shop.profileUrl, '_blank');
+            
+            // Construct the profile URL using the shop ID
+            const profileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${shop.id}`;
+            window.open(profileUrl, '_blank');
         }
 
         // Privacy policy functions
