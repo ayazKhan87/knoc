@@ -281,17 +281,6 @@
                             Grid
                         </button>
                     </div>
-                    
-                    <button class="p-2 bg-white border border-gray-200 rounded-lg">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
-                    <button class="p-2 bg-white border border-gray-200 rounded-lg">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-                        </svg>
-                    </button>
                 </div>
             </div>
             
@@ -526,17 +515,13 @@
                 const shopId = urlParams.get('shopId');
                 const postId = urlParams.get('postId');
                 
-                console.log('URL Parameters:', { type, shopId, postId });
-                
                 if (!type || !shopId) {
-                    console.log('Missing required parameters');
                     showError();
                     return;
                 }
 
                 // Validate UUID format
                 if (!isValidUUID(shopId) || (postId && !isValidUUID(postId))) {
-                    console.log('Invalid UUID format');
                     showError();
                     return;
                 }
@@ -547,8 +532,6 @@
                     apiUrl += `&postId=${postId}`;
                 }
                 
-                console.log('API URL:', apiUrl);
-                
                 const response = await fetch(apiUrl);
                 
                 if (!response.ok) {
@@ -558,12 +541,9 @@
                 shopData = await response.json();
                 
                 if (shopData.error) {
-                    console.log('API Error:', shopData.error);
                     showError();
                     return;
                 }
-                
-                console.log('Shop data loaded:', shopData);
                 
                 renderShopProfile();
                 hideLoading();
@@ -599,16 +579,30 @@
             return { grouped, uncategorized };
         }
 
+        // Validate if product can be ordered (has name and price)
+        function canOrderProduct(product) {
+            const { metadata = {} } = product;
+            const productName = metadata.product_name || product.content;
+            const price = metadata.price;
+            
+            return productName && productName.trim() !== '' && price && price > 0;
+        }
+
         // Add item to order
         function addToOrder(product) {
+            if (!canOrderProduct(product)) {
+                return;
+            }
+
             const { metadata = {} } = product;
-            const originalPrice = metadata.original_price || metadata.price || 299;
+            const productName = metadata.product_name || product.content;
+            const originalPrice = metadata.price;
             const discountedPrice = metadata.discounted_price;
             const displayPrice = discountedPrice || originalPrice;
 
             const orderItem = {
                 id: product.id,
-                name: product.content,
+                name: productName,
                 price: displayPrice,
                 quantity: 1
             };
@@ -1123,10 +1117,15 @@
             const media = product.media && product.media.length > 0 ? product.media[0] : null;
             const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
             
-            const originalPrice = metadata.original_price || metadata.price || 299;
+            // Get product name and price with validation
+            const productName = metadata.product_name || product.content || '';
+            const originalPrice = metadata.price;
             const discountedPrice = metadata.discounted_price;
             const displayPrice = discountedPrice || originalPrice;
-            const hasDiscount = discountedPrice && discountedPrice < originalPrice;
+            
+            // Check if product can be ordered
+            const isOrderable = canOrderProduct(product);
+            const hasDiscount = discountedPrice && originalPrice && discountedPrice < originalPrice;
             const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
 
             const card = document.createElement('div');
@@ -1136,7 +1135,7 @@
                 <div class="relative aspect-square">
                     ${imageUrl ? `
                         <img src="${imageUrl}" 
-                             alt="${product.content}" 
+                             alt="${productName}" 
                              class="w-full h-full object-cover"
                              loading="lazy">
                     ` : `
@@ -1161,18 +1160,28 @@
                 </div>
                 
                 <div class="p-3">
-                    <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${product.content}</h3>
+                    <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${productName || 'Product Name Not Available'}</h3>
                     
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
-                            <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
-                            ${hasDiscount ? `
-                                <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
-                            ` : ''}
+                            ${isOrderable ? `
+                                <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
+                                ${hasDiscount ? `
+                                    <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
+                                ` : ''}
+                            ` : `
+                                <span class="text-gray-400 text-sm">Price not available</span>
+                            `}
                         </div>
-                        <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium">
-                            Add
-                        </button>
+                        ${isOrderable ? `
+                            <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium">
+                                Add
+                            </button>
+                        ` : `
+                            <button disabled class="bg-gray-300 text-gray-500 px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed">
+                                Unavailable
+                            </button>
+                        `}
                     </div>
                 </div>
             `;
