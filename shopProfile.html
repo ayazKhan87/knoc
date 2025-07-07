@@ -143,6 +143,97 @@
             }
         }
 
+        /* Enhanced Image Loading Styles */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f8f9fa 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f8f9fa 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .image-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-placeholder.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lazy-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: blur(0px);
+        }
+
+        .lazy-image.loading {
+            filter: blur(5px);
+        }
+
+        .lazy-image.loaded {
+            opacity: 1;
+            filter: blur(0px);
+        }
+
+        .lazy-image.error {
+            opacity: 0;
+        }
+
+        .image-error-state {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-col;
+            align-items: center;
+            justify-content: center;
+            background: #f3f4f6;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-error-state.visible {
+            opacity: 1;
+        }
+
+        .progressive-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progressive-image .low-res {
+            filter: blur(3px);
+            transform: scale(1.05);
+            transition: opacity 0.3s ease;
+        }
+
+        .progressive-image .high-res {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .progressive-image .high-res.loaded {
+            opacity: 1;
+        }
+
         /* Loading Spinner */
         .loading-spinner {
             width: 20px;
@@ -286,78 +377,89 @@
             100% { transform: translate(24px, 0); }
         }
 
-        /* Image lazy loading styles */
-        .lazy-image {
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        /* Preloading indicator */
+        .preload-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(239, 68, 68, 0.2);
+            z-index: 10000;
+            overflow: hidden;
         }
 
-        .lazy-image.loaded {
-            opacity: 1;
+        .preload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
 
-        .lazy-image.loading {
-            opacity: 0.5;
-        }
-
-        .lazy-image.error {
-            opacity: 0.3;
-        }
-
-        /* Image placeholder */
-        .image-placeholder {
+        /* Critical image preloading skeleton */
+        .critical-image-skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
-            animation: shimmer 2s infinite;
+            animation: shimmer 1.5s infinite;
         }
 
-        /* Intersection observer loading indicator */
-        .loading-indicator {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 50px;
-            margin: 20px 0;
+        /* Network status indicator */
+        .network-status {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 10001;
+            transition: all 0.3s ease;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
-        .loading-indicator.visible {
+        .network-status.online {
+            background: #10b981;
             opacity: 1;
         }
 
-        /* Optimize image containers */
-        .image-container {
-            position: relative;
-            overflow: hidden;
-            background-color: #f3f4f6;
+        .network-status.offline {
+            background: #ef4444;
+            opacity: 1;
         }
 
-        .image-container .placeholder-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
+        /* Image retry button */
+        .image-retry-btn {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.3s ease;
         }
 
-        .image-container img {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Blur effect for loading images */
-        .blur-load {
-            filter: blur(5px);
-            transition: filter 0.3s ease;
-        }
-
-        .blur-load.loaded {
-            filter: blur(0);
+        .image-retry-btn:hover {
+            background: rgba(220, 38, 38, 0.9);
         }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Network Status Indicator -->
+    <div id="network-status" class="network-status">
+        <span id="network-message">Connected</span>
+    </div>
+
+    <!-- Preload Progress Bar -->
+    <div id="preload-progress" class="preload-progress hidden">
+        <div id="preload-progress-bar" class="preload-progress-bar"></div>
+    </div>
+
     <!-- Loading State -->
     <div id="loading" class="min-h-screen">
         <div class="loading-shimmer h-48 w-full"></div>
@@ -417,7 +519,20 @@
         <div class="relative">
             <!-- Cover Image -->
             <div id="cover-section" class="h-48 gradient-bg relative overflow-hidden">
-                <img id="cover-image" class="w-full h-full object-cover hidden" alt="Shop Cover">
+                <div class="image-container w-full h-full">
+                    <div class="image-placeholder">
+                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
+                        </svg>
+                    </div>
+                    <img id="cover-image" class="lazy-image" alt="Shop Cover">
+                    <div class="image-error-state">
+                        <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
+                        </svg>
+                        <span class="text-sm text-gray-500">Cover image unavailable</span>
+                    </div>
+                </div>
                 <div class="absolute inset-0 bg-black bg-opacity-30"></div>
                 
                 <!-- Back Button -->
@@ -433,7 +548,19 @@
                 <!-- Profile Image -->
                 <div class="absolute -top-10 left-1/2 transform -translate-x-1/2">
                     <div class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg">
-                        <img id="profile-image" class="w-full h-full object-cover" alt="Shop Logo">
+                        <div class="image-container w-full h-full">
+                            <div class="image-placeholder">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <img id="profile-image" class="lazy-image" alt="Shop Logo">
+                            <div class="image-error-state">
+                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                     <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                 </div>
@@ -557,14 +684,6 @@
         <div class="px-4 pb-20">
             <div id="products-container">
                 <!-- Products will be loaded here -->
-            </div>
-            
-            <!-- Loading Indicator for Lazy Loading -->
-            <div id="lazy-loading-indicator" class="loading-indicator">
-                <div class="flex items-center space-x-2">
-                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
-                    <span class="text-gray-600">Loading more images...</span>
-                </div>
             </div>
             
             <!-- Empty State -->
@@ -779,79 +898,352 @@
         let selectedOrderType = null;
         let isProcessingOrder = false;
         
-        // Lazy loading variables
+        // Enhanced image loading variables
         let imageObserver = null;
-        let loadingObserver = null;
         let loadedImages = new Set();
-        let imageQueue = [];
-        let isLoadingImages = false;
+        let failedImages = new Set();
+        let preloadQueue = [];
+        let isPreloading = false;
+        let preloadProgress = 0;
+        let totalImagesToPreload = 0;
+        
+        // Network status monitoring
+        let isOnline = navigator.onLine;
+        let networkQuality = 'good'; // good, slow, offline
+        
+        // Performance monitoring
+        let loadStartTime = Date.now();
+        let criticalResourcesLoaded = 0;
+        let totalCriticalResources = 0;
 
-        // Initialize intersection observers for lazy loading
-        function initLazyLoading() {
-            // Image lazy loading observer
-            imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        loadImage(entry.target);
-                        imageObserver.unobserve(entry.target);
+        // Enhanced Image Loading System
+        class ImageLoader {
+            constructor() {
+                this.cache = new Map();
+                this.loading = new Set();
+                this.retryAttempts = new Map();
+                this.maxRetries = 3;
+                this.retryDelay = 1000;
+                this.priorityQueue = [];
+                this.backgroundQueue = [];
+                this.currentLoading = 0;
+                this.maxConcurrent = 3;
+                
+                this.initObserver();
+            }
+            
+            initObserver() {
+                this.observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            this.loadImageWithPriority(img, 'high');
+                            this.observer.unobserve(img);
+                        }
+                    });
+                }, {
+                    rootMargin: '100px',
+                    threshold: 0.1
+                });
+            }
+            
+            async loadImageWithPriority(img, priority = 'normal') {
+                const src = img.dataset.src;
+                if (!src || this.loading.has(src) || loadedImages.has(src)) return;
+                
+                // Add to appropriate queue
+                const item = { img, src, priority };
+                if (priority === 'high' || priority === 'critical') {
+                    this.priorityQueue.unshift(item);
+                } else {
+                    this.backgroundQueue.push(item);
+                }
+                
+                this.processQueue();
+            }
+            
+            async processQueue() {
+                if (this.currentLoading >= this.maxConcurrent) return;
+                
+                const item = this.priorityQueue.shift() || this.backgroundQueue.shift();
+                if (!item) return;
+                
+                this.currentLoading++;
+                this.loading.add(item.src);
+                
+                try {
+                    await this.loadSingleImage(item);
+                } catch (error) {
+                    console.warn('Image load failed:', item.src, error);
+                } finally {
+                    this.currentLoading--;
+                    this.loading.delete(item.src);
+                    // Process next item
+                    setTimeout(() => this.processQueue(), 10);
+                }
+            }
+            
+            async loadSingleImage({ img, src, priority }) {
+                const container = img.closest('.image-container');
+                const placeholder = container?.querySelector('.image-placeholder');
+                const errorState = container?.querySelector('.image-error-state');
+                
+                // Set loading state
+                img.classList.add('loading');
+                if (placeholder) placeholder.classList.remove('hidden');
+                if (errorState) errorState.classList.remove('visible');
+                
+                try {
+                    // Create image with timeout
+                    const loadedImg = await this.createImageWithTimeout(src, 10000);
+                    
+                    // Apply progressive enhancement for high-res images
+                    if (this.shouldUseProgressive(src)) {
+                        await this.applyProgressiveLoading(img, src, loadedImg);
+                    } else {
+                        img.src = src;
+                    }
+                    
+                    // Success state
+                    img.classList.remove('loading');
+                    img.classList.add('loaded');
+                    if (placeholder) {
+                        placeholder.classList.add('hidden');
+                    }
+                    
+                    loadedImages.add(src);
+                    this.cache.set(src, loadedImg);
+                    
+                    // Update preload progress if this was a preloaded image
+                    if (priority === 'critical') {
+                        this.updatePreloadProgress();
+                    }
+                    
+                } catch (error) {
+                    await this.handleImageError(img, src, error);
+                }
+            }
+            
+            createImageWithTimeout(src, timeout = 10000) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    let timeoutId;
+                    
+                    const cleanup = () => {
+                        clearTimeout(timeoutId);
+                        img.onload = null;
+                        img.onerror = null;
+                    };
+                    
+                    img.onload = () => {
+                        cleanup();
+                        resolve(img);
+                    };
+                    
+                    img.onerror = () => {
+                        cleanup();
+                        reject(new Error('Failed to load image'));
+                    };
+                    
+                    timeoutId = setTimeout(() => {
+                        cleanup();
+                        reject(new Error('Image load timeout'));
+                    }, timeout);
+                    
+                    img.src = src;
+                });
+            }
+            
+            shouldUseProgressive(src) {
+                // Use progressive loading for larger images
+                return src.includes('large') || src.includes('high') || 
+                       (!src.includes('thumb') && !src.includes('small'));
+            }
+            
+            async applyProgressiveLoading(img, src, loadedImg) {
+                // Create low-res version URL (if thumbnail exists)
+                const lowResSrc = src.replace(/\/(large|medium)\//, '/thumb/');
+                
+                if (lowResSrc !== src) {
+                    try {
+                        const lowResImg = await this.createImageWithTimeout(lowResSrc, 3000);
+                        
+                        // Show low-res first with blur
+                        img.src = lowResSrc;
+                        img.style.filter = 'blur(3px)';
+                        img.classList.add('loaded');
+                        
+                        // Wait a bit then load high-res
+                        setTimeout(() => {
+                            img.src = src;
+                            img.style.filter = 'blur(0)';
+                        }, 200);
+                        
+                    } catch {
+                        // Fallback to regular loading
+                        img.src = src;
+                    }
+                } else {
+                    img.src = src;
+                }
+            }
+            
+            async handleImageError(img, src, error) {
+                const retryCount = this.retryAttempts.get(src) || 0;
+                
+                if (retryCount < this.maxRetries && isOnline) {
+                    // Retry with exponential backoff
+                    this.retryAttempts.set(src, retryCount + 1);
+                    const delay = this.retryDelay * Math.pow(2, retryCount);
+                    
+                    setTimeout(() => {
+                        this.loadImageWithPriority(img, 'retry');
+                    }, delay);
+                    
+                    return;
+                }
+                
+                // Show error state
+                const container = img.closest('.image-container');
+                const placeholder = container?.querySelector('.image-placeholder');
+                const errorState = container?.querySelector('.image-error-state');
+                
+                img.classList.remove('loading');
+                img.classList.add('error');
+                
+                if (placeholder) placeholder.classList.add('hidden');
+                if (errorState) {
+                    errorState.classList.add('visible');
+                    // Add retry button for manual retry
+                    if (!errorState.querySelector('.image-retry-btn')) {
+                        const retryBtn = document.createElement('button');
+                        retryBtn.className = 'image-retry-btn';
+                        retryBtn.textContent = 'Retry';
+                        retryBtn.onclick = () => {
+                            this.retryAttempts.delete(src);
+                            errorState.classList.remove('visible');
+                            this.loadImageWithPriority(img, 'high');
+                        };
+                        errorState.appendChild(retryBtn);
+                    }
+                }
+                
+                failedImages.add(src);
+            }
+            
+            updatePreloadProgress() {
+                criticalResourcesLoaded++;
+                const progress = Math.min((criticalResourcesLoaded / totalCriticalResources) * 100, 100);
+                
+                const progressBar = document.getElementById('preload-progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                }
+                
+                if (progress >= 100) {
+                    setTimeout(() => {
+                        const progressContainer = document.getElementById('preload-progress');
+                        if (progressContainer) {
+                            progressContainer.classList.add('hidden');
+                        }
+                    }, 500);
+                }
+            }
+            
+            preloadCriticalImages(urls) {
+                if (!urls || urls.length === 0) return;
+                
+                totalCriticalResources = urls.length;
+                const progressContainer = document.getElementById('preload-progress');
+                if (progressContainer) {
+                    progressContainer.classList.remove('hidden');
+                }
+                
+                urls.forEach(url => {
+                    if (url && !loadedImages.has(url)) {
+                        const img = new Image();
+                        img.dataset.src = url;
+                        this.loadImageWithPriority(img, 'critical');
                     }
                 });
-            }, {
-                rootMargin: '200px' // Increased margin for better preloading
+            }
+            
+            observeImage(img) {
+                if (this.observer && img) {
+                    this.observer.observe(img);
+                }
+            }
+            
+            disconnect() {
+                if (this.observer) {
+                    this.observer.disconnect();
+                }
+                this.cache.clear();
+                this.loading.clear();
+                this.retryAttempts.clear();
+                this.priorityQueue = [];
+                this.backgroundQueue = [];
+            }
+        }
+
+        // Initialize image loader
+        const imageLoader = new ImageLoader();
+
+        // Network monitoring
+        function initNetworkMonitoring() {
+            const networkStatus = document.getElementById('network-status');
+            const networkMessage = document.getElementById('network-message');
+
+            function updateNetworkStatus() {
+                if (navigator.onLine) {
+                    isOnline = true;
+                    networkStatus.className = 'network-status online';
+                    networkMessage.textContent = 'Connected';
+                    
+                    // Hide after 2 seconds
+                    setTimeout(() => {
+                        networkStatus.classList.remove('online');
+                    }, 2000);
+                    
+                    // Retry failed images
+                    retryFailedImages();
+                } else {
+                    isOnline = false;
+                    networkStatus.className = 'network-status offline';
+                    networkMessage.textContent = 'No Internet Connection';
+                }
+            }
+
+            window.addEventListener('online', updateNetworkStatus);
+            window.addEventListener('offline', updateNetworkStatus);
+            
+            // Check connection quality
+            if ('connection' in navigator) {
+                const connection = navigator.connection;
+                connection.addEventListener('change', () => {
+                    networkQuality = connection.effectiveType === '4g' ? 'good' : 
+                                   connection.effectiveType === '3g' ? 'medium' : 'slow';
+                    
+                    // Adjust concurrent loading based on network quality
+                    imageLoader.maxConcurrent = networkQuality === 'good' ? 6 : 
+                                               networkQuality === 'medium' ? 3 : 1;
+                });
+            }
+        }
+
+        function retryFailedImages() {
+            const failedImageElements = document.querySelectorAll('.lazy-image.error');
+            failedImageElements.forEach(img => {
+                const src = img.dataset.src;
+                if (src && failedImages.has(src)) {
+                    failedImages.delete(src);
+                    imageLoader.retryAttempts.delete(src);
+                    img.classList.remove('error');
+                    imageLoader.loadImageWithPriority(img, 'retry');
+                }
             });
         }
 
-        // Load image with lazy loading
-        function loadImage(img) {
-            if (!img.dataset.src || loadedImages.has(img.dataset.src)) return;
-            
-            const imageUrl = img.dataset.src;
-            loadedImages.add(imageUrl);
-            
-            img.classList.add('loading');
-            
-            const tempImg = new Image();
-            tempImg.onload = function() {
-                img.src = imageUrl;
-                img.classList.remove('loading', 'blur-load');
-                img.classList.add('loaded');
-                
-                // Remove placeholder
-                const placeholder = img.parentElement.querySelector('.placeholder-icon');
-                if (placeholder) {
-                    placeholder.style.opacity = '0';
-                    setTimeout(() => {
-                        if (placeholder && placeholder.parentElement) {
-                            placeholder.parentElement.removeChild(placeholder);
-                        }
-                    }, 300);
-                }
-            };
-            
-            tempImg.onerror = function() {
-                img.classList.remove('loading', 'blur-load');
-                img.classList.add('error');
-                
-                // Set fallback image
-                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGQ9Im00IDE2IDQuNTg2LTQuNTg2YTIgMiAwIDAgMSAyLjgyOCAwTDE2IDE4bS0yLTVWOWEyIDIgMCAwIDAtMi0ySDhhMiAyIDAgMCAwLTIgMnYuMDEiLz48L3N2Zz4=';
-                
-                // Remove placeholder on error too
-                const placeholder = img.parentElement.querySelector('.placeholder-icon');
-                if (placeholder) {
-                    placeholder.style.opacity = '0';
-                    setTimeout(() => {
-                        if (placeholder && placeholder.parentElement) {
-                            placeholder.parentElement.removeChild(placeholder);
-                        }
-                    }, 300);
-                }
-            };
-            
-            tempImg.src = imageUrl;
-        }
-
-        // Remove the loadNextBatch function and related code since we're using direct observation
-        
         // Device and platform detection
         function getDeviceInfo() {
             const userAgent = navigator.userAgent.toLowerCase();
@@ -865,7 +1257,7 @@
             };
         }
 
-        // Toast notification system
+        // Enhanced toast notification system
         function showToast(title, message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastIcon = document.getElementById('toast-icon');
@@ -896,12 +1288,11 @@
             }, 4000);
         }
 
-        // Show loading overlay
+        // Loading overlay functions
         function showLoadingOverlay() {
             document.getElementById('order-loading').classList.remove('hidden');
         }
 
-        // Hide loading overlay
         function hideLoadingOverlay() {
             document.getElementById('order-loading').classList.add('hidden');
         }
@@ -923,7 +1314,7 @@
             }
         }
 
-        // Load shop data with new simple parameter format
+        // Enhanced shop data loading with preloading
         async function loadShopData() {
             const urlParams = new URLSearchParams(window.location.search);
             
@@ -944,7 +1335,7 @@
                     return;
                 }
 
-                // Build API URL with simple parameters
+                // Build API URL
                 let apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?type=${type}&shopId=${shopId}`;
                 if (postId) {
                     apiUrl += `&postId=${postId}`;
@@ -963,12 +1354,49 @@
                     return;
                 }
                 
+                // Preload critical images
+                await preloadCriticalImages();
+                
                 renderShopProfile();
                 hideLoading();
                 
             } catch (error) {
                 console.error('Error loading shop data:', error);
                 showError();
+            }
+        }
+
+        // Preload critical images for better UX
+        async function preloadCriticalImages() {
+            if (!shopData) return;
+            
+            const criticalImages = [];
+            
+            // Add shop images
+            if (shopData.shop.profileImage) {
+                criticalImages.push(shopData.shop.profileImage);
+            }
+            if (shopData.shop.coverImage) {
+                criticalImages.push(shopData.shop.coverImage);
+            }
+            
+            // Add first few product images (visible above fold)
+            if (shopData.products && shopData.products.length > 0) {
+                const firstProducts = shopData.products.slice(0, 6);
+                firstProducts.forEach(product => {
+                    if (product.media && product.media.length > 0) {
+                        const media = product.media[0];
+                        const imageUrl = media.thumbnailUrl || media.url;
+                        if (imageUrl) {
+                            criticalImages.push(imageUrl);
+                        }
+                    }
+                });
+            }
+            
+            // Start preloading
+            if (criticalImages.length > 0) {
+                imageLoader.preloadCriticalImages(criticalImages);
             }
         }
 
@@ -997,7 +1425,7 @@
             return { grouped, uncategorized };
         }
 
-        // Validate if product can be ordered (has name and price)
+        // Validate if product can be ordered
         function canOrderProduct(product) {
             const { metadata = {} } = product;
             const productName = metadata.product_name || product.content;
@@ -1199,10 +1627,8 @@
             
             // Generate appropriate URL based on device
             if (deviceInfo.isIOS) {
-                // iOS prefers whatsapp:// scheme
                 return `whatsapp://send?phone=${formattedPhone}&text=${encodedMessage}`;
             } else {
-                // Android and Desktop use https://wa.me/
                 return `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
             }
         }
@@ -1213,18 +1639,14 @@
             
             try {
                 if (deviceInfo.isMobile) {
-                    // Mobile: Use location.href for better compatibility
                     window.location.href = url;
                     
-                    // Fallback detection - if user is still on page after 3 seconds
                     setTimeout(() => {
                         showToast('WhatsApp Link', 'If WhatsApp didn\'t open, please install WhatsApp or try copying the message manually', 'info');
                     }, 3000);
                 } else {
-                    // Desktop: Use window.open
                     const whatsappWindow = window.open(url, '_blank');
                     
-                    // Check if popup was blocked
                     if (!whatsappWindow) {
                         copyToClipboard(fallbackMessage);
                         showToast('Link Copied', 'WhatsApp link copied to clipboard. Please paste it in WhatsApp Web or your WhatsApp app.', 'info');
@@ -1240,12 +1662,9 @@
         // Generate concise WhatsApp message for delivery orders
         function generateDeliveryOrderMessage(orderData) {
             const shopName = shopData.shop.name;
-            const deviceInfo = getDeviceInfo();
             
-            // Keep message concise for URL length limits
             let message = `🛍️ *New Order - ${shopName}*\n\n`;
             
-            // Add order items (simplified)
             message += `📝 *Items (${orderData.order_items.length}):*\n`;
             orderData.order_items.forEach((item, index) => {
                 message += `${index + 1}. ${item.name} × ${item.quantity} = ₹${Math.round(item.price * item.quantity)}\n`;
@@ -1364,7 +1783,7 @@
             };
 
             try {
-                // Send API request without waiting for response (fire and forget)
+                // Send API request in background
                 fetch('https://rtwtkapynafirwixyeal.supabase.co/functions/v1/Food-AddItem', {
                     method: 'POST',
                     headers: {
@@ -1373,7 +1792,6 @@
                     body: JSON.stringify(orderData)
                 }).catch(error => {
                     console.error('Background API error:', error);
-                    // Don't show error to user since WhatsApp is the primary communication method
                 });
                 
                 // Generate WhatsApp message and send immediately
@@ -1383,11 +1801,9 @@
                 if (shopContact) {
                     const whatsappUrl = generateWhatsAppLink(shopContact, message);
                     
-                    // Small delay to ensure UI updates, then open WhatsApp
                     setTimeout(() => {
                         openWhatsApp(whatsappUrl, message);
                         
-                        // Hide loading immediately after attempting to open WhatsApp
                         hideLoadingOverlay();
                         showToast('Order Sent!', 'Your delivery order has been sent via WhatsApp. Please check your WhatsApp for confirmation.', 'success');
                         
@@ -1419,7 +1835,7 @@
             }
         }
 
-        // Render shop profile
+        // Enhanced render shop profile with critical image handling
         function renderShopProfile() {
             const { shop, products = [], discounts = [], subcategories = [], stats } = shopData;
 
@@ -1427,15 +1843,22 @@
             const metaDesc = document.querySelector('meta[name="description"]');
             metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
 
-            // Set images
+            // Set critical images with enhanced loading
+            const coverImg = document.getElementById('cover-image');
+            const profileImg = document.getElementById('profile-image');
+            
             if (shop.coverImage) {
-                const coverImg = document.getElementById('cover-image');
-                coverImg.src = shop.coverImage;
-                coverImg.classList.remove('hidden');
+                coverImg.dataset.src = shop.coverImage;
+                imageLoader.loadImageWithPriority(coverImg, 'critical');
             }
 
-            const profileImg = document.getElementById('profile-image');
-            profileImg.src = shop.profileImage || 'https://www.knoc.in/knoc_logo.png';
+            if (shop.profileImage) {
+                profileImg.dataset.src = shop.profileImage;
+                imageLoader.loadImageWithPriority(profileImg, 'critical');
+            } else {
+                profileImg.dataset.src = 'https://www.knoc.in/knoc_logo.png';
+                imageLoader.loadImageWithPriority(profileImg, 'critical');
+            }
 
             // Update shop info
             document.getElementById('shop-name').textContent = shop.name;
@@ -1527,14 +1950,12 @@
             renderProducts(filteredProducts);
         }
 
-        // Render products with lazy loading
+        // Enhanced render products with lazy loading
         function renderProducts(products) {
             const container = document.getElementById('products-container');
             const emptyState = document.getElementById('empty-state');
             
             container.innerHTML = '';
-            imageQueue = [];
-            loadedImages.clear();
             
             if (products.length === 0) {
                 container.classList.add('hidden');
@@ -1551,13 +1972,11 @@
                 renderGridProducts(products, container);
             }
 
-            // Start observing all images immediately after rendering
+            // Start observing all images for lazy loading
             setTimeout(() => {
                 const lazyImages = container.querySelectorAll('.lazy-image');
                 lazyImages.forEach(img => {
-                    if (imageObserver) {
-                        imageObserver.observe(img);
-                    }
+                    imageLoader.observeImage(img);
                 });
             }, 100);
         }
@@ -1623,7 +2042,7 @@
             });
         }
 
-        // Create product card with lazy loading
+        // Enhanced create product card with robust image loading
         function createProductCard(product) {
             const { metadata = {} } = product;
             const media = product.media && product.media.length > 0 ? product.media[0] : null;
@@ -1643,20 +2062,26 @@
             const card = document.createElement('div');
             card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden relative';
             
-            // Create image container with lazy loading
+            // Create enhanced image container with lazy loading
             let imageHTML = '';
             if (imageUrl) {
                 imageHTML = `
-                    <div class="image-container relative aspect-square bg-gray-100">
-                        <div class="placeholder-icon absolute inset-0 flex items-center justify-center">
+                    <div class="image-container relative aspect-square">
+                        <div class="image-placeholder">
                             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
                             </svg>
                         </div>
                         <img data-src="${imageUrl}" 
                              alt="${productName}" 
-                             class="lazy-image w-full h-full object-cover blur-load absolute inset-0"
+                             class="lazy-image"
                              loading="lazy">
+                        <div class="image-error-state">
+                            <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
+                            </svg>
+                            <span class="text-xs text-gray-500">Image unavailable</span>
+                        </div>
                         ${hasDiscount ? `
                             <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10">
                                 ${discountPercent}% OFF
@@ -1811,6 +2236,78 @@
             document.body.removeChild(textArea);
         }
 
+        // Enhanced performance monitoring
+        function initPerformanceMonitoring() {
+            // Monitor page load performance
+            window.addEventListener('load', () => {
+                const loadTime = Date.now() - loadStartTime;
+                console.log(`Page loaded in ${loadTime}ms`);
+                
+                // Report performance to analytics if needed
+                if (window.gtag) {
+                    gtag('event', 'page_load_time', {
+                        value: loadTime,
+                        custom_parameter: 'shop_profile'
+                    });
+                }
+            });
+
+            // Monitor image loading performance
+            const imageLoadObserver = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.initiatorType === 'img') {
+                        console.log(`Image loaded: ${entry.name} in ${entry.duration}ms`);
+                    }
+                }
+            });
+            
+            try {
+                imageLoadObserver.observe({ entryTypes: ['resource'] });
+            } catch (e) {
+                console.log('Performance observer not supported');
+            }
+
+            // Monitor memory usage
+            if ('memory' in performance) {
+                setInterval(() => {
+                    const memory = performance.memory;
+                    if (memory.usedJSHeapSize > 50 * 1024 * 1024) { // 50MB
+                        console.warn('High memory usage detected:', memory.usedJSHeapSize / 1024 / 1024, 'MB');
+                        // Could trigger cleanup or optimization here
+                    }
+                }, 30000); // Check every 30 seconds
+            }
+        }
+
+        // Enhanced error reporting
+        function initErrorReporting() {
+            window.addEventListener('error', (event) => {
+                console.error('JavaScript error:', event.error);
+                
+                // Don't show error toast for minor issues
+                if (!event.error.message.includes('Network')) {
+                    showToast('Error', 'Something went wrong. Please refresh the page.', 'error');
+                }
+            });
+
+            window.addEventListener('unhandledrejection', (event) => {
+                console.error('Unhandled promise rejection:', event.reason);
+                
+                // Handle specific promise rejections
+                if (event.reason?.message?.includes('fetch')) {
+                    showToast('Network Error', 'Please check your internet connection.', 'error');
+                }
+            });
+        }
+
+        // Initialize everything
+        function initializeApp() {
+            initNetworkMonitoring();
+            initPerformanceMonitoring();
+            initErrorReporting();
+            loadShopData();
+        }
+
         // Share functionality
         document.getElementById('share-btn').addEventListener('click', async () => {
             if (navigator.share && shopData) {
@@ -1838,10 +2335,7 @@
         document.getElementById('view-grid').addEventListener('click', () => toggleView('grid'));
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            initLazyLoading();
-            loadShopData();
-        });
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
         // Close modals when clicking outside
         document.addEventListener('click', (e) => {
@@ -1882,72 +2376,53 @@
             }
         });
 
-        // Network status detection
+        // Enhanced network status handling
         window.addEventListener('online', () => {
+            isOnline = true;
             showToast('Connection Restored', 'You are back online', 'success');
+            retryFailedImages();
         });
 
         window.addEventListener('offline', () => {
+            isOnline = false;
             showToast('Connection Lost', 'Please check your internet connection', 'error');
         });
 
-        // Performance monitoring for images
-        window.addEventListener('load', () => {
-            // Monitor lazy loading performance
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.entryType === 'navigation') {
-                        console.log('Page load time:', entry.loadEventEnd - entry.fetchStart, 'ms');
-                    }
-                }
-            });
-            observer.observe({ entryTypes: ['navigation'] });
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (imageLoader) {
+                imageLoader.disconnect();
+            }
         });
 
-        // Preload critical images
-        function preloadCriticalImages() {
-            if (shopData && shopData.shop) {
-                const criticalImages = [
-                    shopData.shop.profileImage,
-                    shopData.shop.coverImage
-                ].filter(Boolean);
-
-                criticalImages.forEach(url => {
-                    const link = document.createElement('link');
-                    link.rel = 'preload';
-                    link.as = 'image';
-                    link.href = url;
-                    document.head.appendChild(link);
-                });
-            }
-        }
-
-        // Memory management for images
-        function cleanupImages() {
-            const images = document.querySelectorAll('.lazy-image');
-            images.forEach(img => {
-                const rect = img.getBoundingClientRect();
-                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-                
-                // If image is far from viewport, we can optionally unload it to save memory
-                if (!isVisible && Math.abs(rect.top) > window.innerHeight * 3) {
-                    // Optionally implement image unloading for memory optimization
-                    // This would be useful for very long product lists
-                }
+        // Intersection Observer polyfill check
+        if (!window.IntersectionObserver) {
+            console.warn('IntersectionObserver not supported, loading all images immediately');
+            // Fallback: load all images immediately
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    const lazyImages = document.querySelectorAll('.lazy-image');
+                    lazyImages.forEach(img => {
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                        }
+                    });
+                }, 1000);
             });
         }
 
-        // Throttled scroll handler for performance
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
-            
-            scrollTimeout = setTimeout(() => {
-                cleanupImages();
-            }, 250);
-        });
+        // Service Worker registration for better caching (optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
