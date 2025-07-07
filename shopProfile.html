@@ -285,6 +285,76 @@
             0% { transform: translate(0, 0); }
             100% { transform: translate(24px, 0); }
         }
+
+        /* Image lazy loading styles */
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lazy-image.loaded {
+            opacity: 1;
+        }
+
+        .lazy-image.loading {
+            opacity: 0.5;
+        }
+
+        .lazy-image.error {
+            opacity: 0.3;
+        }
+
+        /* Image placeholder */
+        .image-placeholder {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        /* Intersection observer loading indicator */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+            margin: 20px 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-indicator.visible {
+            opacity: 1;
+        }
+
+        /* Optimize image containers */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            background-color: #f3f4f6;
+        }
+
+        .image-container .placeholder-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .image-container img {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Blur effect for loading images */
+        .blur-load {
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+        }
+
+        .blur-load.loaded {
+            filter: blur(0);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -487,6 +557,14 @@
         <div class="px-4 pb-20">
             <div id="products-container">
                 <!-- Products will be loaded here -->
+            </div>
+            
+            <!-- Loading Indicator for Lazy Loading -->
+            <div id="lazy-loading-indicator" class="loading-indicator">
+                <div class="flex items-center space-x-2">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
+                    <span class="text-gray-600">Loading more images...</span>
+                </div>
             </div>
             
             <!-- Empty State -->
@@ -700,6 +778,106 @@
         let orderList = [];
         let selectedOrderType = null;
         let isProcessingOrder = false;
+        
+        // Lazy loading variables
+        let imageObserver = null;
+        let loadingObserver = null;
+        let loadedImages = new Set();
+        let imageQueue = [];
+        let isLoadingImages = false;
+
+        // Initialize intersection observers for lazy loading
+        function initLazyLoading() {
+            // Image lazy loading observer
+            imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        loadImage(entry.target);
+                        imageObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '50px'
+            });
+
+            // Loading indicator observer
+            loadingObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !isLoadingImages && imageQueue.length > 0) {
+                        loadNextBatch();
+                    }
+                });
+            }, {
+                rootMargin: '100px'
+            });
+
+            // Observe the loading indicator
+            const loadingIndicator = document.getElementById('lazy-loading-indicator');
+            if (loadingIndicator) {
+                loadingObserver.observe(loadingIndicator);
+            }
+        }
+
+        // Load image with lazy loading
+        function loadImage(img) {
+            if (loadedImages.has(img.dataset.src)) return;
+            
+            const imageUrl = img.dataset.src;
+            loadedImages.add(imageUrl);
+            
+            img.classList.add('loading');
+            
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                img.src = imageUrl;
+                img.classList.remove('loading');
+                img.classList.add('loaded');
+                
+                // Remove placeholder
+                const placeholder = img.parentElement.querySelector('.placeholder-icon');
+                if (placeholder) {
+                    placeholder.style.opacity = '0';
+                    setTimeout(() => {
+                        if (placeholder.parentElement) {
+                            placeholder.parentElement.removeChild(placeholder);
+                        }
+                    }, 300);
+                }
+            };
+            
+            tempImg.onerror = function() {
+                img.classList.remove('loading');
+                img.classList.add('error');
+                
+                // Set fallback image
+                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGQ9Im00IDE2IDQuNTg2LTQuNTg2YTIgMiAwIDAgMSAyLjgyOCAwTDE2IDE4bS0yLTVWOWEyIDIgMCAwIDAtMi0ySDhhMiAyIDAgMCAwLTIgMnYuMDEiLz48L3N2Zz4=';
+            };
+            
+            tempImg.src = imageUrl;
+        }
+
+        // Load next batch of images
+        function loadNextBatch() {
+            if (isLoadingImages || imageQueue.length === 0) return;
+            
+            isLoadingImages = true;
+            const loadingIndicator = document.getElementById('lazy-loading-indicator');
+            loadingIndicator.classList.add('visible');
+            
+            const batchSize = 10;
+            const batch = imageQueue.splice(0, batchSize);
+            
+            batch.forEach(img => {
+                imageObserver.observe(img);
+            });
+            
+            setTimeout(() => {
+                isLoadingImages = false;
+                if (imageQueue.length === 0) {
+                    loadingIndicator.classList.remove('visible');
+                }
+            }, 500);
+        }
 
         // Device and platform detection
         function getDeviceInfo() {
@@ -1376,12 +1554,14 @@
             renderProducts(filteredProducts);
         }
 
-        // Render products
+        // Render products with lazy loading
         function renderProducts(products) {
             const container = document.getElementById('products-container');
             const emptyState = document.getElementById('empty-state');
             
             container.innerHTML = '';
+            imageQueue = [];
+            loadedImages.clear();
             
             if (products.length === 0) {
                 container.classList.add('hidden');
@@ -1397,6 +1577,13 @@
             } else {
                 renderGridProducts(products, container);
             }
+
+            // Initialize lazy loading for new images
+            setTimeout(() => {
+                if (imageQueue.length > 0) {
+                    loadNextBatch();
+                }
+            }, 100);
         }
 
         // Render grouped products
@@ -1460,7 +1647,7 @@
             });
         }
 
-        // Create product card
+        // Create product card with lazy loading
         function createProductCard(product) {
             const { metadata = {} } = product;
             const media = product.media && product.media.length > 0 ? product.media[0] : null;
@@ -1480,32 +1667,45 @@
             const card = document.createElement('div');
             card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden';
             
-            card.innerHTML = `
-                <div class="relative aspect-square">
-                    ${imageUrl ? `
-                        <img src="${imageUrl}" 
-                             alt="${productName}" 
-                             class="w-full h-full object-cover"
-                             loading="lazy">
-                    ` : `
-                        <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+            // Create image container with lazy loading
+            let imageHTML = '';
+            if (imageUrl) {
+                imageHTML = `
+                    <div class="image-container relative aspect-square bg-gray-100">
+                        <div class="placeholder-icon">
                             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
                             </svg>
                         </div>
-                    `}
-                    
-                    ${hasDiscount ? `
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
-                            ${discountPercent}% OFF
-                        </div>
-                    ` : ''}
-                    
-                    <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        <img data-src="${imageUrl}" 
+                             alt="${productName}" 
+                             class="lazy-image w-full h-full object-cover blur-load"
+                             loading="lazy">
+                    </div>
+                `;
+            } else {
+                imageHTML = `
+                    <div class="relative aspect-square bg-gray-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
                         </svg>
                     </div>
+                `;
+            }
+            
+            card.innerHTML = `
+                ${imageHTML}
+                
+                ${hasDiscount ? `
+                    <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                        ${discountPercent}% OFF
+                    </div>
+                ` : ''}
+                
+                <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
                 </div>
                 
                 <div class="p-3">
@@ -1534,6 +1734,14 @@
                     </div>
                 </div>
             `;
+            
+            // Add image to queue for lazy loading
+            if (imageUrl) {
+                const img = card.querySelector('.lazy-image');
+                if (img) {
+                    imageQueue.push(img);
+                }
+            }
             
             return card;
         }
@@ -1655,6 +1863,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            initLazyLoading();
             loadShopData();
         });
 
@@ -1704,6 +1913,64 @@
 
         window.addEventListener('offline', () => {
             showToast('Connection Lost', 'Please check your internet connection', 'error');
+        });
+
+        // Performance monitoring for images
+        window.addEventListener('load', () => {
+            // Monitor lazy loading performance
+            const observer = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.entryType === 'navigation') {
+                        console.log('Page load time:', entry.loadEventEnd - entry.fetchStart, 'ms');
+                    }
+                }
+            });
+            observer.observe({ entryTypes: ['navigation'] });
+        });
+
+        // Preload critical images
+        function preloadCriticalImages() {
+            if (shopData && shopData.shop) {
+                const criticalImages = [
+                    shopData.shop.profileImage,
+                    shopData.shop.coverImage
+                ].filter(Boolean);
+
+                criticalImages.forEach(url => {
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.as = 'image';
+                    link.href = url;
+                    document.head.appendChild(link);
+                });
+            }
+        }
+
+        // Memory management for images
+        function cleanupImages() {
+            const images = document.querySelectorAll('.lazy-image');
+            images.forEach(img => {
+                const rect = img.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                
+                // If image is far from viewport, we can optionally unload it to save memory
+                if (!isVisible && Math.abs(rect.top) > window.innerHeight * 3) {
+                    // Optionally implement image unloading for memory optimization
+                    // This would be useful for very long product lists
+                }
+            });
+        }
+
+        // Throttled scroll handler for performance
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+            
+            scrollTimeout = setTimeout(() => {
+                cleanupImages();
+            }, 250);
         });
     </script>
 </body>
