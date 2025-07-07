@@ -797,30 +797,13 @@
                     }
                 });
             }, {
-                rootMargin: '50px'
+                rootMargin: '200px' // Increased margin for better preloading
             });
-
-            // Loading indicator observer
-            loadingObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !isLoadingImages && imageQueue.length > 0) {
-                        loadNextBatch();
-                    }
-                });
-            }, {
-                rootMargin: '100px'
-            });
-
-            // Observe the loading indicator
-            const loadingIndicator = document.getElementById('lazy-loading-indicator');
-            if (loadingIndicator) {
-                loadingObserver.observe(loadingIndicator);
-            }
         }
 
         // Load image with lazy loading
         function loadImage(img) {
-            if (loadedImages.has(img.dataset.src)) return;
+            if (!img.dataset.src || loadedImages.has(img.dataset.src)) return;
             
             const imageUrl = img.dataset.src;
             loadedImages.add(imageUrl);
@@ -830,7 +813,7 @@
             const tempImg = new Image();
             tempImg.onload = function() {
                 img.src = imageUrl;
-                img.classList.remove('loading');
+                img.classList.remove('loading', 'blur-load');
                 img.classList.add('loaded');
                 
                 // Remove placeholder
@@ -838,7 +821,7 @@
                 if (placeholder) {
                     placeholder.style.opacity = '0';
                     setTimeout(() => {
-                        if (placeholder.parentElement) {
+                        if (placeholder && placeholder.parentElement) {
                             placeholder.parentElement.removeChild(placeholder);
                         }
                     }, 300);
@@ -846,39 +829,29 @@
             };
             
             tempImg.onerror = function() {
-                img.classList.remove('loading');
+                img.classList.remove('loading', 'blur-load');
                 img.classList.add('error');
                 
                 // Set fallback image
                 img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGQ9Im00IDE2IDQuNTg2LTQuNTg2YTIgMiAwIDAgMSAyLjgyOCAwTDE2IDE4bS0yLTVWOWEyIDIgMCAwIDAtMi0ySDhhMiAyIDAgMCAwLTIgMnYuMDEiLz48L3N2Zz4=';
+                
+                // Remove placeholder on error too
+                const placeholder = img.parentElement.querySelector('.placeholder-icon');
+                if (placeholder) {
+                    placeholder.style.opacity = '0';
+                    setTimeout(() => {
+                        if (placeholder && placeholder.parentElement) {
+                            placeholder.parentElement.removeChild(placeholder);
+                        }
+                    }, 300);
+                }
             };
             
             tempImg.src = imageUrl;
         }
 
-        // Load next batch of images
-        function loadNextBatch() {
-            if (isLoadingImages || imageQueue.length === 0) return;
-            
-            isLoadingImages = true;
-            const loadingIndicator = document.getElementById('lazy-loading-indicator');
-            loadingIndicator.classList.add('visible');
-            
-            const batchSize = 10;
-            const batch = imageQueue.splice(0, batchSize);
-            
-            batch.forEach(img => {
-                imageObserver.observe(img);
-            });
-            
-            setTimeout(() => {
-                isLoadingImages = false;
-                if (imageQueue.length === 0) {
-                    loadingIndicator.classList.remove('visible');
-                }
-            }, 500);
-        }
-
+        // Remove the loadNextBatch function and related code since we're using direct observation
+        
         // Device and platform detection
         function getDeviceInfo() {
             const userAgent = navigator.userAgent.toLowerCase();
@@ -1578,11 +1551,14 @@
                 renderGridProducts(products, container);
             }
 
-            // Initialize lazy loading for new images
+            // Start observing all images immediately after rendering
             setTimeout(() => {
-                if (imageQueue.length > 0) {
-                    loadNextBatch();
-                }
+                const lazyImages = container.querySelectorAll('.lazy-image');
+                lazyImages.forEach(img => {
+                    if (imageObserver) {
+                        imageObserver.observe(img);
+                    }
+                });
             }, 100);
         }
 
@@ -1665,22 +1641,32 @@
             const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
 
             const card = document.createElement('div');
-            card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden';
+            card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden relative';
             
             // Create image container with lazy loading
             let imageHTML = '';
             if (imageUrl) {
                 imageHTML = `
                     <div class="image-container relative aspect-square bg-gray-100">
-                        <div class="placeholder-icon">
+                        <div class="placeholder-icon absolute inset-0 flex items-center justify-center">
                             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
                             </svg>
                         </div>
                         <img data-src="${imageUrl}" 
                              alt="${productName}" 
-                             class="lazy-image w-full h-full object-cover blur-load"
+                             class="lazy-image w-full h-full object-cover blur-load absolute inset-0"
                              loading="lazy">
+                        ${hasDiscount ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10">
+                                ${discountPercent}% OFF
+                            </div>
+                        ` : ''}
+                        <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center z-10">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
                     </div>
                 `;
             } else {
@@ -1689,24 +1675,22 @@
                         <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
                         </svg>
+                        ${hasDiscount ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                                ${discountPercent}% OFF
+                            </div>
+                        ` : ''}
+                        <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
                     </div>
                 `;
             }
             
             card.innerHTML = `
                 ${imageHTML}
-                
-                ${hasDiscount ? `
-                    <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
-                        ${discountPercent}% OFF
-                    </div>
-                ` : ''}
-                
-                <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                </div>
                 
                 <div class="p-3">
                     <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${productName || 'Product Name Not Available'}</h3>
@@ -1734,14 +1718,6 @@
                     </div>
                 </div>
             `;
-            
-            // Add image to queue for lazy loading
-            if (imageUrl) {
-                const img = card.querySelector('.lazy-image');
-                if (img) {
-                    imageQueue.push(img);
-                }
-            }
             
             return card;
         }
