@@ -6,6 +6,10 @@
     <title>Shop Profile - Knoc</title>
     <meta name="description" content="Shop profile and products on Knoc">
     
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://rtwtkapynafirwixyeal.supabase.co">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -141,97 +145,6 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        /* Enhanced Image Loading Styles */
-        .image-container {
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%), 
-                        linear-gradient(-45deg, #f8f9fa 25%, transparent 25%), 
-                        linear-gradient(45deg, transparent 75%, #f8f9fa 75%), 
-                        linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-        }
-
-        .image-placeholder {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            transition: opacity 0.3s ease;
-        }
-
-        .image-placeholder.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .lazy-image {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: blur(0px);
-        }
-
-        .lazy-image.loading {
-            filter: blur(5px);
-        }
-
-        .lazy-image.loaded {
-            opacity: 1;
-            filter: blur(0px);
-        }
-
-        .lazy-image.error {
-            opacity: 0;
-        }
-
-        .image-error-state {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-col;
-            align-items: center;
-            justify-content: center;
-            background: #f3f4f6;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .image-error-state.visible {
-            opacity: 1;
-        }
-
-        .progressive-image {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progressive-image .low-res {
-            filter: blur(3px);
-            transform: scale(1.05);
-            transition: opacity 0.3s ease;
-        }
-
-        .progressive-image .high-res {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .progressive-image .high-res.loaded {
-            opacity: 1;
         }
 
         /* Loading Spinner */
@@ -377,89 +290,147 @@
             100% { transform: translate(24px, 0); }
         }
 
-        /* Preloading indicator */
-        .preload-progress {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: rgba(239, 68, 68, 0.2);
-            z-index: 10000;
+        /* Advanced Image Loading Styles */
+        .image-container {
+            position: relative;
             overflow: hidden;
+            background-color: #f9fafb;
+            border-radius: inherit;
         }
 
-        .preload-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #ef4444, #dc2626);
-            width: 0%;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        .image-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            transition: opacity 0.3s ease;
         }
 
-        /* Critical image preloading skeleton */
-        .critical-image-skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.4s ease, filter 0.3s ease;
+            will-change: opacity, filter;
         }
 
-        /* Network status indicator */
-        .network-status {
+        .lazy-image.loading {
+            opacity: 0.6;
+            filter: blur(2px);
+        }
+
+        .lazy-image.loaded {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        .lazy-image.error {
+            opacity: 0.8;
+            filter: grayscale(1);
+        }
+
+        /* Critical image styles for LCP optimization */
+        .critical-image {
+            opacity: 1 !important;
+            filter: none !important;
+            transition: none !important;
+        }
+
+        /* Image fade-in animation */
+        @keyframes imageAppear {
+            from {
+                opacity: 0;
+                transform: scale(1.02);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .lazy-image.loaded {
+            animation: imageAppear 0.4s ease-out;
+        }
+
+        /* Loading performance indicator */
+        .loading-indicator {
             position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
             padding: 8px 16px;
             border-radius: 20px;
-            color: white;
             font-size: 12px;
-            font-weight: 500;
-            z-index: 10001;
-            transition: all 0.3s ease;
+            z-index: 1000;
             opacity: 0;
-            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
 
-        .network-status.online {
-            background: #10b981;
+        .loading-indicator.visible {
             opacity: 1;
+            transform: translateY(0);
         }
 
-        .network-status.offline {
-            background: #ef4444;
-            opacity: 1;
+        /* Optimize for different screen sizes */
+        @media (max-width: 640px) {
+            .image-container {
+                background-color: #f3f4f6;
+            }
+            
+            .lazy-image {
+                transition: opacity 0.2s ease;
+            }
         }
 
-        /* Image retry button */
-        .image-retry-btn {
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
+        /* Preload animation for critical images */
+        .preload-shimmer {
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.2) 20%, 
+                rgba(255,255,255,0.5) 50%, 
+                rgba(255,255,255,0.2) 80%, 
+                rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: preloadShimmer 2s infinite;
+        }
+
+        @keyframes preloadShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Connection status indicator */
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 12px;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: background 0.3s ease;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
 
-        .image-retry-btn:hover {
-            background: rgba(220, 38, 38, 0.9);
+        .connection-status.offline {
+            background: #ef4444;
+            color: white;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .connection-status.slow {
+            background: #f59e0b;
+            color: white;
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Network Status Indicator -->
-    <div id="network-status" class="network-status">
-        <span id="network-message">Connected</span>
-    </div>
-
-    <!-- Preload Progress Bar -->
-    <div id="preload-progress" class="preload-progress hidden">
-        <div id="preload-progress-bar" class="preload-progress-bar"></div>
-    </div>
-
     <!-- Loading State -->
     <div id="loading" class="min-h-screen">
         <div class="loading-shimmer h-48 w-full"></div>
@@ -488,6 +459,19 @@
             <p class="mt-4 text-lg font-semibold">Processing your order...</p>
             <p class="text-sm text-gray-300 mt-2">Please wait while we confirm your order</p>
         </div>
+    </div>
+
+    <!-- Image Loading Indicator -->
+    <div id="image-loading-indicator" class="loading-indicator">
+        <span class="flex items-center">
+            <div class="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+            Loading images...
+        </span>
+    </div>
+
+    <!-- Connection Status -->
+    <div id="connection-status" class="connection-status">
+        <span id="connection-text">Connection lost</span>
     </div>
 
     <!-- Toast Notification -->
@@ -520,23 +504,17 @@
             <!-- Cover Image -->
             <div id="cover-section" class="h-48 gradient-bg relative overflow-hidden">
                 <div class="image-container w-full h-full">
-                    <div class="image-placeholder">
-                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="image-placeholder preload-shimmer">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
                         </svg>
                     </div>
-                    <img id="cover-image" class="lazy-image" alt="Shop Cover">
-                    <div class="image-error-state">
-                        <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
-                        </svg>
-                        <span class="text-sm text-gray-500">Cover image unavailable</span>
-                    </div>
+                    <img id="cover-image" class="lazy-image w-full h-full object-cover absolute inset-0" alt="Shop Cover">
                 </div>
                 <div class="absolute inset-0 bg-black bg-opacity-30"></div>
                 
                 <!-- Back Button -->
-                <button onclick="history.back()" class="absolute top-4 left-4 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all">
+                <button onclick="history.back()" class="absolute top-4 left-4 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all z-10">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
@@ -554,12 +532,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                             </div>
-                            <img id="profile-image" class="lazy-image" alt="Shop Logo">
-                            <div class="image-error-state">
-                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                            </div>
+                            <img id="profile-image" class="lazy-image w-full h-full object-cover absolute inset-0" alt="Shop Logo">
                         </div>
                     </div>
                     <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
@@ -891,6 +864,11 @@
     </div>
 
     <script>
+        // ====================================
+        // ADVANCED IMAGE LOADING SYSTEM 2025
+        // ====================================
+        
+        // Global variables for robust image management
         let shopData = null;
         let currentCategory = 'all';
         let currentView = 'grouped';
@@ -898,428 +876,501 @@
         let selectedOrderType = null;
         let isProcessingOrder = false;
         
-        // Enhanced image loading variables
+        // Advanced image loading system
         let imageObserver = null;
-        let loadedImages = new Set();
-        let failedImages = new Set();
         let preloadQueue = [];
-        let isPreloading = false;
-        let preloadProgress = 0;
-        let totalImagesToPreload = 0;
+        let loadedImages = new Map(); // Track loaded state with metadata
+        let failedImages = new Set();
+        let isLoadingImages = false;
+        let loadingStartTime = 0;
+        let loadingImageCount = 0;
+        let totalImageCount = 0;
+        let connectionQuality = 'unknown';
         
-        // Network status monitoring
-        let isOnline = navigator.onLine;
-        let networkQuality = 'good'; // good, slow, offline
-        
-        // Performance monitoring
-        let loadStartTime = Date.now();
-        let criticalResourcesLoaded = 0;
-        let totalCriticalResources = 0;
+        // Performance tracking
+        const performanceMetrics = {
+            imageLoadTimes: [],
+            failedLoads: 0,
+            totalLoads: 0,
+            averageLoadTime: 0
+        };
 
-        // Enhanced Image Loading System
-        class ImageLoader {
-            constructor() {
-                this.cache = new Map();
-                this.loading = new Set();
-                this.retryAttempts = new Map();
-                this.maxRetries = 3;
-                this.retryDelay = 1000;
-                this.priorityQueue = [];
-                this.backgroundQueue = [];
-                this.currentLoading = 0;
-                this.maxConcurrent = 3;
-                
-                this.initObserver();
-            }
+        // ====================================
+        // ADVANCED INTERSECTION OBSERVER SETUP
+        // ====================================
+        
+        function initAdvancedLazyLoading() {
+            // Detect connection quality for adaptive loading
+            detectConnectionQuality();
             
-            initObserver() {
-                this.observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            this.loadImageWithPriority(img, 'high');
-                            this.observer.unobserve(img);
-                        }
-                    });
-                }, {
-                    rootMargin: '100px',
-                    threshold: 0.1
+            // Set up intersection observer with optimized settings
+            const observerOptions = {
+                root: null,
+                rootMargin: getAdaptiveRootMargin(),
+                threshold: [0, 0.1, 0.5, 1.0] // Multiple thresholds for better control
+            };
+
+            imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
+                        loadImageAdvanced(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Monitor connection changes
+            if ('connection' in navigator) {
+                navigator.connection.addEventListener('change', () => {
+                    detectConnectionQuality();
+                    updateLoadingStrategy();
                 });
             }
-            
-            async loadImageWithPriority(img, priority = 'normal') {
-                const src = img.dataset.src;
-                if (!src || this.loading.has(src) || loadedImages.has(src)) return;
+
+            // Monitor online/offline status
+            window.addEventListener('online', handleOnline);
+            window.addEventListener('offline', handleOffline);
+        }
+
+        function detectConnectionQuality() {
+            if ('connection' in navigator) {
+                const connection = navigator.connection;
+                const effectiveType = connection.effectiveType;
                 
-                // Add to appropriate queue
-                const item = { img, src, priority };
-                if (priority === 'high' || priority === 'critical') {
-                    this.priorityQueue.unshift(item);
+                if (effectiveType === '4g') {
+                    connectionQuality = 'fast';
+                } else if (effectiveType === '3g') {
+                    connectionQuality = 'medium';
                 } else {
-                    this.backgroundQueue.push(item);
+                    connectionQuality = 'slow';
                 }
-                
-                this.processQueue();
+            } else {
+                // Fallback: measure load time of a small test image
+                measureConnectionSpeed();
             }
             
-            async processQueue() {
-                if (this.currentLoading >= this.maxConcurrent) return;
-                
-                const item = this.priorityQueue.shift() || this.backgroundQueue.shift();
-                if (!item) return;
-                
-                this.currentLoading++;
-                this.loading.add(item.src);
-                
-                try {
-                    await this.loadSingleImage(item);
-                } catch (error) {
-                    console.warn('Image load failed:', item.src, error);
-                } finally {
-                    this.currentLoading--;
-                    this.loading.delete(item.src);
-                    // Process next item
-                    setTimeout(() => this.processQueue(), 10);
-                }
-            }
-            
-            async loadSingleImage({ img, src, priority }) {
-                const container = img.closest('.image-container');
-                const placeholder = container?.querySelector('.image-placeholder');
-                const errorState = container?.querySelector('.image-error-state');
-                
-                // Set loading state
-                img.classList.add('loading');
-                if (placeholder) placeholder.classList.remove('hidden');
-                if (errorState) errorState.classList.remove('visible');
-                
-                try {
-                    // Create image with timeout
-                    const loadedImg = await this.createImageWithTimeout(src, 10000);
-                    
-                    // Apply progressive enhancement for high-res images
-                    if (this.shouldUseProgressive(src)) {
-                        await this.applyProgressiveLoading(img, src, loadedImg);
-                    } else {
-                        img.src = src;
-                    }
-                    
-                    // Success state
-                    img.classList.remove('loading');
-                    img.classList.add('loaded');
-                    if (placeholder) {
-                        placeholder.classList.add('hidden');
-                    }
-                    
-                    loadedImages.add(src);
-                    this.cache.set(src, loadedImg);
-                    
-                    // Update preload progress if this was a preloaded image
-                    if (priority === 'critical') {
-                        this.updatePreloadProgress();
-                    }
-                    
-                } catch (error) {
-                    await this.handleImageError(img, src, error);
-                }
-            }
-            
-            createImageWithTimeout(src, timeout = 10000) {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    let timeoutId;
-                    
-                    const cleanup = () => {
-                        clearTimeout(timeoutId);
-                        img.onload = null;
-                        img.onerror = null;
-                    };
-                    
-                    img.onload = () => {
-                        cleanup();
-                        resolve(img);
-                    };
-                    
-                    img.onerror = () => {
-                        cleanup();
-                        reject(new Error('Failed to load image'));
-                    };
-                    
-                    timeoutId = setTimeout(() => {
-                        cleanup();
-                        reject(new Error('Image load timeout'));
-                    }, timeout);
-                    
-                    img.src = src;
-                });
-            }
-            
-            shouldUseProgressive(src) {
-                // Use progressive loading for larger images
-                return src.includes('large') || src.includes('high') || 
-                       (!src.includes('thumb') && !src.includes('small'));
-            }
-            
-            async applyProgressiveLoading(img, src, loadedImg) {
-                // Create low-res version URL (if thumbnail exists)
-                const lowResSrc = src.replace(/\/(large|medium)\//, '/thumb/');
-                
-                if (lowResSrc !== src) {
-                    try {
-                        const lowResImg = await this.createImageWithTimeout(lowResSrc, 3000);
-                        
-                        // Show low-res first with blur
-                        img.src = lowResSrc;
-                        img.style.filter = 'blur(3px)';
-                        img.classList.add('loaded');
-                        
-                        // Wait a bit then load high-res
-                        setTimeout(() => {
-                            img.src = src;
-                            img.style.filter = 'blur(0)';
-                        }, 200);
-                        
-                    } catch {
-                        // Fallback to regular loading
-                        img.src = src;
-                    }
+            updateConnectionStatus();
+        }
+
+        function measureConnectionSpeed() {
+            const start = performance.now();
+            const testImage = new Image();
+            testImage.onload = () => {
+                const loadTime = performance.now() - start;
+                if (loadTime < 500) {
+                    connectionQuality = 'fast';
+                } else if (loadTime < 1500) {
+                    connectionQuality = 'medium';
                 } else {
-                    img.src = src;
+                    connectionQuality = 'slow';
                 }
-            }
-            
-            async handleImageError(img, src, error) {
-                const retryCount = this.retryAttempts.get(src) || 0;
-                
-                if (retryCount < this.maxRetries && isOnline) {
-                    // Retry with exponential backoff
-                    this.retryAttempts.set(src, retryCount + 1);
-                    const delay = this.retryDelay * Math.pow(2, retryCount);
-                    
-                    setTimeout(() => {
-                        this.loadImageWithPriority(img, 'retry');
-                    }, delay);
-                    
-                    return;
-                }
-                
-                // Show error state
-                const container = img.closest('.image-container');
-                const placeholder = container?.querySelector('.image-placeholder');
-                const errorState = container?.querySelector('.image-error-state');
-                
-                img.classList.remove('loading');
-                img.classList.add('error');
-                
-                if (placeholder) placeholder.classList.add('hidden');
-                if (errorState) {
-                    errorState.classList.add('visible');
-                    // Add retry button for manual retry
-                    if (!errorState.querySelector('.image-retry-btn')) {
-                        const retryBtn = document.createElement('button');
-                        retryBtn.className = 'image-retry-btn';
-                        retryBtn.textContent = 'Retry';
-                        retryBtn.onclick = () => {
-                            this.retryAttempts.delete(src);
-                            errorState.classList.remove('visible');
-                            this.loadImageWithPriority(img, 'high');
-                        };
-                        errorState.appendChild(retryBtn);
-                    }
-                }
-                
-                failedImages.add(src);
-            }
-            
-            updatePreloadProgress() {
-                criticalResourcesLoaded++;
-                const progress = Math.min((criticalResourcesLoaded / totalCriticalResources) * 100, 100);
-                
-                const progressBar = document.getElementById('preload-progress-bar');
-                if (progressBar) {
-                    progressBar.style.width = `${progress}%`;
-                }
-                
-                if (progress >= 100) {
-                    setTimeout(() => {
-                        const progressContainer = document.getElementById('preload-progress');
-                        if (progressContainer) {
-                            progressContainer.classList.add('hidden');
-                        }
-                    }, 500);
-                }
-            }
-            
-            preloadCriticalImages(urls) {
-                if (!urls || urls.length === 0) return;
-                
-                totalCriticalResources = urls.length;
-                const progressContainer = document.getElementById('preload-progress');
-                if (progressContainer) {
-                    progressContainer.classList.remove('hidden');
-                }
-                
-                urls.forEach(url => {
-                    if (url && !loadedImages.has(url)) {
-                        const img = new Image();
-                        img.dataset.src = url;
-                        this.loadImageWithPriority(img, 'critical');
-                    }
-                });
-            }
-            
-            observeImage(img) {
-                if (this.observer && img) {
-                    this.observer.observe(img);
-                }
-            }
-            
-            disconnect() {
-                if (this.observer) {
-                    this.observer.disconnect();
-                }
-                this.cache.clear();
-                this.loading.clear();
-                this.retryAttempts.clear();
-                this.priorityQueue = [];
-                this.backgroundQueue = [];
+                updateConnectionStatus();
+            };
+            testImage.onerror = () => {
+                connectionQuality = 'slow';
+                updateConnectionStatus();
+            };
+            // Use a small 1x1 pixel image for testing
+            testImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        }
+
+        function getAdaptiveRootMargin() {
+            switch (connectionQuality) {
+                case 'fast':
+                    return '400px'; // Aggressive preloading for fast connections
+                case 'medium':
+                    return '200px'; // Moderate preloading
+                case 'slow':
+                    return '50px';  // Conservative preloading
+                default:
+                    return '150px'; // Default
             }
         }
 
-        // Initialize image loader
-        const imageLoader = new ImageLoader();
-
-        // Network monitoring
-        function initNetworkMonitoring() {
-            const networkStatus = document.getElementById('network-status');
-            const networkMessage = document.getElementById('network-message');
-
-            function updateNetworkStatus() {
-                if (navigator.onLine) {
-                    isOnline = true;
-                    networkStatus.className = 'network-status online';
-                    networkMessage.textContent = 'Connected';
-                    
-                    // Hide after 2 seconds
-                    setTimeout(() => {
-                        networkStatus.classList.remove('online');
-                    }, 2000);
-                    
-                    // Retry failed images
-                    retryFailedImages();
-                } else {
-                    isOnline = false;
-                    networkStatus.className = 'network-status offline';
-                    networkMessage.textContent = 'No Internet Connection';
-                }
-            }
-
-            window.addEventListener('online', updateNetworkStatus);
-            window.addEventListener('offline', updateNetworkStatus);
-            
-            // Check connection quality
-            if ('connection' in navigator) {
-                const connection = navigator.connection;
-                connection.addEventListener('change', () => {
-                    networkQuality = connection.effectiveType === '4g' ? 'good' : 
-                                   connection.effectiveType === '3g' ? 'medium' : 'slow';
-                    
-                    // Adjust concurrent loading based on network quality
-                    imageLoader.maxConcurrent = networkQuality === 'good' ? 6 : 
-                                               networkQuality === 'medium' ? 3 : 1;
+        function updateLoadingStrategy() {
+            // Update observer with new root margin
+            if (imageObserver) {
+                imageObserver.disconnect();
+                initAdvancedLazyLoading();
+                
+                // Re-observe all unloaded images
+                document.querySelectorAll('.lazy-image:not(.loaded):not(.error)').forEach(img => {
+                    imageObserver.observe(img);
                 });
             }
+        }
+
+        // ====================================
+        // ADVANCED IMAGE LOADING FUNCTIONS
+        // ====================================
+        
+        function loadImageAdvanced(img) {
+            if (!img.dataset.src || loadedImages.has(img.dataset.src)) {
+                return;
+            }
+
+            const imageUrl = img.dataset.src;
+            const startTime = performance.now();
+            
+            // Mark as loading
+            img.classList.add('loading');
+            loadedImages.set(imageUrl, { status: 'loading', startTime });
+            
+            showImageLoadingIndicator();
+            loadingImageCount++;
+            
+            // Create image with advanced error handling
+            const tempImage = new Image();
+            
+            // Set up timeout for slow connections
+            const timeout = setTimeout(() => {
+                handleImageTimeout(img, imageUrl, tempImage);
+            }, getTimeoutDuration());
+            
+            tempImage.onload = function() {
+                clearTimeout(timeout);
+                handleImageSuccess(img, imageUrl, tempImage, startTime);
+            };
+            
+            tempImage.onerror = function() {
+                clearTimeout(timeout);
+                handleImageError(img, imageUrl, startTime);
+            };
+            
+            // Add loading attribute for browser optimization
+            tempImage.loading = 'eager';
+            tempImage.decoding = 'async';
+            
+            // Set source to start loading
+            tempImage.src = imageUrl;
+        }
+
+        function handleImageSuccess(img, imageUrl, tempImage, startTime) {
+            const loadTime = performance.now() - startTime;
+            
+            // Update performance metrics
+            performanceMetrics.imageLoadTimes.push(loadTime);
+            performanceMetrics.totalLoads++;
+            performanceMetrics.averageLoadTime = 
+                performanceMetrics.imageLoadTimes.reduce((a, b) => a + b, 0) / 
+                performanceMetrics.imageLoadTimes.length;
+            
+            // Update image
+            img.src = imageUrl;
+            img.classList.remove('loading');
+            img.classList.add('loaded');
+            
+            // Update tracking
+            loadedImages.set(imageUrl, { 
+                status: 'loaded', 
+                loadTime,
+                timestamp: Date.now()
+            });
+            
+            // Remove placeholder
+            const placeholder = img.parentElement?.querySelector('.image-placeholder');
+            if (placeholder) {
+                placeholder.style.opacity = '0';
+                setTimeout(() => {
+                    placeholder?.remove();
+                }, 300);
+            }
+            
+            loadingImageCount--;
+            if (loadingImageCount === 0) {
+                hideImageLoadingIndicator();
+            }
+        }
+
+        function handleImageError(img, imageUrl, startTime) {
+            performanceMetrics.failedLoads++;
+            performanceMetrics.totalLoads++;
+            
+            // Mark as failed
+            failedImages.add(imageUrl);
+            loadedImages.set(imageUrl, { 
+                status: 'error', 
+                loadTime: performance.now() - startTime,
+                timestamp: Date.now()
+            });
+            
+            img.classList.remove('loading');
+            img.classList.add('error');
+            
+            // Set fallback image with better error handling
+            img.src = createFallbackImage();
+            
+            // Keep placeholder visible but change style
+            const placeholder = img.parentElement?.querySelector('.image-placeholder');
+            if (placeholder) {
+                placeholder.innerHTML = `
+                    <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                `;
+            }
+            
+            loadingImageCount--;
+            if (loadingImageCount === 0) {
+                hideImageLoadingIndicator();
+            }
+            
+            // Retry mechanism for critical images
+            if (img.classList.contains('critical-image') && !img.dataset.retried) {
+                img.dataset.retried = 'true';
+                setTimeout(() => {
+                    if (img.dataset.fallbackSrc) {
+                        img.dataset.src = img.dataset.fallbackSrc;
+                        loadImageAdvanced(img);
+                    }
+                }, 2000);
+            }
+        }
+
+        function handleImageTimeout(img, imageUrl, tempImage) {
+            console.warn(`Image load timeout: ${imageUrl}`);
+            
+            // Cancel the image load
+            tempImage.src = '';
+            
+            // Treat as error
+            handleImageError(img, imageUrl, performance.now());
+        }
+
+        function getTimeoutDuration() {
+            switch (connectionQuality) {
+                case 'fast': return 5000;   // 5 seconds for fast connections
+                case 'medium': return 8000; // 8 seconds for medium connections
+                case 'slow': return 12000;  // 12 seconds for slow connections
+                default: return 7000;       // 7 seconds default
+            }
+        }
+
+        function createFallbackImage() {
+            // Create a simple SVG placeholder as a data URL
+            const svg = `
+                <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" fill="#f3f4f6"/>
+                    <path d="M30 35h40v30H30z" fill="#e5e7eb"/>
+                    <circle cx="40" cy="45" r="3" fill="#9ca3af"/>
+                    <path d="M30 55l8-8 4 4 8-8 20 16v6H30z" fill="#9ca3af"/>
+                </svg>
+            `;
+            return `data:image/svg+xml;base64,${btoa(svg)}`;
+        }
+
+        // ====================================
+        // CRITICAL IMAGE PRELOADING SYSTEM
+        // ====================================
+        
+        function preloadCriticalImages(shopData) {
+            if (!shopData) return;
+            
+            const criticalImages = [];
+            
+            // Add shop profile and cover images (highest priority)
+            if (shopData.shop.profileImage) {
+                criticalImages.push({
+                    url: shopData.shop.profileImage,
+                    priority: 'high',
+                    element: 'profile-image'
+                });
+            }
+            
+            if (shopData.shop.coverImage) {
+                criticalImages.push({
+                    url: shopData.shop.coverImage,
+                    priority: 'high',
+                    element: 'cover-image'
+                });
+            }
+            
+            // Add first few product images (medium priority)
+            if (shopData.products && shopData.products.length > 0) {
+                shopData.products.slice(0, 6).forEach((product, index) => {
+                    const media = product.media && product.media.length > 0 ? product.media[0] : null;
+                    if (media) {
+                        const imageUrl = media.thumbnailUrl || media.url;
+                        if (imageUrl) {
+                            criticalImages.push({
+                                url: imageUrl,
+                                priority: index < 3 ? 'medium' : 'low',
+                                element: `product-${product.id}`
+                            });
+                        }
+                    }
+                });
+            }
+            
+            // Preload using different strategies
+            preloadImagesWithStrategy(criticalImages);
+        }
+
+        function preloadImagesWithStrategy(images) {
+            const highPriorityImages = images.filter(img => img.priority === 'high');
+            const mediumPriorityImages = images.filter(img => img.priority === 'medium');
+            const lowPriorityImages = images.filter(img => img.priority === 'low');
+            
+            // Preload high priority images immediately using link preload
+            highPriorityImages.forEach(img => {
+                preloadWithLinkTag(img.url, 'high');
+            });
+            
+            // Preload medium priority after a short delay
+            setTimeout(() => {
+                mediumPriorityImages.forEach(img => {
+                    preloadWithImageObject(img.url);
+                });
+            }, 100);
+            
+            // Preload low priority after page is stable
+            setTimeout(() => {
+                if (connectionQuality !== 'slow') {
+                    lowPriorityImages.forEach(img => {
+                        preloadWithImageObject(img.url);
+                    });
+                }
+            }, 1000);
+        }
+
+        function preloadWithLinkTag(url, priority = 'low') {
+            // Check if already preloaded
+            if (document.querySelector(`link[href="${url}"]`)) {
+                return;
+            }
+            
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = url;
+            
+            if (priority === 'high') {
+                link.fetchPriority = 'high';
+            }
+            
+            link.onload = () => {
+                loadedImages.set(url, { 
+                    status: 'preloaded', 
+                    method: 'link',
+                    timestamp: Date.now()
+                });
+            };
+            
+            link.onerror = () => {
+                failedImages.add(url);
+            };
+            
+            document.head.appendChild(link);
+        }
+
+        function preloadWithImageObject(url) {
+            if (loadedImages.has(url) || failedImages.has(url)) {
+                return;
+            }
+            
+            const img = new Image();
+            img.onload = () => {
+                loadedImages.set(url, { 
+                    status: 'preloaded', 
+                    method: 'object',
+                    timestamp: Date.now()
+                });
+            };
+            
+            img.onerror = () => {
+                failedImages.add(url);
+            };
+            
+            img.src = url;
+        }
+
+        // ====================================
+        // CONNECTION STATUS MANAGEMENT
+        // ====================================
+        
+        function updateConnectionStatus() {
+            const statusEl = document.getElementById('connection-status');
+            const textEl = document.getElementById('connection-text');
+            
+            if (connectionQuality === 'slow') {
+                statusEl.className = 'connection-status slow';
+                textEl.textContent = 'Slow connection detected';
+            } else {
+                statusEl.className = 'connection-status';
+            }
+        }
+
+        function handleOnline() {
+            const statusEl = document.getElementById('connection-status');
+            statusEl.className = 'connection-status';
+            
+            // Retry failed images
+            retryFailedImages();
+            
+            showToast('Connection Restored', 'You are back online', 'success');
+        }
+
+        function handleOffline() {
+            const statusEl = document.getElementById('connection-status');
+            const textEl = document.getElementById('connection-text');
+            
+            statusEl.className = 'connection-status offline';
+            textEl.textContent = 'You are offline';
+            
+            showToast('Connection Lost', 'Please check your internet connection', 'error');
         }
 
         function retryFailedImages() {
-            const failedImageElements = document.querySelectorAll('.lazy-image.error');
-            failedImageElements.forEach(img => {
-                const src = img.dataset.src;
-                if (src && failedImages.has(src)) {
-                    failedImages.delete(src);
-                    imageLoader.retryAttempts.delete(src);
-                    img.classList.remove('error');
-                    imageLoader.loadImageWithPriority(img, 'retry');
-                }
+            if (failedImages.size === 0) return;
+            
+            const failedUrls = Array.from(failedImages);
+            failedImages.clear();
+            
+            // Retry failed images with a delay
+            failedUrls.forEach((url, index) => {
+                setTimeout(() => {
+                    const imgElements = document.querySelectorAll(`img[data-src="${url}"]`);
+                    imgElements.forEach(img => {
+                        if (!img.classList.contains('loaded')) {
+                            loadImageAdvanced(img);
+                        }
+                    });
+                }, index * 500); // Stagger retries
             });
         }
 
-        // Device and platform detection
-        function getDeviceInfo() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            const platform = navigator.platform.toLowerCase();
-            
-            return {
-                isIOS: /ipad|iphone|ipod/.test(userAgent) || (platform === 'macintel' && navigator.maxTouchPoints > 1),
-                isAndroid: /android/.test(userAgent),
-                isMobile: /mobile|tablet|ipad|iphone|ipod/.test(userAgent) || window.innerWidth < 768,
-                isDesktop: !/mobile|tablet|ipad|iphone|ipod/.test(userAgent) && window.innerWidth >= 768
-            };
-        }
-
-        // Enhanced toast notification system
-        function showToast(title, message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastIcon = document.getElementById('toast-icon');
-            const toastTitle = document.getElementById('toast-title');
-            const toastMessage = document.getElementById('toast-message');
-            
-            // Set icon based on type
-            if (type === 'success') {
-                toastIcon.innerHTML = '<div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>';
-            } else if (type === 'error') {
-                toastIcon.innerHTML = '<div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></div>';
-            } else if (type === 'info') {
-                toastIcon.innerHTML = '<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>';
-            }
-            
-            toastTitle.textContent = title;
-            toastMessage.textContent = message;
-            
-            toast.classList.remove('hidden');
-            toast.classList.add('show');
-            
-            // Auto hide after 4 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    toast.classList.add('hidden');
-                }, 300);
-            }, 4000);
-        }
-
-        // Loading overlay functions
-        function showLoadingOverlay() {
-            document.getElementById('order-loading').classList.remove('hidden');
-        }
-
-        function hideLoadingOverlay() {
-            document.getElementById('order-loading').classList.add('hidden');
-        }
-
-        // Set button loading state
-        function setButtonLoading(buttonId, isLoading) {
-            const button = document.getElementById(buttonId);
-            const btnText = button.querySelector('.btn-text');
-            const spinner = button.querySelector('.loading-spinner');
-            
-            if (isLoading) {
-                button.classList.add('btn-loading');
-                btnText.classList.add('hidden');
-                spinner.classList.remove('hidden');
-            } else {
-                button.classList.remove('btn-loading');
-                btnText.classList.remove('hidden');
-                spinner.classList.add('hidden');
+        // ====================================
+        // UI INDICATOR FUNCTIONS
+        // ====================================
+        
+        function showImageLoadingIndicator() {
+            if (loadingImageCount === 1) { // Only show on first image
+                const indicator = document.getElementById('image-loading-indicator');
+                indicator.classList.add('visible');
+                loadingStartTime = performance.now();
             }
         }
 
-        // Enhanced shop data loading with preloading
+        function hideImageLoadingIndicator() {
+            const indicator = document.getElementById('image-loading-indicator');
+            indicator.classList.remove('visible');
+            
+            // Log performance metrics
+            if (loadingStartTime > 0) {
+                const totalLoadTime = performance.now() - loadingStartTime;
+                console.log(`Images loaded in ${totalLoadTime.toFixed(2)}ms`);
+                loadingStartTime = 0;
+            }
+        }
+
+        // ====================================
+        // SHOP DATA LOADING WITH PRELOADING
+        // ====================================
+        
         async function loadShopData() {
             const urlParams = new URLSearchParams(window.location.search);
             
             try {
-                // Get parameters from URL
                 const type = urlParams.get('type');
                 const shopId = urlParams.get('shopId');
                 const postId = urlParams.get('postId');
@@ -1329,13 +1380,11 @@
                     return;
                 }
 
-                // Validate UUID format
                 if (!isValidUUID(shopId) || (postId && !isValidUUID(postId))) {
                     showError();
                     return;
                 }
 
-                // Build API URL
                 let apiUrl = `https://rtwtkapynafirwixyeal.supabase.co/functions/v1/web-shopView?type=${type}&shopId=${shopId}`;
                 if (postId) {
                     apiUrl += `&postId=${postId}`;
@@ -1354,9 +1403,10 @@
                     return;
                 }
                 
-                // Preload critical images
-                await preloadCriticalImages();
+                // Start preloading critical images immediately
+                preloadCriticalImages(shopData);
                 
+                // Render shop profile
                 renderShopProfile();
                 hideLoading();
                 
@@ -1366,44 +1416,69 @@
             }
         }
 
-        // Preload critical images for better UX
-        async function preloadCriticalImages() {
-            if (!shopData) return;
-            
-            const criticalImages = [];
-            
-            // Add shop images
-            if (shopData.shop.profileImage) {
-                criticalImages.push(shopData.shop.profileImage);
-            }
-            if (shopData.shop.coverImage) {
-                criticalImages.push(shopData.shop.coverImage);
-            }
-            
-            // Add first few product images (visible above fold)
-            if (shopData.products && shopData.products.length > 0) {
-                const firstProducts = shopData.products.slice(0, 6);
-                firstProducts.forEach(product => {
-                    if (product.media && product.media.length > 0) {
-                        const media = product.media[0];
-                        const imageUrl = media.thumbnailUrl || media.url;
-                        if (imageUrl) {
-                            criticalImages.push(imageUrl);
-                        }
-                    }
-                });
-            }
-            
-            // Start preloading
-            if (criticalImages.length > 0) {
-                imageLoader.preloadCriticalImages(criticalImages);
-            }
-        }
-
-        // Validate UUID format
         function isValidUUID(uuid) {
             const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
             return uuidPattern.test(uuid);
+        }
+
+        // ====================================
+        // ENHANCED PRODUCT RENDERING
+        // ====================================
+        
+        function renderShopProfile() {
+            const { shop, products = [], discounts = [], subcategories = [], stats } = shopData;
+
+            document.title = `${shop.name} - Knoc`;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
+
+            // Set critical images with enhanced loading
+            if (shop.coverImage) {
+                const coverImg = document.getElementById('cover-image');
+                coverImg.dataset.src = shop.coverImage;
+                coverImg.classList.add('critical-image');
+                
+                // If already preloaded, set immediately
+                if (loadedImages.has(shop.coverImage)) {
+                    coverImg.src = shop.coverImage;
+                    coverImg.classList.add('loaded');
+                } else {
+                    // Otherwise load with advanced system
+                    loadImageAdvanced(coverImg);
+                }
+            }
+
+            const profileImg = document.getElementById('profile-image');
+            const profileImageUrl = shop.profileImage || 'https://www.knoc.in/knoc_logo.png';
+            profileImg.dataset.src = profileImageUrl;
+            profileImg.classList.add('critical-image');
+            
+            if (loadedImages.has(profileImageUrl)) {
+                profileImg.src = profileImageUrl;
+                profileImg.classList.add('loaded');
+            } else {
+                loadImageAdvanced(profileImg);
+            }
+
+            // Update shop info
+            document.getElementById('shop-name').textContent = shop.name;
+            document.getElementById('shop-description').textContent = shop.description || 'Welcome to our shop!';
+            document.getElementById('shop-rating').textContent = (shop.rating || 4.5).toFixed(1);
+            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount || 0);
+            document.getElementById('product-count').textContent = formatNumber(stats?.totalProducts || products.length);
+
+            if (shop.verifiedAt) {
+                document.getElementById('verified-badge').classList.remove('hidden');
+            }
+
+            // Show promotion banner if discounts available
+            if (discounts.length > 0) {
+                showPromotionBanner(discounts[0]);
+            }
+
+            // Render categories and products
+            renderCategories(subcategories);
+            renderProducts(products);
         }
 
         // Group products by subcategory
@@ -1434,7 +1509,254 @@
             return productName && productName.trim() !== '' && price && price > 0;
         }
 
-        // Add item to order
+        // Show promotion banner
+        function showPromotionBanner(discount) {
+            const banner = document.getElementById('promotion-banner');
+            document.getElementById('promotion-title').textContent = discount.title || 'Special Offer';
+            document.getElementById('promotion-description').textContent = discount.description || '';
+            
+            if (discount.discount_percent) {
+                document.getElementById('promotion-percent').textContent = `${Math.round(discount.discount_percent)}%`;
+            }
+            
+            banner.classList.remove('hidden');
+        }
+
+        // Render categories
+        function renderCategories(subcategories) {
+            const container = document.getElementById('categories-container');
+            const allButton = container.querySelector('[data-category="all"]');
+            container.innerHTML = '';
+            container.appendChild(allButton);
+            
+            subcategories.forEach(sub => {
+                const productCount = shopData.products.filter(p => p.subcategoryId === sub.id).length;
+                if (productCount > 0) {
+                    const button = document.createElement('button');
+                    button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
+                    button.textContent = `${sub.name} (${productCount})`;
+                    button.dataset.category = sub.id;
+                    button.onclick = () => filterProducts(sub.id);
+                    container.appendChild(button);
+                }
+            });
+            
+            const uncategorizedCount = shopData.products.filter(p => !p.subcategoryId).length;
+            if (uncategorizedCount > 0) {
+                const button = document.createElement('button');
+                button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
+                button.textContent = `Other (${uncategorizedCount})`;
+                button.dataset.category = 'uncategorized';
+                button.onclick = () => filterProducts('uncategorized');
+                container.appendChild(button);
+            }
+            
+            allButton.textContent = `All Products (${shopData.products.length})`;
+        }
+
+        // Enhanced product rendering with optimized lazy loading
+        function renderProducts(products) {
+            const container = document.getElementById('products-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            container.innerHTML = '';
+            totalImageCount = 0;
+            
+            if (products.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            if (currentView === 'grouped' && currentCategory === 'all') {
+                renderGroupedProducts(products, container);
+            } else {
+                renderGridProducts(products, container);
+            }
+
+            // Set up lazy loading for all images after rendering
+            setTimeout(() => {
+                const lazyImages = container.querySelectorAll('.lazy-image:not(.loaded)');
+                totalImageCount = lazyImages.length;
+                
+                lazyImages.forEach((img, index) => {
+                    // Mark first few images as higher priority
+                    if (index < 6) {
+                        img.classList.add('priority');
+                    }
+                    
+                    if (imageObserver) {
+                        imageObserver.observe(img);
+                    }
+                });
+            }, 100);
+        }
+
+        // Render grouped products
+        function renderGroupedProducts(products, container) {
+            const { grouped, uncategorized } = groupProductsBySubcategory(products);
+            
+            container.className = 'space-y-8';
+            
+            Object.entries(grouped).forEach(([categoryName, categoryProducts]) => {
+                const categorySection = document.createElement('div');
+                categorySection.className = 'category-section';
+                categorySection.innerHTML = `
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-900">${categoryName}</h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${categoryProducts.length} products</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-${categoryName.replace(/\s+/g, '-')}">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(categorySection);
+                
+                const categoryGrid = categorySection.querySelector(`#category-${categoryName.replace(/\s+/g, '-')}`);
+                categoryProducts.forEach(product => {
+                    const productCard = createAdvancedProductCard(product);
+                    categoryGrid.appendChild(productCard);
+                });
+            });
+            
+            if (uncategorized.length > 0) {
+                const uncategorizedSection = document.createElement('div');
+                uncategorizedSection.className = 'category-section';
+                uncategorizedSection.innerHTML = `
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-900">Other Products</h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${uncategorized.length} products</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-uncategorized">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(uncategorizedSection);
+                
+                const uncategorizedGrid = uncategorizedSection.querySelector('#category-uncategorized');
+                uncategorized.forEach(product => {
+                    const productCard = createAdvancedProductCard(product);
+                    uncategorizedGrid.appendChild(productCard);
+                });
+            }
+        }
+
+        // Render grid products
+        function renderGridProducts(products, container) {
+            container.className = 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4';
+            
+            products.forEach(product => {
+                const productCard = createAdvancedProductCard(product);
+                container.appendChild(productCard);
+            });
+        }
+
+        // Create advanced product card with optimized image loading
+        function createAdvancedProductCard(product) {
+            const { metadata = {} } = product;
+            const media = product.media && product.media.length > 0 ? product.media[0] : null;
+            const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
+            
+            const productName = metadata.product_name || product.content || '';
+            const originalPrice = metadata.price;
+            const discountedPrice = metadata.discounted_price;
+            const displayPrice = discountedPrice || originalPrice;
+            
+            const isOrderable = canOrderProduct(product);
+            const hasDiscount = discountedPrice && originalPrice && discountedPrice < originalPrice;
+            const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
+
+            const card = document.createElement('div');
+            card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden relative';
+            
+            // Create optimized image container
+            let imageHTML = '';
+            if (imageUrl) {
+                // Check if image is already loaded/preloaded
+                const isPreloaded = loadedImages.has(imageUrl);
+                const imageClass = isPreloaded ? 'lazy-image loaded' : 'lazy-image';
+                
+                imageHTML = `
+                    <div class="image-container relative aspect-square bg-gray-100">
+                        <div class="image-placeholder ${isPreloaded ? 'hidden' : ''}">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
+                            </svg>
+                        </div>
+                        <img ${isPreloaded ? `src="${imageUrl}"` : `data-src="${imageUrl}"`}
+                             alt="${productName}" 
+                             class="${imageClass} w-full h-full object-cover absolute inset-0"
+                             loading="lazy"
+                             decoding="async">
+                        ${hasDiscount ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10">
+                                ${discountPercent}% OFF
+                            </div>
+                        ` : ''}
+                        <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center z-10">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                `;
+            } else {
+                imageHTML = `
+                    <div class="relative aspect-square bg-gray-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
+                        </svg>
+                        ${hasDiscount ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                                ${discountPercent}% OFF
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            card.innerHTML = `
+                ${imageHTML}
+                
+                <div class="p-3">
+                    <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${productName || 'Product Name Not Available'}</h3>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            ${isOrderable ? `
+                                <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
+                                ${hasDiscount ? `
+                                    <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
+                                ` : ''}
+                            ` : `
+                                <span class="text-gray-400 text-sm">Price not available</span>
+                            `}
+                        </div>
+                        ${isOrderable ? `
+                            <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium ripple">
+                                Add
+                            </button>
+                        ` : `
+                            <button disabled class="bg-gray-300 text-gray-500 px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed">
+                                Unavailable
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // ====================================
+        // ORDER MANAGEMENT FUNCTIONS
+        // ====================================
+        
         function addToOrder(product) {
             if (!canOrderProduct(product)) {
                 return;
@@ -1465,7 +1787,6 @@
             showToast('Added to Cart', `${productName} added to your order`, 'success');
         }
 
-        // Remove item from order
         function removeFromOrder(productId) {
             const index = orderList.findIndex(item => item.id === productId);
             if (index !== -1) {
@@ -1480,7 +1801,6 @@
             }
         }
 
-        // Update order UI elements
         function updateOrderUI() {
             const orderCount = orderList.reduce((total, item) => total + item.quantity, 0);
             const floatingCart = document.getElementById('floating-cart');
@@ -1500,7 +1820,6 @@
             updateOrderModal();
         }
 
-        // Update order modal content
         function updateOrderModal() {
             const orderListEl = document.getElementById('order-list');
             const orderEmpty = document.getElementById('order-empty');
@@ -1536,7 +1855,7 @@
                             <span class="font-bold text-gray-900 min-w-[20px] text-center">${item.quantity}</span>
                             <button onclick="addToOrderFromModal('${item.id}')" class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m0-6H6"></path>
                                 </svg>
                             </button>
                         </div>
@@ -1545,7 +1864,6 @@
             `).join('');
         }
 
-        // Add to order from modal
         function addToOrderFromModal(productId) {
             const product = shopData.products.find(p => p.id === productId);
             if (product) {
@@ -1553,7 +1871,59 @@
             }
         }
 
-        // Modal functions
+        // Filter products by category
+        function filterProducts(categoryId) {
+            currentCategory = categoryId;
+            
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                if (chip.dataset.category === categoryId) {
+                    chip.className = 'category-chip bg-red-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap font-medium';
+                } else {
+                    chip.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
+                }
+            });
+
+            let filteredProducts;
+            if (categoryId === 'all') {
+                filteredProducts = shopData.products;
+            } else if (categoryId === 'uncategorized') {
+                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
+            } else {
+                filteredProducts = shopData.products.filter(p => p.subcategoryId === categoryId);
+            }
+            
+            renderProducts(filteredProducts);
+        }
+
+        // Toggle view
+        function toggleView(viewType) {
+            currentView = viewType;
+            
+            document.querySelectorAll('.view-toggle').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-gray-600');
+            });
+            
+            const activeBtn = document.getElementById(`view-${viewType}`);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-gray-600');
+            
+            let filteredProducts;
+            if (currentCategory === 'all') {
+                filteredProducts = shopData.products;
+            } else if (currentCategory === 'uncategorized') {
+                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
+            } else {
+                filteredProducts = shopData.products.filter(p => p.subcategoryId === currentCategory);
+            }
+            
+            renderProducts(filteredProducts);
+        }
+
+        // ====================================
+        // MODAL MANAGEMENT FUNCTIONS
+        // ====================================
+        
         function openOrderModal() {
             document.getElementById('order-modal').classList.remove('hidden');
             updateOrderModal();
@@ -1606,12 +1976,26 @@
             document.getElementById('address-modal').classList.add('hidden');
         }
 
-        // Enhanced WhatsApp link generation with cross-platform support
+        // ====================================
+        // ORDER PROCESSING FUNCTIONS
+        // ====================================
+
+        function getDeviceInfo() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+            
+            return {
+                isIOS: /ipad|iphone|ipod/.test(userAgent) || (platform === 'macintel' && navigator.maxTouchPoints > 1),
+                isAndroid: /android/.test(userAgent),
+                isMobile: /mobile|tablet|ipad|iphone|ipod/.test(userAgent) || window.innerWidth < 768,
+                isDesktop: !/mobile|tablet|ipad|iphone|ipod/.test(userAgent) && window.innerWidth >= 768
+            };
+        }
+
         function generateWhatsAppLink(phoneNumber, message) {
             const deviceInfo = getDeviceInfo();
             const encodedMessage = encodeURIComponent(message);
             
-            // Clean phone number
             const cleanPhone = phoneNumber.replace(/[^\d+]/g, '');
             let formattedPhone;
             
@@ -1625,7 +2009,6 @@
                 formattedPhone = cleanPhone;
             }
             
-            // Generate appropriate URL based on device
             if (deviceInfo.isIOS) {
                 return `whatsapp://send?phone=${formattedPhone}&text=${encodedMessage}`;
             } else {
@@ -1633,7 +2016,6 @@
             }
         }
 
-        // Open WhatsApp with fallback
         function openWhatsApp(url, fallbackMessage) {
             const deviceInfo = getDeviceInfo();
             
@@ -1659,7 +2041,6 @@
             }
         }
 
-        // Generate concise WhatsApp message for delivery orders
         function generateDeliveryOrderMessage(orderData) {
             const shopName = shopData.shop.name;
             
@@ -1686,7 +2067,6 @@
             return message;
         }
 
-        // Order confirmation functions
         async function confirmDineInOrder() {
             if (isProcessingOrder) return;
             
@@ -1730,12 +2110,10 @@
                     hideLoadingOverlay();
                     showToast('Order Confirmed!', 'Your dine-in order has been placed successfully. The restaurant will prepare your order.', 'success');
                     
-                    // Reset form and order
                     orderList = [];
                     updateOrderUI();
                     closeTableModal();
                     
-                    // Clear form
                     document.getElementById('table-number').value = '';
                     document.getElementById('order-notes').value = '';
                 } else {
@@ -1783,7 +2161,6 @@
             };
 
             try {
-                // Send API request in background
                 fetch('https://rtwtkapynafirwixyeal.supabase.co/functions/v1/Food-AddItem', {
                     method: 'POST',
                     headers: {
@@ -1794,7 +2171,6 @@
                     console.error('Background API error:', error);
                 });
                 
-                // Generate WhatsApp message and send immediately
                 const message = generateDeliveryOrderMessage(orderData);
                 const shopContact = shopData.shop.contact?.phone;
                 
@@ -1807,12 +2183,10 @@
                         hideLoadingOverlay();
                         showToast('Order Sent!', 'Your delivery order has been sent via WhatsApp. Please check your WhatsApp for confirmation.', 'success');
                         
-                        // Reset form and order
                         orderList = [];
                         updateOrderUI();
                         closeAddressModal();
                         
-                        // Clear form
                         document.getElementById('delivery-address').value = '';
                         document.getElementById('customer-phone').value = '';
                         document.getElementById('delivery-notes').value = '';
@@ -1835,344 +2209,62 @@
             }
         }
 
-        // Enhanced render shop profile with critical image handling
-        function renderShopProfile() {
-            const { shop, products = [], discounts = [], subcategories = [], stats } = shopData;
+        // ====================================
+        // UI UTILITY FUNCTIONS
+        // ====================================
 
-            document.title = `${shop.name} - Knoc`;
-            const metaDesc = document.querySelector('meta[name="description"]');
-            metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
-
-            // Set critical images with enhanced loading
-            const coverImg = document.getElementById('cover-image');
-            const profileImg = document.getElementById('profile-image');
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
             
-            if (shop.coverImage) {
-                coverImg.dataset.src = shop.coverImage;
-                imageLoader.loadImageWithPriority(coverImg, 'critical');
-            }
-
-            if (shop.profileImage) {
-                profileImg.dataset.src = shop.profileImage;
-                imageLoader.loadImageWithPriority(profileImg, 'critical');
-            } else {
-                profileImg.dataset.src = 'https://www.knoc.in/knoc_logo.png';
-                imageLoader.loadImageWithPriority(profileImg, 'critical');
-            }
-
-            // Update shop info
-            document.getElementById('shop-name').textContent = shop.name;
-            document.getElementById('shop-description').textContent = shop.description || 'Welcome to our shop!';
-            document.getElementById('shop-rating').textContent = (shop.rating || 4.5).toFixed(1);
-            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount || 0);
-            document.getElementById('product-count').textContent = formatNumber(stats?.totalProducts || products.length);
-
-            if (shop.verifiedAt) {
-                document.getElementById('verified-badge').classList.remove('hidden');
-            }
-
-            // Show promotion banner if discounts available
-            if (discounts.length > 0) {
-                showPromotionBanner(discounts[0]);
-            }
-
-            // Render categories and products
-            renderCategories(subcategories);
-            renderProducts(products);
-        }
-
-        // Show promotion banner
-        function showPromotionBanner(discount) {
-            const banner = document.getElementById('promotion-banner');
-            document.getElementById('promotion-title').textContent = discount.title || 'Special Offer';
-            document.getElementById('promotion-description').textContent = discount.description || '';
-            
-            if (discount.discount_percent) {
-                document.getElementById('promotion-percent').textContent = `${Math.round(discount.discount_percent)}%`;
+            if (type === 'success') {
+                toastIcon.innerHTML = '<div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>';
+            } else if (type === 'error') {
+                toastIcon.innerHTML = '<div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></div>';
+            } else if (type === 'info') {
+                toastIcon.innerHTML = '<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>';
             }
             
-            banner.classList.remove('hidden');
-        }
-
-        // Render categories
-        function renderCategories(subcategories) {
-            const container = document.getElementById('categories-container');
-            const allButton = container.querySelector('[data-category="all"]');
-            container.innerHTML = '';
-            container.appendChild(allButton);
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
             
-            subcategories.forEach(sub => {
-                const productCount = shopData.products.filter(p => p.subcategoryId === sub.id).length;
-                if (productCount > 0) {
-                    const button = document.createElement('button');
-                    button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
-                    button.textContent = `${sub.name} (${productCount})`;
-                    button.dataset.category = sub.id;
-                    button.onclick = () => filterProducts(sub.id);
-                    container.appendChild(button);
-                }
-            });
+            toast.classList.remove('hidden');
+            toast.classList.add('show');
             
-            const uncategorizedCount = shopData.products.filter(p => !p.subcategoryId).length;
-            if (uncategorizedCount > 0) {
-                const button = document.createElement('button');
-                button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
-                button.textContent = `Other (${uncategorizedCount})`;
-                button.dataset.category = 'uncategorized';
-                button.onclick = () => filterProducts('uncategorized');
-                container.appendChild(button);
-            }
-            
-            allButton.textContent = `All Products (${shopData.products.length})`;
-        }
-
-        // Filter products by category
-        function filterProducts(categoryId) {
-            currentCategory = categoryId;
-            
-            document.querySelectorAll('.category-chip').forEach(chip => {
-                if (chip.dataset.category === categoryId) {
-                    chip.className = 'category-chip bg-red-500 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap font-medium';
-                } else {
-                    chip.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
-                }
-            });
-
-            let filteredProducts;
-            if (categoryId === 'all') {
-                filteredProducts = shopData.products;
-            } else if (categoryId === 'uncategorized') {
-                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
-            } else {
-                filteredProducts = shopData.products.filter(p => p.subcategoryId === categoryId);
-            }
-            
-            renderProducts(filteredProducts);
-        }
-
-        // Enhanced render products with lazy loading
-        function renderProducts(products) {
-            const container = document.getElementById('products-container');
-            const emptyState = document.getElementById('empty-state');
-            
-            container.innerHTML = '';
-            
-            if (products.length === 0) {
-                container.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            
-            container.classList.remove('hidden');
-            emptyState.classList.add('hidden');
-
-            if (currentView === 'grouped' && currentCategory === 'all') {
-                renderGroupedProducts(products, container);
-            } else {
-                renderGridProducts(products, container);
-            }
-
-            // Start observing all images for lazy loading
             setTimeout(() => {
-                const lazyImages = container.querySelectorAll('.lazy-image');
-                lazyImages.forEach(img => {
-                    imageLoader.observeImage(img);
-                });
-            }, 100);
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 300);
+            }, 4000);
         }
 
-        // Render grouped products
-        function renderGroupedProducts(products, container) {
-            const { grouped, uncategorized } = groupProductsBySubcategory(products);
-            
-            container.className = 'space-y-8';
-            
-            Object.entries(grouped).forEach(([categoryName, categoryProducts]) => {
-                const categorySection = document.createElement('div');
-                categorySection.className = 'category-section';
-                categorySection.innerHTML = `
-                    <div class="mb-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-lg font-bold text-gray-900">${categoryName}</h3>
-                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${categoryProducts.length} products</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-${categoryName.replace(/\s+/g, '-')}">
-                        </div>
-                    </div>
-                `;
-                container.appendChild(categorySection);
-                
-                const categoryGrid = categorySection.querySelector(`#category-${categoryName.replace(/\s+/g, '-')}`);
-                categoryProducts.forEach(product => {
-                    const productCard = createProductCard(product);
-                    categoryGrid.appendChild(productCard);
-                });
-            });
-            
-            if (uncategorized.length > 0) {
-                const uncategorizedSection = document.createElement('div');
-                uncategorizedSection.className = 'category-section';
-                uncategorizedSection.innerHTML = `
-                    <div class="mb-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-lg font-bold text-gray-900">Other Products</h3>
-                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">${uncategorized.length} products</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" id="category-uncategorized">
-                        </div>
-                    </div>
-                `;
-                container.appendChild(uncategorizedSection);
-                
-                const uncategorizedGrid = uncategorizedSection.querySelector('#category-uncategorized');
-                uncategorized.forEach(product => {
-                    const productCard = createProductCard(product);
-                    uncategorizedGrid.appendChild(productCard);
-                });
-            }
+        function showLoadingOverlay() {
+            document.getElementById('order-loading').classList.remove('hidden');
         }
 
-        // Render grid products
-        function renderGridProducts(products, container) {
-            container.className = 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4';
-            
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                container.appendChild(productCard);
-            });
+        function hideLoadingOverlay() {
+            document.getElementById('order-loading').classList.add('hidden');
         }
 
-        // Enhanced create product card with robust image loading
-        function createProductCard(product) {
-            const { metadata = {} } = product;
-            const media = product.media && product.media.length > 0 ? product.media[0] : null;
-            const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const btnText = button.querySelector('.btn-text');
+            const spinner = button.querySelector('.loading-spinner');
             
-            // Get product name and price with validation
-            const productName = metadata.product_name || product.content || '';
-            const originalPrice = metadata.price;
-            const discountedPrice = metadata.discounted_price;
-            const displayPrice = discountedPrice || originalPrice;
-            
-            // Check if product can be ordered
-            const isOrderable = canOrderProduct(product);
-            const hasDiscount = discountedPrice && originalPrice && discountedPrice < originalPrice;
-            const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
-
-            const card = document.createElement('div');
-            card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden relative';
-            
-            // Create enhanced image container with lazy loading
-            let imageHTML = '';
-            if (imageUrl) {
-                imageHTML = `
-                    <div class="image-container relative aspect-square">
-                        <div class="image-placeholder">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
-                            </svg>
-                        </div>
-                        <img data-src="${imageUrl}" 
-                             alt="${productName}" 
-                             class="lazy-image"
-                             loading="lazy">
-                        <div class="image-error-state">
-                            <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
-                            </svg>
-                            <span class="text-xs text-gray-500">Image unavailable</span>
-                        </div>
-                        ${hasDiscount ? `
-                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10">
-                                ${discountPercent}% OFF
-                            </div>
-                        ` : ''}
-                        <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center z-10">
-                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                `;
+            if (isLoading) {
+                button.classList.add('btn-loading');
+                btnText.classList.add('hidden');
+                spinner.classList.remove('hidden');
             } else {
-                imageHTML = `
-                    <div class="relative aspect-square bg-gray-100 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
-                        </svg>
-                        ${hasDiscount ? `
-                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
-                                ${discountPercent}% OFF
-                            </div>
-                        ` : ''}
-                        <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                `;
+                button.classList.remove('btn-loading');
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
             }
-            
-            card.innerHTML = `
-                ${imageHTML}
-                
-                <div class="p-3">
-                    <h3 class="font-medium text-gray-900 text-sm mb-2 line-clamp-2">${productName || 'Product Name Not Available'}</h3>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            ${isOrderable ? `
-                                <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
-                                ${hasDiscount ? `
-                                    <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
-                                ` : ''}
-                            ` : `
-                                <span class="text-gray-400 text-sm">Price not available</span>
-                            `}
-                        </div>
-                        ${isOrderable ? `
-                            <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium ripple">
-                                Add
-                            </button>
-                        ` : `
-                            <button disabled class="bg-gray-300 text-gray-500 px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed">
-                                Unavailable
-                            </button>
-                        `}
-                    </div>
-                </div>
-            `;
-            
-            return card;
         }
 
-        // Toggle view
-        function toggleView(viewType) {
-            currentView = viewType;
-            
-            document.querySelectorAll('.view-toggle').forEach(btn => {
-                btn.classList.remove('active');
-                btn.classList.add('text-gray-600');
-            });
-            
-            const activeBtn = document.getElementById(`view-${viewType}`);
-            activeBtn.classList.add('active');
-            activeBtn.classList.remove('text-gray-600');
-            
-            let filteredProducts;
-            if (currentCategory === 'all') {
-                filteredProducts = shopData.products;
-            } else if (currentCategory === 'uncategorized') {
-                filteredProducts = shopData.products.filter(p => !p.subcategoryId);
-            } else {
-                filteredProducts = shopData.products.filter(p => p.subcategoryId === currentCategory);
-            }
-            
-            renderProducts(filteredProducts);
-        }
-
-        // Download app function
         function downloadApp() {
             const deviceInfo = getDeviceInfo();
             
@@ -2183,7 +2275,6 @@
             }
         }
 
-        // Utility functions
         function formatNumber(num) {
             if (num >= 1000000) {
                 return (num / 1000000).toFixed(1) + 'M';
@@ -2236,77 +2327,9 @@
             document.body.removeChild(textArea);
         }
 
-        // Enhanced performance monitoring
-        function initPerformanceMonitoring() {
-            // Monitor page load performance
-            window.addEventListener('load', () => {
-                const loadTime = Date.now() - loadStartTime;
-                console.log(`Page loaded in ${loadTime}ms`);
-                
-                // Report performance to analytics if needed
-                if (window.gtag) {
-                    gtag('event', 'page_load_time', {
-                        value: loadTime,
-                        custom_parameter: 'shop_profile'
-                    });
-                }
-            });
-
-            // Monitor image loading performance
-            const imageLoadObserver = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.initiatorType === 'img') {
-                        console.log(`Image loaded: ${entry.name} in ${entry.duration}ms`);
-                    }
-                }
-            });
-            
-            try {
-                imageLoadObserver.observe({ entryTypes: ['resource'] });
-            } catch (e) {
-                console.log('Performance observer not supported');
-            }
-
-            // Monitor memory usage
-            if ('memory' in performance) {
-                setInterval(() => {
-                    const memory = performance.memory;
-                    if (memory.usedJSHeapSize > 50 * 1024 * 1024) { // 50MB
-                        console.warn('High memory usage detected:', memory.usedJSHeapSize / 1024 / 1024, 'MB');
-                        // Could trigger cleanup or optimization here
-                    }
-                }, 30000); // Check every 30 seconds
-            }
-        }
-
-        // Enhanced error reporting
-        function initErrorReporting() {
-            window.addEventListener('error', (event) => {
-                console.error('JavaScript error:', event.error);
-                
-                // Don't show error toast for minor issues
-                if (!event.error.message.includes('Network')) {
-                    showToast('Error', 'Something went wrong. Please refresh the page.', 'error');
-                }
-            });
-
-            window.addEventListener('unhandledrejection', (event) => {
-                console.error('Unhandled promise rejection:', event.reason);
-                
-                // Handle specific promise rejections
-                if (event.reason?.message?.includes('fetch')) {
-                    showToast('Network Error', 'Please check your internet connection.', 'error');
-                }
-            });
-        }
-
-        // Initialize everything
-        function initializeApp() {
-            initNetworkMonitoring();
-            initPerformanceMonitoring();
-            initErrorReporting();
-            loadShopData();
-        }
+        // ====================================
+        // EVENT LISTENERS AND INITIALIZATION
+        // ====================================
 
         // Share functionality
         document.getElementById('share-btn').addEventListener('click', async () => {
@@ -2330,12 +2353,15 @@
             }
         });
 
-        // Event Listeners
+        // View toggle event listeners
         document.getElementById('view-grouped').addEventListener('click', () => toggleView('grouped'));
         document.getElementById('view-grid').addEventListener('click', () => toggleView('grid'));
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdvancedLazyLoading();
+            loadShopData();
+        });
 
         // Close modals when clicking outside
         document.addEventListener('click', (e) => {
@@ -2376,53 +2402,140 @@
             }
         });
 
-        // Enhanced network status handling
-        window.addEventListener('online', () => {
-            isOnline = true;
-            showToast('Connection Restored', 'You are back online', 'success');
-            retryFailedImages();
+        // Performance monitoring for images
+        window.addEventListener('load', () => {
+            const observer = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.entryType === 'navigation') {
+                        console.log('Page load time:', entry.loadEventEnd - entry.fetchStart, 'ms');
+                    }
+                }
+            });
+            observer.observe({ entryTypes: ['navigation'] });
+            
+            // Log image loading performance
+            console.log('Image loading performance:', {
+                totalImages: totalImageCount,
+                loadedImages: loadedImages.size,
+                failedImages: failedImages.size,
+                averageLoadTime: performanceMetrics.averageLoadTime.toFixed(2) + 'ms',
+                successRate: ((performanceMetrics.totalLoads - performanceMetrics.failedLoads) / performanceMetrics.totalLoads * 100).toFixed(1) + '%'
+            });
         });
 
-        window.addEventListener('offline', () => {
-            isOnline = false;
-            showToast('Connection Lost', 'Please check your internet connection', 'error');
-        });
-
-        // Cleanup on page unload
+        // Cleanup and optimization on page unload
         window.addEventListener('beforeunload', () => {
-            if (imageLoader) {
-                imageLoader.disconnect();
+            if (imageObserver) {
+                imageObserver.disconnect();
+            }
+            
+            // Clear image caches if needed
+            if (loadedImages.size > 100) {
+                const oldEntries = Array.from(loadedImages.entries())
+                    .filter(([url, data]) => Date.now() - data.timestamp > 600000) // 10 minutes
+                    .map(([url]) => url);
+                
+                oldEntries.forEach(url => loadedImages.delete(url));
             }
         });
 
-        // Intersection Observer polyfill check
-        if (!window.IntersectionObserver) {
-            console.warn('IntersectionObserver not supported, loading all images immediately');
-            // Fallback: load all images immediately
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => {
-                    const lazyImages = document.querySelectorAll('.lazy-image');
-                    lazyImages.forEach(img => {
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
+        // Visibility change handling for performance optimization
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Pause non-essential loading when tab is hidden
+                if (imageObserver) {
+                    imageObserver.disconnect();
+                }
+            } else {
+                // Resume loading when tab becomes visible
+                if (!imageObserver) {
+                    initAdvancedLazyLoading();
+                }
+                
+                // Re-observe unloaded images
+                const unloadedImages = document.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
+                unloadedImages.forEach(img => {
+                    if (imageObserver) {
+                        imageObserver.observe(img);
+                    }
+                });
+            }
+        });
+
+        // ====================================
+        // PERFORMANCE OPTIMIZATION
+        // ====================================
+
+        // Throttled scroll handler for performance
+        let scrollTimeout;
+        let isScrolling = false;
+        
+        window.addEventListener('scroll', () => {
+            if (!isScrolling) {
+                window.requestAnimationFrame(() => {
+                    // Only run optimization checks if performance is poor
+                    if (performanceMetrics.averageLoadTime > 2000) {
+                        optimizePerformance();
+                    }
+                    isScrolling = false;
+                });
+                isScrolling = true;
+            }
+        });
+
+        function optimizePerformance() {
+            // Remove images that are far from viewport to save memory
+            const images = document.querySelectorAll('.lazy-image.loaded');
+            images.forEach(img => {
+                const rect = img.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight * 2 && rect.bottom > -window.innerHeight;
+                
+                if (!isVisible && Math.abs(rect.top) > window.innerHeight * 4) {
+                    // Optionally unload very distant images on slow devices
+                    if (connectionQuality === 'slow' && !img.classList.contains('critical-image')) {
+                        img.removeAttribute('src');
+                        img.classList.remove('loaded');
+                        img.classList.add('lazy-image');
+                        
+                        // Re-add to observer for lazy loading
+                        if (imageObserver) {
+                            imageObserver.observe(img);
                         }
-                    });
-                }, 1000);
+                    }
+                }
             });
         }
 
-        // Service Worker registration for better caching (optional)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
+        // Memory cleanup for mobile devices
+        if (navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
+            setInterval(() => {
+                if (loadedImages.size > 50) {
+                    const oldEntries = Array.from(loadedImages.entries())
+                        .sort((a, b) => a[1].timestamp - b[1].timestamp)
+                        .slice(0, 10);
+                    
+                    oldEntries.forEach(([url]) => loadedImages.delete(url));
+                }
+            }, 60000); // Every minute
         }
+
+        // Preload next page images when user scrolls near bottom
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                // User is near bottom, preload more images if available
+                const unloadedImages = document.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
+                if (unloadedImages.length > 0 && connectionQuality !== 'slow') {
+                    Array.from(unloadedImages).slice(0, 3).forEach(img => {
+                        if (imageObserver) {
+                            imageObserver.observe(img);
+                        }
+                    });
+                }
+            }
+        });
+
+        console.log('🚀 Advanced Image Loading System 2025 initialized successfully!');
+        console.log('📊 Features: Intelligent preloading, connection adaptation, error recovery, performance monitoring');
     </script>
 </body>
 </html>
