@@ -496,11 +496,11 @@
                 </button>
             </div>
             
-            <!-- Profile Section -->
-            <div class="relative px-4 pb-6">
+<!-- Profile Section -->
+            <div class="relative px-4 pb-6 bg-white">
                 <!-- Profile Image -->
-                <div class="absolute -top-10 left-1/2 transform -translate-x-1/2">
-                    <div class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg">
+                <div class="flex justify-center -mt-10 mb-4">
+                    <div class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg relative">
                         <div class="image-container w-full h-full">
                             <div class="image-placeholder">
                                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -509,12 +509,13 @@
                             </div>
                             <img id="profile-image" class="lazy-image" alt="Shop Logo">
                         </div>
+                        <!-- Online indicator -->
+                        <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                     </div>
-                    <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                 </div>
                 
                 <!-- Shop Info -->
-                <div class="pt-12 text-center">
+                <div class="text-center">
                     <div class="flex items-center justify-center space-x-2 mb-2">
                         <div class="flex items-center text-yellow-500">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -556,8 +557,8 @@
                     </div>
                 </div>
             </div>
-        </div>
 
+            
         <!-- Promotion Banner -->
         <div id="promotion-banner" class="hidden mx-4 mb-6 p-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl text-white shadow-lg">
             <div class="flex items-center justify-between">
@@ -1108,56 +1109,76 @@
         // SHOP PROFILE RENDERING
         // ====================================
         
-        function renderShopProfile() {
-            const { shop, products = [], discounts = [], subcategories = [], stats } = shopData;
+function renderShopProfile() {
+    const { shop, products = [], discounts = [], subcategories = [], stats } = shopData;
 
-            document.title = `${shop.name} - Knoc`;
-            const metaDesc = document.querySelector('meta[name="description"]');
-            metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
+    document.title = `${shop.name} - Knoc`;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
 
-            // Set critical images
-            if (shop.coverImage) {
-                const coverImg = document.getElementById('cover-image');
-                coverImg.dataset.src = shop.coverImage;
-                if (loadedImages.has(shop.coverImage)) {
-                    coverImg.src = shop.coverImage;
-                    coverImg.classList.add('loaded', 'critical-image');
-                } else {
-                    setTimeout(() => loadImage(coverImg), 100);
-                }
-            }
+    // Set cover image - IMMEDIATE LOADING for critical images
+    if (shop.coverImage) {
+        const coverImg = document.getElementById('cover-image');
+        coverImg.dataset.src = shop.coverImage;
+        // FORCE IMMEDIATE LOADING for critical images
+        loadImage(coverImg);
+    }
 
-            const profileImg = document.getElementById('profile-image');
-            const profileImageUrl = shop.profileImage || 'https://www.knoc.in/knoc_logo.png';
-            profileImg.dataset.src = profileImageUrl;
-            if (loadedImages.has(profileImageUrl)) {
-                profileImg.src = profileImageUrl;
-                profileImg.classList.add('loaded', 'critical-image');
-            } else {
-                setTimeout(() => loadImage(profileImg), 100);
-            }
+    // Set profile image - IMMEDIATE LOADING for critical images
+    const profileImg = document.getElementById('profile-image');
+    const profileImageUrl = shop.profileImage || 'https://www.knoc.in/knoc_logo.png';
+    profileImg.dataset.src = profileImageUrl;
+    // FORCE IMMEDIATE LOADING for critical images
+    loadImage(profileImg);
 
-            // Update shop info
-            document.getElementById('shop-name').textContent = shop.name;
-            document.getElementById('shop-description').textContent = shop.description || 'Welcome to our shop!';
-            document.getElementById('shop-rating').textContent = (shop.rating || 4.5).toFixed(1);
-            document.getElementById('follower-count').textContent = formatNumber(shop.followerCount || 0);
-            document.getElementById('product-count').textContent = formatNumber(stats?.totalProducts || products.length);
+    // Update shop info
+    document.getElementById('shop-name').textContent = shop.name;
+    document.getElementById('shop-description').textContent = shop.description || 'Welcome to our shop!';
+    document.getElementById('shop-rating').textContent = (shop.rating || 4.5).toFixed(1);
+    document.getElementById('follower-count').textContent = formatNumber(shop.followerCount || 0);
+    document.getElementById('product-count').textContent = formatNumber(stats?.totalProducts || products.length);
 
-            if (shop.verifiedAt) {
-                document.getElementById('verified-badge').classList.remove('hidden');
-            }
+    if (shop.verifiedAt) {
+        document.getElementById('verified-badge').classList.remove('hidden');
+    }
 
-            // Show promotion banner if discounts available
-            if (discounts.length > 0) {
-                showPromotionBanner(discounts[0]);
-            }
+    // Show promotion banner if discounts available
+    if (discounts.length > 0) {
+        showPromotionBanner(discounts[0]);
+    }
 
-            // Render categories and products
-            renderCategories(subcategories);
-            renderProducts(products);
+    // Render categories and products
+    renderCategories(subcategories);
+    renderProducts(products);
+
+    // CRITICAL: Force load any images that are immediately visible
+    setTimeout(() => {
+        checkForImmediatelyVisibleImages();
+    }, 100);
+}
+
+function checkForImmediatelyVisibleImages() {
+    const unloadedImages = document.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
+    
+    unloadedImages.forEach(img => {
+        const rect = img.getBoundingClientRect();
+        const isInViewport = rect.top >= 0 && rect.left >= 0 && 
+                           rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                           rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+        
+        // Also load images that are just slightly below viewport
+        const isNearViewport = rect.top < window.innerHeight + 100;
+        
+        if (isInViewport || isNearViewport) {
+            console.log('Loading immediately visible image:', img.dataset.src);
+            loadImage(img);
+        } else if (imageObserver && img.dataset.src) {
+            // Only observe images that are not immediately visible
+            imageObserver.observe(img);
         }
-
+    });
+}
+        
         function showPromotionBanner(discount) {
             const banner = document.getElementById('promotion-banner');
             document.getElementById('promotion-title').textContent = discount.title || 'Special Offer';
@@ -1226,15 +1247,10 @@
                 renderGridProducts(products, container);
             }
 
-            // Set up lazy loading for all new images
+            // Set up loading for all new images - IMMEDIATE CHECK
             setTimeout(() => {
-                const newLazyImages = container.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
-                newLazyImages.forEach(img => {
-                    if (imageObserver && img.dataset.src) {
-                        imageObserver.observe(img);
-                    }
-                });
-            }, 100);
+                checkForImmediatelyVisibleImages();
+            }, 50);
         }
 
         function groupProductsBySubcategory(products) {
