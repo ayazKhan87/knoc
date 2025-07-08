@@ -290,7 +290,7 @@
             100% { transform: translate(24px, 0); }
         }
 
-        /* Advanced Image Loading Styles */
+        /* SIMPLIFIED IMAGE LOADING STYLES */
         .image-container {
             position: relative;
             overflow: hidden;
@@ -306,53 +306,36 @@
             justify-content: center;
             background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
             transition: opacity 0.3s ease;
+            z-index: 1;
         }
 
         .lazy-image {
             opacity: 0;
-            transition: opacity 0.4s ease, filter 0.3s ease;
-            will-change: opacity, filter;
-        }
-
-        .lazy-image.loading {
-            opacity: 0.6;
-            filter: blur(2px);
+            transition: opacity 0.4s ease;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 2;
         }
 
         .lazy-image.loaded {
             opacity: 1;
-            filter: blur(0);
         }
 
         .lazy-image.error {
-            opacity: 0.8;
-            filter: grayscale(1);
+            opacity: 0;
         }
 
-        /* Critical image styles for LCP optimization */
+        /* Force immediate display for critical images */
         .critical-image {
             opacity: 1 !important;
-            filter: none !important;
-            transition: none !important;
+            position: relative !important;
+            z-index: 3 !important;
         }
 
-        /* Image fade-in animation */
-        @keyframes imageAppear {
-            from {
-                opacity: 0;
-                transform: scale(1.02);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .lazy-image.loaded {
-            animation: imageAppear 0.4s ease-out;
-        }
-
-        /* Loading performance indicator */
+        /* Loading indicator */
         .loading-indicator {
             position: fixed;
             bottom: 80px;
@@ -371,34 +354,6 @@
         .loading-indicator.visible {
             opacity: 1;
             transform: translateY(0);
-        }
-
-        /* Optimize for different screen sizes */
-        @media (max-width: 640px) {
-            .image-container {
-                background-color: #f3f4f6;
-            }
-            
-            .lazy-image {
-                transition: opacity 0.2s ease;
-            }
-        }
-
-        /* Preload animation for critical images */
-        .preload-shimmer {
-            background: linear-gradient(90deg, 
-                rgba(255,255,255,0) 0%, 
-                rgba(255,255,255,0.2) 20%, 
-                rgba(255,255,255,0.5) 50%, 
-                rgba(255,255,255,0.2) 80%, 
-                rgba(255,255,255,0) 100%);
-            background-size: 200% 100%;
-            animation: preloadShimmer 2s infinite;
-        }
-
-        @keyframes preloadShimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
         }
 
         /* Connection status indicator */
@@ -427,6 +382,26 @@
             color: white;
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Improved mobile handling */
+        @media (max-width: 640px) {
+            .image-container {
+                background-color: #f3f4f6;
+            }
+            
+            .lazy-image {
+                transition: opacity 0.2s ease;
+            }
+
+            .product-card {
+                transform: none;
+            }
+
+            .product-card:hover {
+                transform: none;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
         }
     </style>
 </head>
@@ -504,12 +479,12 @@
             <!-- Cover Image -->
             <div id="cover-section" class="h-48 gradient-bg relative overflow-hidden">
                 <div class="image-container w-full h-full">
-                    <div class="image-placeholder preload-shimmer">
+                    <div class="image-placeholder">
                         <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
                         </svg>
                     </div>
-                    <img id="cover-image" class="lazy-image w-full h-full object-cover absolute inset-0" alt="Shop Cover">
+                    <img id="cover-image" class="lazy-image" alt="Shop Cover">
                 </div>
                 <div class="absolute inset-0 bg-black bg-opacity-30"></div>
                 
@@ -532,7 +507,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                             </div>
-                            <img id="profile-image" class="lazy-image w-full h-full object-cover absolute inset-0" alt="Shop Logo">
+                            <img id="profile-image" class="lazy-image" alt="Shop Logo">
                         </div>
                     </div>
                     <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
@@ -865,10 +840,10 @@
 
     <script>
         // ====================================
-        // ADVANCED IMAGE LOADING SYSTEM 2025
+        // ROBUST IMAGE LOADING SYSTEM 2025
         // ====================================
         
-        // Global variables for robust image management
+        // Global variables
         let shopData = null;
         let currentCategory = 'all';
         let currentView = 'grouped';
@@ -876,278 +851,102 @@
         let selectedOrderType = null;
         let isProcessingOrder = false;
         
-        // Advanced image loading system
+        // Simplified image loading variables
         let imageObserver = null;
-        let preloadQueue = [];
-        let loadedImages = new Map(); // Track loaded state with metadata
+        let loadedImages = new Set(); // Simple set to track loaded URLs
         let failedImages = new Set();
-        let isLoadingImages = false;
-        let loadingStartTime = 0;
         let loadingImageCount = 0;
-        let totalImageCount = 0;
-        let connectionQuality = 'unknown';
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
-        // Performance tracking
-        const performanceMetrics = {
-            imageLoadTimes: [],
-            failedLoads: 0,
-            totalLoads: 0,
-            averageLoadTime: 0
-        };
-
         // ====================================
-        // ADVANCED INTERSECTION OBSERVER SETUP
+        // SIMPLIFIED ROBUST IMAGE LOADING
         // ====================================
         
-        function initAdvancedLazyLoading() {
-            // Detect connection quality for adaptive loading
-            detectConnectionQuality();
-            
-            // Set up intersection observer with optimized settings
+        function initImageLoading() {
+            // Create intersection observer with simpler, more reliable settings
             const observerOptions = {
                 root: null,
-                rootMargin: getAdaptiveRootMargin(),
-                threshold: [0, 0.1, 0.5, 1.0] // Multiple thresholds for better control
+                rootMargin: isMobile ? '100px' : '200px', // Consistent margin
+                threshold: 0.1 // Single threshold for reliability
             };
 
-            imageObserver = new IntersectionObserver((entries, observer) => {
+            imageObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
-                        loadImageAdvanced(entry.target);
-                        observer.unobserve(entry.target);
+                    if (entry.isIntersecting) {
+                        loadImage(entry.target);
+                        imageObserver.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
-
-            // Monitor connection changes
-            if ('connection' in navigator) {
-                navigator.connection.addEventListener('change', () => {
-                    detectConnectionQuality();
-                    updateLoadingStrategy();
-                });
-            }
 
             // Monitor online/offline status
             window.addEventListener('online', handleOnline);
             window.addEventListener('offline', handleOffline);
         }
 
-        function detectConnectionQuality() {
-            if ('connection' in navigator) {
-                const connection = navigator.connection;
-                const effectiveType = connection.effectiveType;
-                
-                if (effectiveType === '4g') {
-                    connectionQuality = 'fast';
-                } else if (effectiveType === '3g') {
-                    connectionQuality = 'medium';
-                } else {
-                    connectionQuality = 'slow';
-                }
-            } else {
-                // Fallback: measure load time of a small test image
-                measureConnectionSpeed();
-            }
-            
-            updateConnectionStatus();
-        }
-
-        function measureConnectionSpeed() {
-            const start = performance.now();
-            const testImage = new Image();
-            testImage.onload = () => {
-                const loadTime = performance.now() - start;
-                if (loadTime < 500) {
-                    connectionQuality = 'fast';
-                } else if (loadTime < 1500) {
-                    connectionQuality = 'medium';
-                } else {
-                    connectionQuality = 'slow';
-                }
-                updateConnectionStatus();
-            };
-            testImage.onerror = () => {
-                connectionQuality = 'slow';
-                updateConnectionStatus();
-            };
-            // Use a small 1x1 pixel image for testing
-            testImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-        }
-
-        function getAdaptiveRootMargin() {
-            switch (connectionQuality) {
-                case 'fast':
-                    return '400px'; // Aggressive preloading for fast connections
-                case 'medium':
-                    return '200px'; // Moderate preloading
-                case 'slow':
-                    return '50px';  // Conservative preloading
-                default:
-                    return '150px'; // Default
-            }
-        }
-
-        function updateLoadingStrategy() {
-            // Update observer with new root margin
-            if (imageObserver) {
-                imageObserver.disconnect();
-                initAdvancedLazyLoading();
-                
-                // Re-observe all unloaded images
-                document.querySelectorAll('.lazy-image:not(.loaded):not(.error)').forEach(img => {
-                    imageObserver.observe(img);
-                });
-            }
-        }
-
-        // ====================================
-        // ADVANCED IMAGE LOADING FUNCTIONS
-        // ====================================
-        
-        function loadImageAdvanced(img) {
-            if (!img.dataset.src || loadedImages.has(img.dataset.src)) {
+        function loadImage(img) {
+            const imageUrl = img.dataset.src;
+            if (!imageUrl || loadedImages.has(imageUrl) || failedImages.has(imageUrl)) {
                 return;
             }
 
-            const imageUrl = img.dataset.src;
-            const startTime = performance.now();
-            
-            // Mark as loading
-            img.classList.add('loading');
-            loadedImages.set(imageUrl, { status: 'loading', startTime });
-            
-            showImageLoadingIndicator();
             loadingImageCount++;
+            showImageLoadingIndicator();
             
-            // Create image with advanced error handling
+            // Create new image for loading
             const tempImage = new Image();
             
-            // Set up timeout for slow connections
-            const timeout = setTimeout(() => {
-                handleImageTimeout(img, imageUrl, tempImage);
-            }, getTimeoutDuration());
-            
             tempImage.onload = function() {
-                clearTimeout(timeout);
-                handleImageSuccess(img, imageUrl, tempImage, startTime);
+                img.src = imageUrl;
+                img.classList.add('loaded');
+                loadedImages.add(imageUrl);
+                
+                // Hide placeholder
+                const placeholder = img.closest('.image-container')?.querySelector('.image-placeholder');
+                if (placeholder) {
+                    placeholder.style.opacity = '0';
+                    setTimeout(() => placeholder?.remove(), 300);
+                }
+                
+                loadingImageCount--;
+                if (loadingImageCount === 0) {
+                    hideImageLoadingIndicator();
+                }
             };
             
             tempImage.onerror = function() {
-                clearTimeout(timeout);
-                handleImageError(img, imageUrl, startTime);
+                failedImages.add(imageUrl);
+                img.classList.add('error');
+                img.src = createFallbackImage();
+                
+                // Update placeholder for error state
+                const placeholder = img.closest('.image-container')?.querySelector('.image-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = `
+                        <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    `;
+                }
+                
+                loadingImageCount--;
+                if (loadingImageCount === 0) {
+                    hideImageLoadingIndicator();
+                }
             };
             
-            // Add loading attribute for browser optimization
-            tempImage.loading = 'eager';
-            tempImage.decoding = 'async';
+            // Set timeout for slow loading images
+            setTimeout(() => {
+                if (!tempImage.complete) {
+                    tempImage.src = ''; // Cancel loading
+                    tempImage.onerror(); // Trigger error handler
+                }
+            }, isMobile ? 10000 : 8000);
             
-            // Set source to start loading
             tempImage.src = imageUrl;
         }
 
-        function handleImageSuccess(img, imageUrl, tempImage, startTime) {
-            const loadTime = performance.now() - startTime;
-            
-            // Update performance metrics
-            performanceMetrics.imageLoadTimes.push(loadTime);
-            performanceMetrics.totalLoads++;
-            performanceMetrics.averageLoadTime = 
-                performanceMetrics.imageLoadTimes.reduce((a, b) => a + b, 0) / 
-                performanceMetrics.imageLoadTimes.length;
-            
-            // Update image
-            img.src = imageUrl;
-            img.classList.remove('loading');
-            img.classList.add('loaded');
-            
-            // Update tracking
-            loadedImages.set(imageUrl, { 
-                status: 'loaded', 
-                loadTime,
-                timestamp: Date.now()
-            });
-            
-            // Remove placeholder
-            const placeholder = img.parentElement?.querySelector('.image-placeholder');
-            if (placeholder) {
-                placeholder.style.opacity = '0';
-                setTimeout(() => {
-                    placeholder?.remove();
-                }, 300);
-            }
-            
-            loadingImageCount--;
-            if (loadingImageCount === 0) {
-                hideImageLoadingIndicator();
-            }
-        }
-
-        function handleImageError(img, imageUrl, startTime) {
-            performanceMetrics.failedLoads++;
-            performanceMetrics.totalLoads++;
-            
-            // Mark as failed
-            failedImages.add(imageUrl);
-            loadedImages.set(imageUrl, { 
-                status: 'error', 
-                loadTime: performance.now() - startTime,
-                timestamp: Date.now()
-            });
-            
-            img.classList.remove('loading');
-            img.classList.add('error');
-            
-            // Set fallback image with better error handling
-            img.src = createFallbackImage();
-            
-            // Keep placeholder visible but change style
-            const placeholder = img.parentElement?.querySelector('.image-placeholder');
-            if (placeholder) {
-                placeholder.innerHTML = `
-                    <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                `;
-            }
-            
-            loadingImageCount--;
-            if (loadingImageCount === 0) {
-                hideImageLoadingIndicator();
-            }
-            
-            // Retry mechanism for critical images
-            if (img.classList.contains('critical-image') && !img.dataset.retried) {
-                img.dataset.retried = 'true';
-                setTimeout(() => {
-                    if (img.dataset.fallbackSrc) {
-                        img.dataset.src = img.dataset.fallbackSrc;
-                        loadImageAdvanced(img);
-                    }
-                }, 2000);
-            }
-        }
-
-        function handleImageTimeout(img, imageUrl, tempImage) {
-            console.warn(`Image load timeout: ${imageUrl}`);
-            
-            // Cancel the image load
-            tempImage.src = '';
-            
-            // Treat as error
-            handleImageError(img, imageUrl, performance.now());
-        }
-
-        function getTimeoutDuration() {
-            switch (connectionQuality) {
-                case 'fast': return 5000;   // 5 seconds for fast connections
-                case 'medium': return 8000; // 8 seconds for medium connections
-                case 'slow': return 12000;  // 12 seconds for slow connections
-                default: return 7000;       // 7 seconds default
-            }
-        }
-
         function createFallbackImage() {
-            // Create a simple SVG placeholder as a data URL
             const svg = `
                 <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <rect width="100" height="100" fill="#f3f4f6"/>
@@ -1159,153 +958,14 @@
             return `data:image/svg+xml;base64,${btoa(svg)}`;
         }
 
-        // ====================================
-        // CRITICAL IMAGE PRELOADING SYSTEM
-        // ====================================
-        
-        function preloadCriticalImages(shopData) {
-            if (!shopData) return;
-            
-            const criticalImages = [];
-            
-            // Add shop profile and cover images (highest priority)
-            if (shopData.shop.profileImage) {
-                criticalImages.push({
-                    url: shopData.shop.profileImage,
-                    priority: 'high',
-                    element: 'profile-image'
-                });
-            }
-            
-            if (shopData.shop.coverImage) {
-                criticalImages.push({
-                    url: shopData.shop.coverImage,
-                    priority: 'high',
-                    element: 'cover-image'
-                });
-            }
-            
-            // Add first few product images (medium priority)
-            if (shopData.products && shopData.products.length > 0) {
-                shopData.products.slice(0, 6).forEach((product, index) => {
-                    const media = product.media && product.media.length > 0 ? product.media[0] : null;
-                    if (media) {
-                        const imageUrl = media.thumbnailUrl || media.url;
-                        if (imageUrl) {
-                            criticalImages.push({
-                                url: imageUrl,
-                                priority: index < 3 ? 'medium' : 'low',
-                                element: `product-${product.id}`
-                            });
-                        }
-                    }
-                });
-            }
-            
-            // Preload using different strategies
-            preloadImagesWithStrategy(criticalImages);
-        }
-
-        function preloadImagesWithStrategy(images) {
-            const highPriorityImages = images.filter(img => img.priority === 'high');
-            const mediumPriorityImages = images.filter(img => img.priority === 'medium');
-            const lowPriorityImages = images.filter(img => img.priority === 'low');
-            
-            // Preload high priority images immediately using link preload
-            highPriorityImages.forEach(img => {
-                preloadWithLinkTag(img.url, 'high');
-            });
-            
-            // Preload medium priority after a short delay
-            setTimeout(() => {
-                mediumPriorityImages.forEach(img => {
-                    preloadWithImageObject(img.url);
-                });
-            }, 100);
-            
-            // Preload low priority after page is stable
-            setTimeout(() => {
-                if (connectionQuality !== 'slow') {
-                    lowPriorityImages.forEach(img => {
-                        preloadWithImageObject(img.url);
-                    });
-                }
-            }, 1000);
-        }
-
-        function preloadWithLinkTag(url, priority = 'low') {
-            // Check if already preloaded
-            if (document.querySelector(`link[href="${url}"]`)) {
-                return;
-            }
-            
-            const link = document.createElement('link');
-            link.rel = 'preload';
-            link.as = 'image';
-            link.href = url;
-            
-            if (priority === 'high') {
-                link.fetchPriority = 'high';
-            }
-            
-            link.onload = () => {
-                loadedImages.set(url, { 
-                    status: 'preloaded', 
-                    method: 'link',
-                    timestamp: Date.now()
-                });
-            };
-            
-            link.onerror = () => {
-                failedImages.add(url);
-            };
-            
-            document.head.appendChild(link);
-        }
-
-        function preloadWithImageObject(url) {
-            if (loadedImages.has(url) || failedImages.has(url)) {
-                return;
-            }
-            
-            const img = new Image();
-            img.onload = () => {
-                loadedImages.set(url, { 
-                    status: 'preloaded', 
-                    method: 'object',
-                    timestamp: Date.now()
-                });
-            };
-            
-            img.onerror = () => {
-                failedImages.add(url);
-            };
-            
-            img.src = url;
-        }
-
-        // ====================================
-        // CONNECTION STATUS MANAGEMENT
-        // ====================================
-        
-        function updateConnectionStatus() {
-            const statusEl = document.getElementById('connection-status');
-            const textEl = document.getElementById('connection-text');
-            
-            if (connectionQuality === 'slow') {
-                statusEl.className = 'connection-status slow';
-                textEl.textContent = 'Slow connection detected';
-            } else {
-                statusEl.className = 'connection-status';
-            }
-        }
-
         function handleOnline() {
             const statusEl = document.getElementById('connection-status');
             statusEl.className = 'connection-status';
             
             // Retry failed images
-            retryFailedImages();
+            setTimeout(() => {
+                retryFailedImages();
+            }, 1000);
             
             showToast('Connection Restored', 'You are back online', 'success');
         }
@@ -1321,50 +981,73 @@
         }
 
         function retryFailedImages() {
-            if (failedImages.size === 0) return;
-            
             const failedUrls = Array.from(failedImages);
             failedImages.clear();
             
-            // Retry failed images with a delay
-            failedUrls.forEach((url, index) => {
-                setTimeout(() => {
-                    const imgElements = document.querySelectorAll(`img[data-src="${url}"]`);
-                    imgElements.forEach(img => {
-                        if (!img.classList.contains('loaded')) {
-                            loadImageAdvanced(img);
-                        }
-                    });
-                }, index * 500); // Stagger retries
+            failedUrls.forEach(url => {
+                const images = document.querySelectorAll(`img[data-src="${url}"]`);
+                images.forEach(img => {
+                    if (img.classList.contains('error')) {
+                        img.classList.remove('error');
+                        loadImage(img);
+                    }
+                });
             });
         }
 
-        // ====================================
-        // UI INDICATOR FUNCTIONS
-        // ====================================
-        
         function showImageLoadingIndicator() {
-            if (loadingImageCount === 1) { // Only show on first image
+            if (loadingImageCount === 1) {
                 const indicator = document.getElementById('image-loading-indicator');
                 indicator.classList.add('visible');
-                loadingStartTime = performance.now();
             }
         }
 
         function hideImageLoadingIndicator() {
             const indicator = document.getElementById('image-loading-indicator');
             indicator.classList.remove('visible');
-            
-            // Log performance metrics
-            if (loadingStartTime > 0) {
-                const totalLoadTime = performance.now() - loadingStartTime;
-                console.log(`Images loaded in ${totalLoadTime.toFixed(2)}ms`);
-                loadingStartTime = 0;
-            }
         }
 
         // ====================================
-        // SHOP DATA LOADING WITH PRELOADING
+        // CRITICAL IMAGE PRELOADING
+        // ====================================
+        
+        function preloadCriticalImages(shopData) {
+            if (!shopData) return;
+            
+            const criticalImages = [];
+            
+            // Add shop images
+            if (shopData.shop.profileImage) {
+                criticalImages.push(shopData.shop.profileImage);
+            }
+            if (shopData.shop.coverImage) {
+                criticalImages.push(shopData.shop.coverImage);
+            }
+            
+            // Add first few product images
+            if (shopData.products && shopData.products.length > 0) {
+                shopData.products.slice(0, 4).forEach(product => {
+                    const media = product.media && product.media.length > 0 ? product.media[0] : null;
+                    if (media) {
+                        const imageUrl = media.thumbnailUrl || media.url;
+                        if (imageUrl) {
+                            criticalImages.push(imageUrl);
+                        }
+                    }
+                });
+            }
+            
+            // Preload using simple image objects
+            criticalImages.forEach(url => {
+                const img = new Image();
+                img.onload = () => loadedImages.add(url);
+                img.onerror = () => failedImages.add(url);
+                img.src = url;
+            });
+        }
+
+        // ====================================
+        // SHOP DATA LOADING
         // ====================================
         
         async function loadShopData() {
@@ -1403,7 +1086,7 @@
                     return;
                 }
                 
-                // Start preloading critical images immediately
+                // Start preloading critical images
                 preloadCriticalImages(shopData);
                 
                 // Render shop profile
@@ -1422,7 +1105,7 @@
         }
 
         // ====================================
-        // ENHANCED PRODUCT RENDERING
+        // SHOP PROFILE RENDERING
         // ====================================
         
         function renderShopProfile() {
@@ -1432,32 +1115,26 @@
             const metaDesc = document.querySelector('meta[name="description"]');
             metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
 
-            // Set critical images with enhanced loading
+            // Set critical images
             if (shop.coverImage) {
                 const coverImg = document.getElementById('cover-image');
                 coverImg.dataset.src = shop.coverImage;
-                coverImg.classList.add('critical-image');
-                
-                // If already preloaded, set immediately
                 if (loadedImages.has(shop.coverImage)) {
                     coverImg.src = shop.coverImage;
-                    coverImg.classList.add('loaded');
+                    coverImg.classList.add('loaded', 'critical-image');
                 } else {
-                    // Otherwise load with advanced system
-                    loadImageAdvanced(coverImg);
+                    setTimeout(() => loadImage(coverImg), 100);
                 }
             }
 
             const profileImg = document.getElementById('profile-image');
             const profileImageUrl = shop.profileImage || 'https://www.knoc.in/knoc_logo.png';
             profileImg.dataset.src = profileImageUrl;
-            profileImg.classList.add('critical-image');
-            
             if (loadedImages.has(profileImageUrl)) {
                 profileImg.src = profileImageUrl;
-                profileImg.classList.add('loaded');
+                profileImg.classList.add('loaded', 'critical-image');
             } else {
-                loadImageAdvanced(profileImg);
+                setTimeout(() => loadImage(profileImg), 100);
             }
 
             // Update shop info
@@ -1481,35 +1158,6 @@
             renderProducts(products);
         }
 
-        // Group products by subcategory
-        function groupProductsBySubcategory(products) {
-            const grouped = {};
-            const uncategorized = [];
-            
-            products.forEach(product => {
-                if (product.subcategoryId && product.subcategoryName) {
-                    if (!grouped[product.subcategoryName]) {
-                        grouped[product.subcategoryName] = [];
-                    }
-                    grouped[product.subcategoryName].push(product);
-                } else {
-                    uncategorized.push(product);
-                }
-            });
-            
-            return { grouped, uncategorized };
-        }
-
-        // Validate if product can be ordered
-        function canOrderProduct(product) {
-            const { metadata = {} } = product;
-            const productName = metadata.product_name || product.content;
-            const price = metadata.price;
-            
-            return productName && productName.trim() !== '' && price && price > 0;
-        }
-
-        // Show promotion banner
         function showPromotionBanner(discount) {
             const banner = document.getElementById('promotion-banner');
             document.getElementById('promotion-title').textContent = discount.title || 'Special Offer';
@@ -1522,7 +1170,6 @@
             banner.classList.remove('hidden');
         }
 
-        // Render categories
         function renderCategories(subcategories) {
             const container = document.getElementById('categories-container');
             const allButton = container.querySelector('[data-category="all"]');
@@ -1554,13 +1201,15 @@
             allButton.textContent = `All Products (${shopData.products.length})`;
         }
 
-        // Enhanced product rendering with optimized lazy loading
+        // ====================================
+        // PRODUCT RENDERING WITH ROBUST IMAGE LOADING
+        // ====================================
+        
         function renderProducts(products) {
             const container = document.getElementById('products-container');
             const emptyState = document.getElementById('empty-state');
             
             container.innerHTML = '';
-            totalImageCount = 0;
             
             if (products.length === 0) {
                 container.classList.add('hidden');
@@ -1577,25 +1226,35 @@
                 renderGridProducts(products, container);
             }
 
-            // Set up lazy loading for all images after rendering
+            // Set up lazy loading for all new images
             setTimeout(() => {
-                const lazyImages = container.querySelectorAll('.lazy-image:not(.loaded)');
-                totalImageCount = lazyImages.length;
-                
-                lazyImages.forEach((img, index) => {
-                    // Mark first few images as higher priority
-                    if (index < 6) {
-                        img.classList.add('priority');
-                    }
-                    
-                    if (imageObserver) {
+                const newLazyImages = container.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
+                newLazyImages.forEach(img => {
+                    if (imageObserver && img.dataset.src) {
                         imageObserver.observe(img);
                     }
                 });
             }, 100);
         }
 
-        // Render grouped products
+        function groupProductsBySubcategory(products) {
+            const grouped = {};
+            const uncategorized = [];
+            
+            products.forEach(product => {
+                if (product.subcategoryId && product.subcategoryName) {
+                    if (!grouped[product.subcategoryName]) {
+                        grouped[product.subcategoryName] = [];
+                    }
+                    grouped[product.subcategoryName].push(product);
+                } else {
+                    uncategorized.push(product);
+                }
+            });
+            
+            return { grouped, uncategorized };
+        }
+
         function renderGroupedProducts(products, container) {
             const { grouped, uncategorized } = groupProductsBySubcategory(products);
             
@@ -1618,7 +1277,7 @@
                 
                 const categoryGrid = categorySection.querySelector(`#category-${categoryName.replace(/\s+/g, '-')}`);
                 categoryProducts.forEach(product => {
-                    const productCard = createAdvancedProductCard(product);
+                    const productCard = createProductCard(product);
                     categoryGrid.appendChild(productCard);
                 });
             });
@@ -1640,24 +1299,22 @@
                 
                 const uncategorizedGrid = uncategorizedSection.querySelector('#category-uncategorized');
                 uncategorized.forEach(product => {
-                    const productCard = createAdvancedProductCard(product);
+                    const productCard = createProductCard(product);
                     uncategorizedGrid.appendChild(productCard);
                 });
             }
         }
 
-        // Render grid products
         function renderGridProducts(products, container) {
             container.className = 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4';
             
             products.forEach(product => {
-                const productCard = createAdvancedProductCard(product);
+                const productCard = createProductCard(product);
                 container.appendChild(productCard);
             });
         }
 
-        // Create advanced product card with optimized image loading
-        function createAdvancedProductCard(product) {
+        function createProductCard(product) {
             const { metadata = {} } = product;
             const media = product.media && product.media.length > 0 ? product.media[0] : null;
             const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
@@ -1674,12 +1331,9 @@
             const card = document.createElement('div');
             card.className = 'product-card bg-white rounded-xl shadow-sm overflow-hidden relative';
             
-            // Create optimized image container
             let imageHTML = '';
             if (imageUrl) {
-                // Check if image is already loaded/preloaded
                 const isPreloaded = loadedImages.has(imageUrl);
-                const imageClass = isPreloaded ? 'lazy-image loaded' : 'lazy-image';
                 
                 imageHTML = `
                     <div class="image-container relative aspect-square bg-gray-100">
@@ -1688,11 +1342,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
                             </svg>
                         </div>
-                        <img ${isPreloaded ? `src="${imageUrl}"` : `data-src="${imageUrl}"`}
+                        <img ${isPreloaded ? `src="${imageUrl}" class="lazy-image loaded"` : `data-src="${imageUrl}" class="lazy-image"`}
                              alt="${productName}" 
-                             class="${imageClass} w-full h-full object-cover absolute inset-0"
-                             loading="lazy"
-                             decoding="async">
+                             loading="lazy">
                         ${hasDiscount ? `
                             <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10">
                                 ${discountPercent}% OFF
@@ -1751,6 +1403,14 @@
             `;
             
             return card;
+        }
+
+        function canOrderProduct(product) {
+            const { metadata = {} } = product;
+            const productName = metadata.product_name || product.content;
+            const price = metadata.price;
+            
+            return productName && productName.trim() !== '' && price && price > 0;
         }
 
         // ====================================
@@ -1871,7 +1531,6 @@
             }
         }
 
-        // Filter products by category
         function filterProducts(categoryId) {
             currentCategory = categoryId;
             
@@ -1895,7 +1554,6 @@
             renderProducts(filteredProducts);
         }
 
-        // Toggle view
         function toggleView(viewType) {
             currentView = viewType;
             
@@ -2328,6 +1986,26 @@
         }
 
         // ====================================
+        // SCROLL-BASED FALLBACK FOR MISSED IMAGES
+        // ====================================
+        
+        function checkForMissedImages() {
+            const unloadedImages = document.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
+            
+            unloadedImages.forEach(img => {
+                if (img.dataset.src && !loadedImages.has(img.dataset.src) && !failedImages.has(img.dataset.src)) {
+                    const rect = img.getBoundingClientRect();
+                    const isVisible = rect.top < window.innerHeight + 300 && rect.bottom > -300;
+                    
+                    if (isVisible) {
+                        console.log('Fallback loading image:', img.dataset.src);
+                        loadImage(img);
+                    }
+                }
+            });
+        }
+
+        // ====================================
         // EVENT LISTENERS AND INITIALIZATION
         // ====================================
 
@@ -2359,7 +2037,8 @@
 
         // Initialize on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
-            initAdvancedLazyLoading();
+            console.log('🚀 Initializing Robust Image Loading System');
+            initImageLoading();
             loadShopData();
         });
 
@@ -2402,140 +2081,65 @@
             }
         });
 
-        // Performance monitoring for images
-        window.addEventListener('load', () => {
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.entryType === 'navigation') {
-                        console.log('Page load time:', entry.loadEventEnd - entry.fetchStart, 'ms');
-                    }
-                }
-            });
-            observer.observe({ entryTypes: ['navigation'] });
-            
-            // Log image loading performance
-            console.log('Image loading performance:', {
-                totalImages: totalImageCount,
-                loadedImages: loadedImages.size,
-                failedImages: failedImages.size,
-                averageLoadTime: performanceMetrics.averageLoadTime.toFixed(2) + 'ms',
-                successRate: ((performanceMetrics.totalLoads - performanceMetrics.failedLoads) / performanceMetrics.totalLoads * 100).toFixed(1) + '%'
-            });
+        // Scroll-based fallback for missed images (mobile-friendly)
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                checkForMissedImages();
+            }, 200);
         });
 
-        // Cleanup and optimization on page unload
+        // Additional fallback check on window resize (mobile orientation change)
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                checkForMissedImages();
+            }, 500);
+        });
+
+        // Visibility change handling - simplified and more reliable
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // Re-check for missed images when tab becomes visible
+                setTimeout(() => {
+                    checkForMissedImages();
+                }, 1000);
+            }
+        });
+
+        // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             if (imageObserver) {
                 imageObserver.disconnect();
             }
+        });
+
+        // Performance monitoring
+        window.addEventListener('load', () => {
+            console.log('✅ Page loaded successfully');
+            console.log('📊 Image loading stats:', {
+                loaded: loadedImages.size,
+                failed: failedImages.size,
+                isMobile: isMobile
+            });
             
-            // Clear image caches if needed
-            if (loadedImages.size > 100) {
-                const oldEntries = Array.from(loadedImages.entries())
-                    .filter(([url, data]) => Date.now() - data.timestamp > 600000) // 10 minutes
-                    .map(([url]) => url);
-                
-                oldEntries.forEach(url => loadedImages.delete(url));
-            }
+            // Final check for any missed images after page load
+            setTimeout(() => {
+                checkForMissedImages();
+            }, 2000);
         });
 
-        // Visibility change handling for performance optimization
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                // Pause non-essential loading when tab is hidden
-                if (imageObserver) {
-                    imageObserver.disconnect();
-                }
-            } else {
-                // Resume loading when tab becomes visible
-                if (!imageObserver) {
-                    initAdvancedLazyLoading();
-                }
-                
-                // Re-observe unloaded images
-                const unloadedImages = document.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
-                unloadedImages.forEach(img => {
-                    if (imageObserver) {
-                        imageObserver.observe(img);
-                    }
-                });
-            }
-        });
-
-        // ====================================
-        // PERFORMANCE OPTIMIZATION
-        // ====================================
-
-        // Throttled scroll handler for performance
-        let scrollTimeout;
-        let isScrolling = false;
-        
-        window.addEventListener('scroll', () => {
-            if (!isScrolling) {
-                window.requestAnimationFrame(() => {
-                    // Only run optimization checks if performance is poor
-                    if (performanceMetrics.averageLoadTime > 2000) {
-                        optimizePerformance();
-                    }
-                    isScrolling = false;
-                });
-                isScrolling = true;
-            }
-        });
-
-        function optimizePerformance() {
-            // Remove images that are far from viewport to save memory
-            const images = document.querySelectorAll('.lazy-image.loaded');
-            images.forEach(img => {
-                const rect = img.getBoundingClientRect();
-                const isVisible = rect.top < window.innerHeight * 2 && rect.bottom > -window.innerHeight;
-                
-                if (!isVisible && Math.abs(rect.top) > window.innerHeight * 4) {
-                    // Optionally unload very distant images on slow devices
-                    if (connectionQuality === 'slow' && !img.classList.contains('critical-image')) {
-                        img.removeAttribute('src');
-                        img.classList.remove('loaded');
-                        img.classList.add('lazy-image');
-                        
-                        // Re-add to observer for lazy loading
-                        if (imageObserver) {
-                            imageObserver.observe(img);
-                        }
-                    }
-                }
+        // Touch event handling for mobile - reduce hover effects
+        if (isMobile) {
+            document.addEventListener('touchstart', () => {
+                // Disable hover effects on mobile by adding touch class
+                document.body.classList.add('touch-device');
             });
         }
 
-        // Memory cleanup for mobile devices
-        if (navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
-            setInterval(() => {
-                if (loadedImages.size > 50) {
-                    const oldEntries = Array.from(loadedImages.entries())
-                        .sort((a, b) => a[1].timestamp - b[1].timestamp)
-                        .slice(0, 10);
-                    
-                    oldEntries.forEach(([url]) => loadedImages.delete(url));
-                }
-            }, 60000); // Every minute
-        }
-
-        // Preload next page images when user scrolls near bottom
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-                // User is near bottom, preload more images if available
-                const unloadedImages = document.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
-                if (unloadedImages.length > 0 && connectionQuality !== 'slow') {
-                    Array.from(unloadedImages).slice(0, 3).forEach(img => {
-                        if (imageObserver) {
-                            imageObserver.observe(img);
-                        }
-                    });
-                }
-            }
-        });
-
-        console.log('🚀 Advanced Image Loading System 2025 initialized successfully!');
-        console.log('📊 Features: Intelligent preloading, connection adaptation, error recovery, performance monitoring');
+        console.log('🚀 Robust Image Loading System 2025 initialized!');
+        console.log('📱 Mobile device detected:', isMobile);
+        console.log('🎯 Features: Simplified observer, fallback loading, error recovery, mobile optimization');
     </script>
 </body>
 </html>
