@@ -170,7 +170,7 @@
             transition: width 0.3s ease;
         }
 
-        /* Category Section */
+        /* Category Section Styling */
         .category-section {
             margin-bottom: 32px;
             contain: layout style;
@@ -182,6 +182,35 @@
             color: #1f2937;
             margin-bottom: 16px;
             padding: 0 4px;
+            border-bottom: 2px solid #ef4444;
+            padding-bottom: 8px;
+        }
+
+        /* Grid layout for category sections */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            contain: layout style;
+        }
+
+        @media (min-width: 640px) {
+            .category-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 16px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .category-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        /* Ensure contents class maintains grid layout */
+        .contents {
+            display: contents;
         }
 
         /* Toast Notifications */
@@ -948,23 +977,11 @@
                 currentBatch = 0;
                 loadedProductsCount = 0;
                 
-                // Create products grid
-                const productsGrid = document.createElement('div');
-                productsGrid.className = 'products-grid';
-                productsGrid.id = 'products-grid';
-                container.appendChild(productsGrid);
-                
-                // Load products in batches
-                while (currentBatch * BATCH_SIZE < filteredProducts.length) {
-                    await loadProductBatch();
-                    currentBatch++;
-                    
-                    // Update progress
-                    const progress = Math.min(100, (loadedProductsCount / filteredProducts.length) * 100);
-                    updateLoadingProgress(75 + (progress * 0.25));
-                    
-                    // Small delay to prevent blocking
-                    await new Promise(resolve => setTimeout(resolve, 10));
+                // Check if we should group by subcategories (for "All Products" view)
+                if (currentCategory === 'all') {
+                    await loadProductsGroupedByCategory();
+                } else {
+                    await loadProductsInGrid();
                 }
                 
                 updateLoadingStatus('Loading complete!');
@@ -976,14 +993,145 @@
             }
         }
 
-        async function loadProductBatch() {
+        async function loadProductsGroupedByCategory() {
+            const container = document.getElementById('products-container');
+            
+            // Group products by subcategory
+            const { grouped, uncategorized } = groupProductsBySubcategory(filteredProducts);
+            
+            // Create container for grouped sections
+            const groupedContainer = document.createElement('div');
+            groupedContainer.className = 'space-y-8';
+            groupedContainer.id = 'grouped-container';
+            container.appendChild(groupedContainer);
+            
+            // Load categorized products
+            for (const [categoryName, categoryProducts] of Object.entries(grouped)) {
+                await loadCategorySection(groupedContainer, categoryName, categoryProducts);
+                
+                // Update progress
+                const progress = Math.min(100, (loadedProductsCount / filteredProducts.length) * 100);
+                updateLoadingProgress(75 + (progress * 0.25));
+                
+                // Small delay to prevent blocking
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            
+            // Load uncategorized products if any
+            if (uncategorized.length > 0) {
+                await loadCategorySection(groupedContainer, 'Other Products', uncategorized);
+            }
+        }
+
+        async function loadCategorySection(container, categoryName, products) {
+            if (products.length === 0) return;
+            
+            // Create category section
+            const categorySection = document.createElement('div');
+            categorySection.className = 'category-section product-batch';
+            categorySection.style.animationDelay = `${Object.keys(container.children).length * 0.1}s`;
+            
+            categorySection.innerHTML = `
+                <div class="category-title">
+                    ${categoryName} 
+                    <span class="text-sm font-normal text-gray-500 ml-2">(${products.length} products)</span>
+                </div>
+                <div class="products-grid category-grid" data-category="${categoryName}">
+                </div>
+            `;
+            
+            container.appendChild(categorySection);
+            
+            const categoryGrid = categorySection.querySelector('.category-grid');
+            
+            // Load products in this category in batches
+            const categoryBatchSize = Math.min(BATCH_SIZE, products.length);
+            let categoryBatch = 0;
+            
+            while (categoryBatch * categoryBatchSize < products.length) {
+                const startIndex = categoryBatch * categoryBatchSize;
+                const endIndex = Math.min(startIndex + categoryBatchSize, products.length);
+                const batchProducts = products.slice(startIndex, endIndex);
+                
+                // Create batch container
+                const batchContainer = document.createElement('div');
+                batchContainer.className = 'contents'; // Use contents to maintain grid layout
+                
+                // Create product cards
+                batchProducts.forEach((product, index) => {
+                    const productCard = createProductCard(product, startIndex + index);
+                    batchContainer.appendChild(productCard);
+                    loadedProductsCount++;
+                });
+                
+                categoryGrid.appendChild(batchContainer);
+                
+                // Update counters
+                updateProductCounts();
+                
+                // Start loading images for this batch
+                requestAnimationFrame(() => {
+                    loadBatchImages(batchContainer);
+                });
+                
+                categoryBatch++;
+                
+                // Small delay between batches within category
+                if (categoryBatch * categoryBatchSize < products.length) {
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+            }
+        }
+
+        async function loadProductsInGrid() {
+            const container = document.getElementById('products-container');
+            
+            // Create products grid
+            const productsGrid = document.createElement('div');
+            productsGrid.className = 'products-grid';
+            productsGrid.id = 'products-grid';
+            container.appendChild(productsGrid);
+            
+            // Load products in batches
+            while (currentBatch * BATCH_SIZE < filteredProducts.length) {
+                await loadProductBatch(productsGrid);
+                currentBatch++;
+                
+                // Update progress
+                const progress = Math.min(100, (loadedProductsCount / filteredProducts.length) * 100);
+                updateLoadingProgress(75 + (progress * 0.25));
+                
+                // Small delay to prevent blocking
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+        }
+
+        function groupProductsBySubcategory(products) {
+            const grouped = {};
+            const uncategorized = [];
+            
+            products.forEach(product => {
+                if (product.subcategoryId && product.subcategoryName) {
+                    if (!grouped[product.subcategoryName]) {
+                        grouped[product.subcategoryName] = [];
+                    }
+                    grouped[product.subcategoryName].push(product);
+                } else {
+                    uncategorized.push(product);
+                }
+            });
+            
+            return { grouped, uncategorized };
+        }
+
+        async function loadProductBatch(gridContainer = null) {
+            const grid = gridContainer || document.getElementById('products-grid');
             const startIndex = currentBatch * BATCH_SIZE;
             const endIndex = Math.min(startIndex + BATCH_SIZE, filteredProducts.length);
             const batchProducts = filteredProducts.slice(startIndex, endIndex);
             
-            const grid = document.getElementById('products-grid');
             const batchContainer = document.createElement('div');
-            batchContainer.className = 'product-batch';
+            batchContainer.className = 'product-batch contents'; // Use contents to maintain grid layout
             batchContainer.style.animationDelay = `${currentBatch * 0.1}s`;
             
             // Create product cards
