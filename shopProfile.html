@@ -1811,27 +1811,25 @@
         // DELIVERY MAP INITIALIZATION
         // ====================================
         
+        // Updated initializeDeliveryMap function
         function initializeDeliveryMap() {
             if (deliveryMap) {
                 return; // Map already initialized
             }
-
+        
             const mapContainer = document.getElementById('delivery-map');
             if (!mapContainer) return;
-
+        
             deliveryMap = L.map('delivery-map').setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
             
-            // Add tile layer using our proxy
-            L.tileLayer(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+            // Add tile layer with proper URL template
+            L.tileLayer(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}/{z}/{x}/{y}`, {
                 attribution: '© Mapbox © OpenStreetMap',
                 maxZoom: 18,
                 tileSize: 256,
-                zoomOffset: 0,
-                getTileUrl: function(coords) {
-                    return `${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`;
-                }
+                zoomOffset: 0
             }).addTo(deliveryMap);
-
+        
             // Add click event to map
             deliveryMap.on('click', onDeliveryMapClick);
             
@@ -1842,6 +1840,7 @@
             getCurrentDeliveryLocation();
         }
 
+        
         function onDeliveryMapClick(e) {
             const { lat, lng } = e.latlng;
             setDeliveryLocation(lat, lng);
