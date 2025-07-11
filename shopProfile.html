@@ -332,27 +332,30 @@
         }
 
         .map-container {
-            height: 400px;
-            border-radius: 12px;
+            height: 350px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            position: relative;
         }
         
         .delivery-summary {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 24px;
+            box-shadow: 0 4px 20px rgba(22, 163, 74, 0.2);
         }
         
         .calculation-loading {
             display: none;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid #3b82f6;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 16px 0;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid #60a5fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
         }
         
         .calculation-loading.show {
@@ -368,72 +371,204 @@
         .price-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            align-items: center;
         }
         
         .price-row.total {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding-top: 8px;
-            margin-top: 8px;
+            padding-top: 12px;
+            margin-top: 12px;
         }
         
         .error-message {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid #fca5a5;
             color: #dc2626;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 16px 0;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
         }
         
         .map-controls {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
         
         .map-control-btn {
             background: white;
             border: none;
-            padding: 8px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .map-control-btn:hover {
-            background: #f3f4f6;
+            background: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        .map-control-btn:active {
+            transform: translateY(0);
         }
         
-        .address-input {
+        .delivery-form-field {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
             width: 100%;
-            padding: 12px;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            background: #fefefe;
+        }
+
+        .form-input:invalid {
+            border-color: #ef4444;
+        }
+
+        .form-input:valid {
+            border-color: #10b981;
+        }
+
+        .delivery-step {
+            opacity: 0.6;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .delivery-step.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .step-circle.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .step-circle.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .location-quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 10px 16px;
+            background: #f3f4f6;
             border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 14px;
-            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        
-        .address-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+
+        .quick-action-btn:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+        }
+
+        .map-location-info {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 13px;
+            color: #4b5563;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .dine-in-summary {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 24px;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.2);
+        }
+
+        .enhanced-modal {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .device-specific-instructions {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+            font-size: 13px;
+            color: #64748b;
         }
 
         @media (max-width: 640px) {
@@ -455,7 +590,85 @@
             }
 
             .map-container {
-                height: 300px;
+                height: 280px;
+                border-radius: 12px;
+            }
+
+            .map-controls {
+                top: 10px;
+                right: 10px;
+                gap: 8px;
+            }
+
+            .map-control-btn {
+                padding: 10px;
+                min-width: 40px;
+                min-height: 40px;
+                font-size: 14px;
+            }
+
+            .delivery-form-field {
+                margin-bottom: 20px;
+            }
+
+            .form-input {
+                padding: 12px 14px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .modal-content {
+                margin: 8px;
+                max-height: calc(100vh - 16px);
+            }
+
+            .location-quick-actions {
+                justify-content: center;
+            }
+
+            .map-location-info {
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .price-row {
+                font-size: 14px;
+            }
+
+            .price-row.total {
+                font-size: 18px;
+            }
+
+            .delivery-summary, .dine-in-summary {
+                padding: 20px;
+                margin-top: 20px;
+            }
+        }
+
+        /* iOS specific adjustments */
+        @supports (-webkit-appearance: none) {
+            .form-input {
+                -webkit-appearance: none;
+                border-radius: 12px;
+            }
+        }
+
+        /* Desktop specific improvements */
+        @media (min-width: 1024px) {
+            .map-container {
+                height: 400px;
+            }
+
+            .enhanced-modal {
+                max-width: 900px;
+            }
+
+            .delivery-form-field {
+                margin-bottom: 28px;
             }
         }
     </style>
@@ -844,53 +1057,152 @@
         </div>
     </div>
 
-    <!-- Delivery Address Modal -->
+    <!-- Enhanced Delivery Address Modal -->
     <div id="address-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 modal-overlay transition-opacity" onclick="closeAddressModal()"></div>
             
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full modal-content">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-gray-900">Delivery Address</h3>
-                        <button onclick="closeAddressModal()" class="text-gray-400 hover:text-gray-600">
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full modal-content enhanced-modal">
+                <div class="bg-white px-6 pt-6 pb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">📦 Delivery Details</h3>
+                            <p class="text-sm text-gray-600 mt-1">Fill in your details and select delivery location</p>
+                        </div>
+                        <button onclick="closeAddressModal()" class="text-gray-400 hover:text-gray-600 p-2">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
+
+                    <!-- Step Indicator -->
+                    <div class="step-indicator">
+                        <div class="step-circle active" id="step1-circle">1</div>
+                        <span class="text-sm font-medium text-gray-900">Personal Details</span>
+                        <div class="flex-1 mx-3 h-px bg-gray-200"></div>
+                        <div class="step-circle" id="step2-circle">2</div>
+                        <span class="text-sm font-medium text-gray-600">Location & Address</span>
+                        <div class="flex-1 mx-3 h-px bg-gray-200"></div>
+                        <div class="step-circle" id="step3-circle">3</div>
+                        <span class="text-sm font-medium text-gray-600">Confirm Order</span>
+                    </div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Left Column: Address Form -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Left Column: Form -->
                         <div>
-                            <div class="mb-4">
-                                <label for="delivery-address" class="block text-sm font-medium text-gray-700 mb-2">Delivery Address</label>
-                                <input 
-                                    type="text" 
-                                    id="delivery-address" 
-                                    class="address-input" 
-                                    placeholder="Enter delivery address or use map"
-                                    autocomplete="off"
-                                >
+                            <!-- Step 1: Personal Details -->
+                            <div id="delivery-step-1" class="delivery-step active">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">👤 Personal Information</h4>
+                                
+                                <div class="delivery-form-field">
+                                    <label for="customer-name" class="form-label">Full Name *</label>
+                                    <input 
+                                        type="text" 
+                                        id="customer-name" 
+                                        class="form-input" 
+                                        placeholder="Enter your full name"
+                                        required
+                                        autocomplete="name"
+                                    >
+                                </div>
+                                
+                                <div class="delivery-form-field">
+                                    <label for="customer-phone" class="form-label">Phone Number *</label>
+                                    <input 
+                                        type="tel" 
+                                        id="customer-phone" 
+                                        class="form-input" 
+                                        placeholder="Enter 10-digit mobile number"
+                                        required
+                                        pattern="[6-9][0-9]{9}"
+                                        autocomplete="tel"
+                                    >
+                                    <p class="text-xs text-gray-500 mt-1">We'll call you if needed for delivery</p>
+                                </div>
+
+                                <button onclick="goToStep2()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg transition-colors font-medium">
+                                    Continue to Address →
+                                </button>
                             </div>
-                            
-                            <div class="mb-4">
-                                <label for="customer-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                <input type="tel" id="customer-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Your phone number">
+
+                            <!-- Step 2: Address & Location -->
+                            <div id="delivery-step-2" class="delivery-step">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-lg font-semibold text-gray-900">📍 Delivery Location</h4>
+                                    <button onclick="goToStep1()" class="text-blue-500 hover:text-blue-600 text-sm">← Back</button>
+                                </div>
+
+                                <!-- Quick Location Actions -->
+                                <div class="location-quick-actions">
+                                    <button onclick="getCurrentDeliveryLocation()" class="quick-action-btn" id="current-location-quick">
+                                        📍 Use Current Location
+                                    </button>
+                                    <button onclick="focusAddressInput()" class="quick-action-btn">
+                                        ✏️ Type Address
+                                    </button>
+                                </div>
+
+                                <!-- Device-specific instructions -->
+                                <div id="location-instructions" class="device-specific-instructions">
+                                    <p class="font-medium">📱 How to set your location:</p>
+                                    <p id="device-instruction-text">• Tap "Use Current Location" or click on the map</p>
+                                </div>
+                                
+                                <div class="delivery-form-field">
+                                    <label for="delivery-address" class="form-label">Delivery Address *</label>
+                                    <input 
+                                        type="text" 
+                                        id="delivery-address" 
+                                        class="form-input" 
+                                        placeholder="Enter full address or click on map"
+                                        autocomplete="street-address"
+                                    >
+                                </div>
+                                
+                                <div class="delivery-form-field">
+                                    <label for="delivery-notes" class="form-label">Delivery Instructions (Optional)</label>
+                                    <textarea 
+                                        id="delivery-notes" 
+                                        rows="2" 
+                                        class="form-input" 
+                                        placeholder="Floor, apartment, landmark, special instructions..."
+                                    ></textarea>
+                                </div>
+
+                                <button onclick="goToStep3()" id="continue-to-step3" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg transition-colors font-medium" disabled>
+                                    Continue to Confirm →
+                                </button>
                             </div>
-                            
-                            <div class="mb-4">
-                                <label for="delivery-notes" class="block text-sm font-medium text-gray-700 mb-2">Special Instructions (Optional)</label>
-                                <textarea id="delivery-notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Any special requests or notes..."></textarea>
+
+                            <!-- Step 3: Order Confirmation -->
+                            <div id="delivery-step-3" class="delivery-step">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-lg font-semibold text-gray-900">✅ Confirm Order</h4>
+                                    <button onclick="goToStep2()" class="text-blue-500 hover:text-blue-600 text-sm">← Back</button>
+                                </div>
+
+                                <!-- Order Summary Display -->
+                                <div id="final-order-summary" class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <h5 class="font-medium text-gray-900 mb-2">Order Summary</h5>
+                                    <div id="final-order-items" class="text-sm text-gray-600 mb-2">
+                                        <!-- Items will be populated -->
+                                    </div>
+                                    <div class="text-sm">
+                                        <span class="font-medium">👤 Name:</span> <span id="final-customer-name">-</span><br>
+                                        <span class="font-medium">📞 Phone:</span> <span id="final-customer-phone">-</span><br>
+                                        <span class="font-medium">📍 Address:</span> <span id="final-delivery-address">-</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
                         <!-- Right Column: Map -->
                         <div>
-                            <div class="map-container relative">
+                            <div class="map-container">
                                 <div id="delivery-map"></div>
                                 <div class="map-controls">
-                                    <button id="current-location-btn" class="map-control-btn" title="Current Location">
+                                    <button id="current-location-btn" class="map-control-btn" title="Use Current Location">
                                         📍
                                     </button>
                                     <button id="zoom-in-btn" class="map-control-btn" title="Zoom In">
@@ -900,68 +1212,89 @@
                                         ➖
                                     </button>
                                 </div>
+                                <div class="map-location-info" id="map-location-info">
+                                    <div class="text-center">
+                                        <p class="font-medium">📍 Select your delivery location</p>
+                                        <p class="text-xs">Tap map or use current location</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Calculation Loading -->
                     <div id="delivery-calculation-loading" class="calculation-loading">
-                        <div class="flex items-center">
-                            <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent mr-2"></div>
-                            <span class="text-sm text-blue-600">Calculating delivery charges...</span>
+                        <div class="flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent mr-3"></div>
+                            <span class="text-sm text-blue-600 font-medium">Calculating delivery charges and total...</span>
                         </div>
                     </div>
                     
                     <!-- Error Message -->
                     <div id="delivery-error-message" class="error-message hidden">
-                        <p class="text-sm font-medium">Delivery Error</p>
-                        <p id="delivery-error-text" class="text-xs mt-1"></p>
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium text-red-800">Delivery Issue</p>
+                                <p id="delivery-error-text" class="text-sm text-red-700 mt-1"></p>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Selected Address Display -->
                     <div id="selected-address" class="hidden">
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                            <p class="text-sm font-medium text-green-800">📍 Selected Address:</p>
-                            <p id="selected-address-text" class="text-sm text-green-700 mt-1"></p>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-medium text-green-800">📍 Selected Location:</p>
+                                    <p id="selected-address-text" class="text-sm text-green-700 mt-1"></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Delivery Summary -->
                     <div id="delivery-summary" class="delivery-summary hidden">
-                        <h4 class="font-bold text-lg mb-3">📦 Delivery Summary</h4>
+                        <h4 class="font-bold text-xl mb-4">📦 Delivery Summary</h4>
                         
                         <div class="price-row">
                             <span>📍 Distance:</span>
-                            <span id="distance-display">0 km</span>
+                            <span id="distance-display" class="font-semibold">0 km</span>
                         </div>
                         
                         <div class="price-row">
                             <span>🛍️ Items Total:</span>
-                            <span id="delivery-items-total">₹0</span>
+                            <span id="delivery-items-total" class="font-semibold">₹0</span>
                         </div>
                         
                         <div class="price-row">
                             <span>🚚 Delivery Charge:</span>
-                            <span id="delivery-charge">₹0</span>
+                            <span id="delivery-charge" class="font-semibold">₹0</span>
                         </div>
                         
                         <div class="price-row" id="delivery-tax-row">
                             <span>📊 Tax:</span>
-                            <span id="delivery-tax-amount">₹0</span>
+                            <span id="delivery-tax-amount" class="font-semibold">₹0</span>
                         </div>
                         
                         <div class="price-row total">
                             <span>💰 Total Amount:</span>
-                            <span id="delivery-total-amount">₹0</span>
+                            <span id="delivery-total-amount" class="text-yellow-300">₹0</span>
                         </div>
                     </div>
                     
-                    <button id="confirm-delivery-btn" onclick="confirmDeliveryOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center ripple mt-4">
+                    <button id="confirm-delivery-btn" onclick="confirmDeliveryOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-lg transition-colors flex items-center justify-center ripple mt-6 font-semibold text-lg shadow-lg">
                         <span class="btn-text flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.515"/>
                             </svg>
-                            Order via WhatsApp
+                            Send Order via WhatsApp
                         </span>
                         <div class="loading-spinner hidden mx-auto"></div>
                     </button>
@@ -1000,6 +1333,7 @@
         let deliverySettings = null;
         let shopSettings = null;
         let debounceTimer = null;
+        let currentDeliveryStep = 1;
         
         // Image loading variables
         let imageObserver = null;
@@ -1008,12 +1342,44 @@
         let loadingImageCount = 0;
         let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+        // Device detection
+        const deviceInfo = getDeviceInfo();
+
         // Initialization
         document.addEventListener('DOMContentLoaded', () => {
             initImageLoading();
             loadShopData();
             setupEventListeners();
+            updateDeviceInstructions();
         });
+
+        function getDeviceInfo() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+            
+            return {
+                isIOS: /ipad|iphone|ipod/.test(userAgent) || (platform === 'macintel' && navigator.maxTouchPoints > 1),
+                isAndroid: /android/.test(userAgent),
+                isMobile: /mobile|tablet|ipad|iphone|ipod/.test(userAgent) || window.innerWidth < 768,
+                isDesktop: !/mobile|tablet|ipad|iphone|ipod/.test(userAgent) && window.innerWidth >= 768,
+                hasGPS: 'geolocation' in navigator
+            };
+        }
+
+        function updateDeviceInstructions() {
+            const instructionText = document.getElementById('device-instruction-text');
+            if (!instructionText) return;
+
+            if (deviceInfo.isDesktop) {
+                instructionText.innerHTML = '• Click on the map to set location<br>• Type address in the field above<br>• GPS may not be available on desktop';
+            } else if (deviceInfo.isIOS) {
+                instructionText.innerHTML = '• Tap "Use Current Location" for GPS<br>• Tap on map to set location<br>• Type address if needed';
+            } else if (deviceInfo.isAndroid) {
+                instructionText.innerHTML = '• Tap "Use Current Location" for GPS<br>• Tap on map to set location<br>• Type address in the field above';
+            } else {
+                instructionText.innerHTML = '• Tap on the map or type address above';
+            }
+        }
 
         function setupEventListeners() {
             // Share functionality
@@ -1057,8 +1423,12 @@
                 if (e.key === 'Enter' && !isProcessingOrder) {
                     if (e.target.id === 'table-number') {
                         confirmDineInOrder();
-                    } else if (e.target.id === 'delivery-address' || e.target.id === 'customer-phone') {
-                        confirmDeliveryOrder();
+                    } else if (e.target.id === 'customer-name' && currentDeliveryStep === 1) {
+                        goToStep2();
+                    } else if (e.target.id === 'customer-phone' && currentDeliveryStep === 1) {
+                        goToStep2();
+                    } else if (e.target.id === 'delivery-address' && currentDeliveryStep === 2) {
+                        goToStep3();
                     }
                 }
             });
@@ -1083,12 +1453,141 @@
                         geocodeAddress(address);
                     }
                 }, 1000);
+
+                validateStep2();
             });
 
             // Table number input change - calculate dine-in total
             document.getElementById('table-number').addEventListener('input', () => {
                 calculateDineInTotal();
             });
+
+            // Form validation listeners
+            document.getElementById('customer-name').addEventListener('input', validateStep1);
+            document.getElementById('customer-phone').addEventListener('input', validateStep1);
+        }
+
+        // Delivery Step Management
+        function goToStep1() {
+            currentDeliveryStep = 1;
+            updateStepDisplay();
+        }
+
+        function goToStep2() {
+            if (!validateStep1()) {
+                return;
+            }
+            currentDeliveryStep = 2;
+            updateStepDisplay();
+            
+            // Initialize map if not already done
+            setTimeout(() => {
+                if (!deliveryMap) {
+                    initializeDeliveryMap();
+                }
+            }, 100);
+        }
+
+        function goToStep3() {
+            if (!validateStep2()) {
+                return;
+            }
+            currentDeliveryStep = 3;
+            updateStepDisplay();
+            updateFinalOrderSummary();
+            calculateDeliveryCharges();
+        }
+
+        function validateStep1() {
+            const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const phoneRegex = /^[6-9]\d{9}$/;
+            
+            const nameValid = name.length >= 2;
+            const phoneValid = phoneRegex.test(phone.replace(/[^\d]/g, ''));
+            
+            // Update visual feedback
+            updateInputValidation('customer-name', nameValid);
+            updateInputValidation('customer-phone', phoneValid);
+            
+            return nameValid && phoneValid;
+        }
+
+        function validateStep2() {
+            const address = document.getElementById('delivery-address').value.trim();
+            const hasLocation = selectedDeliveryLocation !== null;
+            const hasAddress = address.length > 5;
+            
+            const isValid = (hasLocation || hasAddress);
+            
+            // Update button state
+            const continueBtn = document.getElementById('continue-to-step3');
+            continueBtn.disabled = !isValid;
+            continueBtn.className = isValid 
+                ? 'w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg transition-colors font-medium'
+                : 'w-full bg-gray-300 text-gray-500 py-3 px-4 rounded-lg font-medium cursor-not-allowed';
+            
+            updateInputValidation('delivery-address', hasAddress);
+            
+            return isValid;
+        }
+
+        function updateInputValidation(inputId, isValid) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            
+            if (isValid) {
+                input.classList.remove('border-red-300');
+                input.classList.add('border-green-300');
+            } else if (input.value.trim() !== '') {
+                input.classList.remove('border-green-300');
+                input.classList.add('border-red-300');
+            } else {
+                input.classList.remove('border-red-300', 'border-green-300');
+            }
+        }
+
+        function updateStepDisplay() {
+            // Update step circles
+            for (let i = 1; i <= 3; i++) {
+                const circle = document.getElementById(`step${i}-circle`);
+                const step = document.getElementById(`delivery-step-${i}`);
+                
+                if (i < currentDeliveryStep) {
+                    circle.className = 'step-circle completed';
+                    circle.innerHTML = '✓';
+                    step.className = 'delivery-step';
+                } else if (i === currentDeliveryStep) {
+                    circle.className = 'step-circle active';
+                    circle.innerHTML = i;
+                    step.className = 'delivery-step active';
+                } else {
+                    circle.className = 'step-circle';
+                    circle.innerHTML = i;
+                    step.className = 'delivery-step';
+                }
+            }
+        }
+
+        function updateFinalOrderSummary() {
+            const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const address = document.getElementById('delivery-address').value.trim();
+            
+            document.getElementById('final-customer-name').textContent = name;
+            document.getElementById('final-customer-phone').textContent = phone;
+            document.getElementById('final-delivery-address').textContent = address || 'Selected on map';
+            
+            // Update order items
+            const itemsHtml = orderList.map(item => 
+                `${item.name} × ${item.quantity} = ₹${Math.round(item.price * item.quantity)}`
+            ).join('<br>');
+            
+            document.getElementById('final-order-items').innerHTML = itemsHtml;
+        }
+
+        function focusAddressInput() {
+            document.getElementById('delivery-address').focus();
         }
 
         // Shop Data Loading
@@ -1325,7 +1824,7 @@
             });
         }
 
-        // Product Rendering
+        // Product Rendering (keeping existing functions...)
         function renderCategories(subcategories) {
             const container = document.getElementById('categories-container');
             const allButton = container.querySelector('[data-category="all"]');
@@ -1705,8 +2204,31 @@
             if (type === 'dine_in') {
                 openTableModal();
             } else if (type === 'delivery') {
+                resetDeliveryForm();
                 openAddressModal();
             }
+        }
+
+        function resetDeliveryForm() {
+            currentDeliveryStep = 1;
+            selectedDeliveryLocation = null;
+            selectedDeliveryAddress = null;
+            
+            // Clear form fields
+            document.getElementById('customer-name').value = '';
+            document.getElementById('customer-phone').value = '';
+            document.getElementById('delivery-address').value = '';
+            document.getElementById('delivery-notes').value = '';
+            
+            // Reset validation classes
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('border-red-300', 'border-green-300');
+            });
+            
+            // Hide summary sections
+            document.getElementById('delivery-summary').classList.add('hidden');
+            document.getElementById('selected-address').classList.add('hidden');
+            hideDeliveryError();
         }
 
         function openTableModal() {
@@ -1719,26 +2241,12 @@
             document.getElementById('table-modal').classList.add('hidden');
         }
 
-function openAddressModal() {
-    const modal = document.getElementById('address-modal');
-    modal.classList.remove('hidden');
-    document.getElementById('delivery-address').focus();
-    
-    // Initialize map immediately
-    initializeDeliveryMap();
-    
-    // CRITICAL: Multiple invalidateSize calls with increasing delays
-    // to handle different browser rendering speeds
-    const invalidateSizes = [100, 300, 500, 1000];
-    invalidateSizes.forEach(delay => {
-        setTimeout(() => {
-            if (deliveryMap) {
-                deliveryMap.invalidateSize();
-                console.log(`Map invalidated at ${delay}ms`);
-            }
-        }, delay);
-    });
-}
+        function openAddressModal() {
+            const modal = document.getElementById('address-modal');
+            modal.classList.remove('hidden');
+            updateStepDisplay();
+            document.getElementById('customer-name').focus();
+        }
 
         function closeAddressModal() {
             document.getElementById('address-modal').classList.add('hidden');
@@ -1779,86 +2287,64 @@ function openAddressModal() {
             }
         }
 
-        // Delivery Map Initialization - FIXED for browser compatibility
-function initializeDeliveryMap() {
-    if (deliveryMap) {
-        return; // Map already initialized
-    }
+        // Enhanced Delivery Map Initialization
+        function initializeDeliveryMap() {
+            if (deliveryMap) {
+                return;
+            }
 
-    const mapContainer = document.getElementById('delivery-map');
-    if (!mapContainer) {
-        console.error('Map container not found');
-        return;
-    }
+            const mapContainer = document.getElementById('delivery-map');
+            if (!mapContainer) {
+                console.error('Map container not found');
+                return;
+            }
 
-    // Ensure container has explicit dimensions BEFORE map creation
-    if (!mapContainer.style.height) {
-        mapContainer.style.height = '400px';
-        mapContainer.style.width = '100%';
-    }
+            // Ensure container has explicit dimensions
+            if (!mapContainer.style.height) {
+                mapContainer.style.height = deviceInfo.isMobile ? '280px' : '350px';
+                mapContainer.style.width = '100%';
+            }
 
-    try {
-        deliveryMap = L.map('delivery-map', {
-            // Force immediate tile loading
-            preferCanvas: false,
-            zoomControl: true,
-            // Better for modal contexts
-            trackResize: true
-        }).setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
-        
-        // ✅ FIXED: Use OpenStreetMap tiles (more reliable than Mapbox for debugging)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 18,
-            // Force tile loading
-            crossOrigin: true,
-            // Better error handling
-            errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UaWxlIEVycm9yPC90ZXh0Pjwvc3ZnPg=='
-        }).addTo(deliveryMap);
+            try {
+                deliveryMap = L.map('delivery-map', {
+                    preferCanvas: false,
+                    zoomControl: false, // We'll use custom controls
+                    trackResize: true,
+                    attributionControl: false
+                }).setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
+                
+                // Use OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18,
+                    crossOrigin: true
+                }).addTo(deliveryMap);
 
-        // Add click event
-        deliveryMap.on('click', onDeliveryMapClick);
-        
-        // Setup map controls
-        setupMapControls();
-        
-        // CRITICAL: Force immediate size calculation
-        deliveryMap.invalidateSize(true);
-        
-        console.log('Delivery map initialized successfully');
-        
-    } catch (error) {
-        console.error('Failed to initialize delivery map:', error);
-    }
-}
-
-
-
-
-function addMapResizeObserver() {
-    if (!window.ResizeObserver || !deliveryMap) return;
-    
-    const mapContainer = document.getElementById('delivery-map');
-    const resizeObserver = new ResizeObserver(entries => {
-        for (let entry of entries) {
-            if (entry.target === mapContainer) {
-                // Debounce the resize to avoid too many calls
-                clearTimeout(window.mapResizeTimeout);
-                window.mapResizeTimeout = setTimeout(() => {
+                // Add click event
+                deliveryMap.on('click', onDeliveryMapClick);
+                
+                // Setup map controls
+                setupMapControls();
+                
+                // Force immediate size calculation
+                deliveryMap.invalidateSize(true);
+                
+                // Additional invalidations for better browser compatibility
+                setTimeout(() => {
                     if (deliveryMap) {
                         deliveryMap.invalidateSize();
-                        console.log('Map resized via ResizeObserver');
+                        updateMapLocationInfo('Click on map to set delivery location');
                     }
-                }, 100);
+                }, 300);
+                
+                console.log('Delivery map initialized successfully');
+                
+            } catch (error) {
+                console.error('Failed to initialize delivery map:', error);
+                updateMapLocationInfo('Map failed to load. Please refresh and try again.');
             }
         }
-    });
-    
-    resizeObserver.observe(mapContainer);
-}
 
-        
-        
         function onDeliveryMapClick(e) {
             const { lat, lng } = e.latlng;
             setDeliveryLocation(lat, lng);
@@ -1871,15 +2357,31 @@ function addMapResizeObserver() {
             if (deliveryLocationMarker) {
                 deliveryLocationMarker.setLatLng([lat, lng]);
             } else {
-                deliveryLocationMarker = L.marker([lat, lng], { draggable: true }).addTo(deliveryMap);
+                deliveryLocationMarker = L.marker([lat, lng], { 
+                    draggable: true,
+                    title: 'Delivery Location'
+                }).addTo(deliveryMap);
+                
                 deliveryLocationMarker.on('dragend', (e) => {
                     const pos = e.target.getLatLng();
                     setDeliveryLocation(pos.lat, pos.lng);
                 });
             }
             
+            updateMapLocationInfo(`Location set: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+            
             // Reverse geocode to get address
             reverseGeocodeDelivery(lat, lng);
+            
+            // Validate step 2
+            validateStep2();
+        }
+
+        function updateMapLocationInfo(message) {
+            const infoEl = document.getElementById('map-location-info');
+            if (infoEl) {
+                infoEl.innerHTML = `<div class="text-center"><p class="font-medium text-sm">${message}</p></div>`;
+            }
         }
 
         function setupMapControls() {
@@ -1888,30 +2390,100 @@ function addMapResizeObserver() {
             
             // Zoom controls
             document.getElementById('zoom-in-btn').addEventListener('click', () => {
-                deliveryMap.setZoom(deliveryMap.getZoom() + 1);
+                if (deliveryMap) {
+                    deliveryMap.setZoom(deliveryMap.getZoom() + 1);
+                }
             });
             
             document.getElementById('zoom-out-btn').addEventListener('click', () => {
-                deliveryMap.setZoom(deliveryMap.getZoom() - 1);
+                if (deliveryMap) {
+                    deliveryMap.setZoom(deliveryMap.getZoom() - 1);
+                }
             });
         }
 
         function getCurrentDeliveryLocation() {
+            const currentLocationBtn = document.getElementById('current-location-btn');
+            const quickLocationBtn = document.getElementById('current-location-quick');
+            
+            // Update button states
+            [currentLocationBtn, quickLocationBtn].forEach(btn => {
+                if (btn) {
+                    btn.style.opacity = '0.5';
+                    btn.style.pointerEvents = 'none';
+                }
+            });
+            
+            updateMapLocationInfo('Getting your current location...');
+            
+            if (!deviceInfo.hasGPS) {
+                updateMapLocationInfo('GPS not available on this device. Please click on map or type address.');
+                resetLocationButtons();
+                return;
+            }
+
             if (navigator.geolocation) {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                };
+
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude } = position.coords;
-                        deliveryMap.setView([latitude, longitude], 15);
-                        setDeliveryLocation(latitude, longitude);
+                        if (deliveryMap) {
+                            deliveryMap.setView([latitude, longitude], 16);
+                            setDeliveryLocation(latitude, longitude);
+                            showToast('Location Found', 'Your current location has been set', 'success');
+                        }
+                        resetLocationButtons();
                     },
                     (error) => {
-                        setDeliveryLocation(CONFIG.DEFAULT_LOCATION[0], CONFIG.DEFAULT_LOCATION[1]);
+                        let errorMessage = 'Could not get your location. ';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += 'Please allow location access and try again.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += 'Location service unavailable.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += 'Location request timed out.';
+                                break;
+                            default:
+                                errorMessage += 'Please try again or click on the map.';
+                                break;
+                        }
+                        
+                        updateMapLocationInfo(errorMessage);
+                        showToast('Location Error', errorMessage, 'error');
+                        
+                        // Fallback to default location
+                        if (deliveryMap) {
+                            deliveryMap.setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
+                        }
+                        resetLocationButtons();
                     },
-                    { enableHighAccuracy: true, timeout: 10000 }
+                    options
                 );
             } else {
-                setDeliveryLocation(CONFIG.DEFAULT_LOCATION[0], CONFIG.DEFAULT_LOCATION[1]);
+                updateMapLocationInfo('Location services not supported. Please click on map or type address.');
+                resetLocationButtons();
             }
+        }
+
+        function resetLocationButtons() {
+            const currentLocationBtn = document.getElementById('current-location-btn');
+            const quickLocationBtn = document.getElementById('current-location-quick');
+            
+            [currentLocationBtn, quickLocationBtn].forEach(btn => {
+                if (btn) {
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+            });
         }
 
         // Delivery Calculations
@@ -1937,18 +2509,15 @@ function addMapResizeObserver() {
                     selectedDeliveryAddress = data.address;
                     document.getElementById('delivery-address').value = selectedDeliveryAddress;
                     updateDeliveryAddressDisplay();
-                    calculateDeliveryCharges();
                 } else {
                     selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
                     document.getElementById('delivery-address').value = selectedDeliveryAddress;
                     updateDeliveryAddressDisplay();
-                    calculateDeliveryCharges();
                 }
             } catch (error) {
                 selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
                 document.getElementById('delivery-address').value = selectedDeliveryAddress;
                 updateDeliveryAddressDisplay();
-                calculateDeliveryCharges();
             }
         }
 
@@ -1971,9 +2540,11 @@ function addMapResizeObserver() {
                 
                 if (data.success) {
                     const { latitude, longitude } = data.coordinates;
-                    deliveryMap.setView([latitude, longitude], 15);
-                    setDeliveryLocation(latitude, longitude);
-                    showToast('Address Found', 'Location set on map', 'success');
+                    if (deliveryMap) {
+                        deliveryMap.setView([latitude, longitude], 15);
+                        setDeliveryLocation(latitude, longitude);
+                        showToast('Address Found', 'Location set on map', 'success');
+                    }
                 } else {
                     showDeliveryError('Address not found. Please try a different address or use the map.');
                 }
@@ -2022,7 +2593,7 @@ function addMapResizeObserver() {
                         deliveryCharge *= 2;
                     }
                     
-// Apply free delivery threshold
+                    // Apply free delivery threshold
                     if (itemsTotal >= shopSettings.delivery_free_threshold) {
                         deliveryCharge = 0.0;
                     }
@@ -2206,25 +2777,21 @@ function addMapResizeObserver() {
         async function confirmDeliveryOrder() {
             if (isProcessingOrder) return;
             
-            const address = document.getElementById('delivery-address').value.trim();
+            // Enhanced validation
+            const name = document.getElementById('customer-name').value.trim();
             const phone = document.getElementById('customer-phone').value.trim();
+            const address = document.getElementById('delivery-address').value.trim();
             const notes = document.getElementById('delivery-notes').value.trim();
             
-            // Enhanced validation
-            if (!address) {
-                showToast('Missing Information', 'Please enter a delivery address', 'error');
-                document.getElementById('delivery-address').focus();
+            if (!validateStep1()) {
+                goToStep1();
+                showToast('Incomplete Information', 'Please fill in your name and phone number', 'error');
                 return;
             }
 
-            if (!selectedDeliveryLocation) {
-                showToast('Missing Location', 'Please select a location on the map', 'error');
-                return;
-            }
-
-            if (!phone) {
-                showToast('Missing Information', 'Please enter your phone number', 'error');
-                document.getElementById('customer-phone').focus();
+            if (!validateStep2()) {
+                goToStep2();
+                showToast('Missing Location', 'Please select a delivery location', 'error');
                 return;
             }
 
@@ -2232,6 +2799,7 @@ function addMapResizeObserver() {
             const phoneRegex = /^[6-9]\d{9}$/;
             const cleanPhone = phone.replace(/[^\d]/g, '');
             if (!phoneRegex.test(cleanPhone)) {
+                goToStep1();
                 showToast('Invalid Phone', 'Please enter a valid 10-digit mobile number', 'error');
                 document.getElementById('customer-phone').focus();
                 return;
@@ -2278,11 +2846,15 @@ function addMapResizeObserver() {
                     distance_km
                 } = totalsResult;
 
+                // Create full address with name for better identification
+                const fullAddress = `${name}, ${address}`;
+
                 // Prepare order data for backend
                 const orderData = {
                     shop_id: shopData.shop.id,
                     order_type: 'delivery',
-                    customer_address: address,
+                    customer_name: name,
+                    customer_address: fullAddress, // Include name in address
                     customer_phone: cleanPhone,
                     customer_latitude: selectedDeliveryLocation.lat,
                     customer_longitude: selectedDeliveryLocation.lng,
@@ -2337,11 +2909,7 @@ function addMapResizeObserver() {
                         closeAddressModal();
                         
                         // Reset form
-                        document.getElementById('delivery-address').value = '';
-                        document.getElementById('customer-phone').value = '';
-                        document.getElementById('delivery-notes').value = '';
-                        selectedDeliveryLocation = null;
-                        selectedDeliveryAddress = null;
+                        resetDeliveryForm();
                         
                         // Remove map marker
                         if (deliveryLocationMarker) {
@@ -2371,6 +2939,10 @@ function addMapResizeObserver() {
             
             let message = `🛍️ *New Delivery Order - ${shopName}*\n\n`;
             
+            message += `👤 *Customer Details:*\n`;
+            message += `• Name: ${orderData.customer_name}\n`;
+            message += `• Phone: ${orderData.customer_phone}\n\n`;
+            
             message += `📝 *Items (${orderData.order_items.length}):*\n`;
             orderData.order_items.forEach((item, index) => {
                 message += `${index + 1}. ${item.name} × ${item.quantity} = ₹${Math.round(item.price * item.quantity)}\n`;
@@ -2395,10 +2967,6 @@ function addMapResizeObserver() {
             message += `• Address: ${orderData.customer_address}\n`;
             message += `• Distance: ${orderData.delivery_distance_km.toFixed(1)} km\n`;
             
-            if (orderData.customer_phone) {
-                message += `• Phone: ${orderData.customer_phone}\n`;
-            }
-            
             if (orderData.notes) {
                 message += `• Notes: ${orderData.notes}\n`;
             }
@@ -2413,7 +2981,7 @@ function addMapResizeObserver() {
                     shopSettings.upi_id,
                     shopName,
                     orderData.total_amount,
-                    `Payment for Order - ${shopName}`
+                    `Payment for Order - ${shopName} - ${orderData.customer_name}`
                 );
                 message += `\n💳 *Payment Link:*\n${paymentLink}\n`;
             }
@@ -2430,7 +2998,6 @@ function addMapResizeObserver() {
         }
 
         function generateWhatsAppLink(phoneNumber, message) {
-            const deviceInfo = getDeviceInfo();
             const encodedMessage = encodeURIComponent(message);
             
             const cleanPhone = phoneNumber.replace(/[^\d+]/g, '');
@@ -2453,21 +3020,7 @@ function addMapResizeObserver() {
             }
         }
 
-        function getDeviceInfo() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            const platform = navigator.platform.toLowerCase();
-            
-            return {
-                isIOS: /ipad|iphone|ipod/.test(userAgent) || (platform === 'macintel' && navigator.maxTouchPoints > 1),
-                isAndroid: /android/.test(userAgent),
-                isMobile: /mobile|tablet|ipad|iphone|ipod/.test(userAgent) || window.innerWidth < 768,
-                isDesktop: !/mobile|tablet|ipad|iphone|ipod/.test(userAgent) && window.innerWidth >= 768
-            };
-        }
-
         function openWhatsApp(url, fallbackMessage) {
-            const deviceInfo = getDeviceInfo();
-            
             try {
                 if (deviceInfo.isMobile) {
                     window.location.href = url;
@@ -2562,7 +3115,7 @@ function addMapResizeObserver() {
                 setTimeout(() => {
                     toast.classList.add('hidden');
                 }, 300);
-            }, 4000);
+            }, 5000);
         }
 
         function showLoadingOverlay() {
@@ -2590,8 +3143,6 @@ function addMapResizeObserver() {
         }
 
         function downloadApp() {
-            const deviceInfo = getDeviceInfo();
-            
             if (deviceInfo.isAndroid) {
                 window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
             } else {
@@ -2673,6 +3224,25 @@ function addMapResizeObserver() {
                 document.body.classList.add('touch-device');
             });
         }
+
+        // Enhanced resize handling for modals and maps
+        window.addEventListener('resize', () => {
+            if (deliveryMap) {
+                setTimeout(() => {
+                    deliveryMap.invalidateSize();
+                }, 300);
+            }
+        });
+
+        // Orientation change handling for mobile devices
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (deliveryMap) {
+                    deliveryMap.invalidateSize();
+                }
+                updateDeviceInstructions();
+            }, 500);
+        });
     </script>
 </body>
 </html>
