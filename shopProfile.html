@@ -151,7 +151,6 @@
             }
         }
 
-        /* Loading Spinner */
         .loading-spinner {
             width: 20px;
             height: 20px;
@@ -166,14 +165,12 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Button loading state */
         .btn-loading {
             opacity: 0.7;
             cursor: not-allowed;
             pointer-events: none;
         }
 
-        /* Success animation */
         .success-checkmark {
             animation: checkmark 0.6s ease-in-out;
         }
@@ -184,7 +181,6 @@
             100% { transform: scale(1); }
         }
 
-        /* Ripple effect */
         .ripple {
             position: relative;
             overflow: hidden;
@@ -208,7 +204,6 @@
             height: 300px;
         }
 
-        /* Toast notification */
         .toast {
             position: fixed;
             top: 20px;
@@ -222,7 +217,6 @@
             transform: translateX(0);
         }
 
-        /* Cool loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -294,7 +288,6 @@
             100% { transform: translate(24px, 0); }
         }
 
-        /* SIMPLIFIED IMAGE LOADING STYLES */
         .image-container {
             position: relative;
             overflow: hidden;
@@ -332,14 +325,12 @@
             opacity: 0;
         }
 
-        /* Force immediate display for critical images */
         .critical-image {
             opacity: 1 !important;
             position: relative !important;
             z-index: 3 !important;
         }
 
-        /* Map Styles */
         .map-container {
             height: 400px;
             border-radius: 12px;
@@ -445,7 +436,6 @@
             margin-top: 20px;
         }
 
-        /* Mobile optimization */
         @media (max-width: 640px) {
             .image-container {
                 background-color: #f3f4f6;
@@ -984,16 +974,13 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // ====================================
-        // CONFIGURATION & GLOBAL VARIABLES
-        // ====================================
-        
+        // Configuration & Global Variables
         const CONFIG = {
             SUPABASE_URL: 'https://rtwtkapynafirwixyeal.supabase.co',
             DELIVERY_FUNCTION: '/functions/v1/delivery-calculator',
             SHOP_VIEW_FUNCTION: '/functions/v1/web-shopView',
             FOOD_ORDER_FUNCTION: '/functions/v1/Food-AddItem',
-            DEFAULT_LOCATION: [22.7196, 75.8577], // Indore, India
+            DEFAULT_LOCATION: [22.7196, 75.8577],
             DEFAULT_ZOOM: 13
         };
 
@@ -1021,12 +1008,8 @@
         let loadingImageCount = 0;
         let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        // ====================================
-        // INITIALIZATION
-        // ====================================
-        
+        // Initialization
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Initializing Enhanced Delivery System');
             initImageLoading();
             loadShopData();
             setupEventListeners();
@@ -1108,10 +1091,7 @@
             });
         }
 
-        // ====================================
-        // SHOP DATA LOADING
-        // ====================================
-        
+        // Shop Data Loading
         async function loadShopData() {
             const urlParams = new URLSearchParams(window.location.search);
             
@@ -1156,15 +1136,11 @@
                 hideLoading();
                 
             } catch (error) {
-                console.error('Error loading shop data:', error);
                 showError();
             }
         }
 
-        // ====================================
-        // DELIVERY SETTINGS LOADING
-        // ====================================
-        
+        // Delivery Settings Loading
         async function loadDeliverySettings() {
             try {
                 // Load default delivery settings
@@ -1185,16 +1161,12 @@
                     upi_id: 'shop@paytm'
                 };
                 
-                console.log('📊 Delivery settings loaded:', { deliverySettings, shopSettings });
             } catch (error) {
-                console.error('❌ Error loading delivery settings:', error);
+                // Fallback to defaults
             }
         }
 
-        // ====================================
-        // SHOP PROFILE RENDERING
-        // ====================================
-        
+        // Shop Profile Rendering
         function renderShopProfile() {
             const { shop, products = [], discounts = [], subcategories = [], stats } = shopData;
 
@@ -1236,10 +1208,7 @@
             }, 100);
         }
 
-// ====================================
-        // IMAGE LOADING SYSTEM (CONTINUED)
-        // ====================================
-        
+        // Image Loading System
         function initImageLoading() {
             const observerOptions = {
                 root: null,
@@ -1356,10 +1325,7 @@
             });
         }
 
-        // ====================================
-        // PRODUCT RENDERING
-        // ====================================
-        
+        // Product Rendering
         function renderCategories(subcategories) {
             const container = document.getElementById('categories-container');
             const allButton = container.querySelector('[data-category="all"]');
@@ -1593,10 +1559,7 @@
             return productName && productName.trim() !== '' && price && price > 0;
         }
 
-        // ====================================
-        // ORDER MANAGEMENT
-        // ====================================
-        
+        // Order Management
         function addToOrder(product) {
             if (!canOrderProduct(product)) {
                 return;
@@ -1711,10 +1674,7 @@
             }
         }
 
-        // ====================================
-        // MODAL MANAGEMENT
-        // ====================================
-        
+        // Modal Management
         function openOrderModal() {
             document.getElementById('order-modal').classList.remove('hidden');
             updateOrderModal();
@@ -1769,10 +1729,7 @@
             document.getElementById('address-modal').classList.add('hidden');
         }
 
-        // ====================================
-        // DINE-IN CALCULATIONS
-        // ====================================
-        
+        // Dine-in Calculations
         function calculateDineInTotal() {
             const tableNumber = document.getElementById('table-number').value.trim();
             
@@ -1807,39 +1764,34 @@
             }
         }
 
-        // ====================================
-        // DELIVERY MAP INITIALIZATION
-        // ====================================
-        
-        // Updated initializeDeliveryMap function
-function initializeDeliveryMap() {
-    if (deliveryMap) {
-        return; // Map already initialized
-    }
+        // Delivery Map Initialization - FIXED for browser compatibility
+        function initializeDeliveryMap() {
+            if (deliveryMap) {
+                return; // Map already initialized
+            }
 
-    const mapContainer = document.getElementById('delivery-map');
-    if (!mapContainer) return;
+            const mapContainer = document.getElementById('delivery-map');
+            if (!mapContainer) return;
 
-    deliveryMap = L.map('delivery-map').setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
-    
-    // ✅ FIXED: Use proper tile URL that doesn't conflict with API
-    L.tileLayer(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}/tiles/{z}/{x}/{y}`, {
-        attribution: '© Mapbox © OpenStreetMap',
-        maxZoom: 18,
-        tileSize: 256,
-        zoomOffset: 0,
-        errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2Y5ZmFmYiIvPjx0ZXh0IHg9IjEyOCIgeT0iMTI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjM2MzYzIj5NYXAgVGlsZSBOb3QgQXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg=='
-    }).addTo(deliveryMap);
+            deliveryMap = L.map('delivery-map').setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
+            
+            // ✅ FIXED: Use standard OpenStreetMap tiles instead of custom function
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18,
+                tileSize: 256,
+                zoomOffset: 0
+            }).addTo(deliveryMap);
 
-    // Add click event to map
-    deliveryMap.on('click', onDeliveryMapClick);
-    
-    // Setup map controls
-    setupMapControls();
-    
-    // Get current location
-    getCurrentDeliveryLocation();
-}
+            // Add click event to map
+            deliveryMap.on('click', onDeliveryMapClick);
+            
+            // Setup map controls
+            setupMapControls();
+            
+            // Get current location
+            getCurrentDeliveryLocation();
+        }
         
         function onDeliveryMapClick(e) {
             const { lat, lng } = e.latlng;
@@ -1887,7 +1839,6 @@ function initializeDeliveryMap() {
                         setDeliveryLocation(latitude, longitude);
                     },
                     (error) => {
-                        console.log('📍 Geolocation error:', error);
                         setDeliveryLocation(CONFIG.DEFAULT_LOCATION[0], CONFIG.DEFAULT_LOCATION[1]);
                     },
                     { enableHighAccuracy: true, timeout: 10000 }
@@ -1897,241 +1848,178 @@ function initializeDeliveryMap() {
             }
         }
 
-        // ====================================
-        // DELIVERY CALCULATIONS
-        // ====================================
-        
-async function reverseGeocodeDelivery(lat, lng) {
-    try {
-        console.log('🌍 Reverse geocoding coordinates:', lat, lng);
-        
-        const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'reverse-geocode',
-                latitude: lat,
-                longitude: lng
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+        // Delivery Calculations
+        async function reverseGeocodeDelivery(lat, lng) {
+            try {
+                const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'reverse-geocode',
+                        latitude: lat,
+                        longitude: lng
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    selectedDeliveryAddress = data.address;
+                    document.getElementById('delivery-address').value = selectedDeliveryAddress;
+                    updateDeliveryAddressDisplay();
+                    calculateDeliveryCharges();
+                } else {
+                    selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                    document.getElementById('delivery-address').value = selectedDeliveryAddress;
+                    updateDeliveryAddressDisplay();
+                    calculateDeliveryCharges();
+                }
+            } catch (error) {
+                selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                document.getElementById('delivery-address').value = selectedDeliveryAddress;
+                updateDeliveryAddressDisplay();
+                calculateDeliveryCharges();
+            }
         }
-        
-        const data = await response.json();
-        console.log('🌍 Reverse geocoding result:', data);
-        
-        if (data.success) {
-            selectedDeliveryAddress = data.address;
-            document.getElementById('delivery-address').value = selectedDeliveryAddress;
-            updateDeliveryAddressDisplay();
-            calculateDeliveryCharges();
-        } else {
-            console.log('⚠️ Reverse geocoding failed, using coordinates');
-            selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-            document.getElementById('delivery-address').value = selectedDeliveryAddress;
-            updateDeliveryAddressDisplay();
-            calculateDeliveryCharges();
-        }
-    } catch (error) {
-        console.error('❌ Reverse geocoding error:', error);
-        selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-        document.getElementById('delivery-address').value = selectedDeliveryAddress;
-        updateDeliveryAddressDisplay();
-        calculateDeliveryCharges();
-    }
-}
-async function geocodeAddress(address) {
-    try {
-        console.log('🌍 Geocoding address:', address);
-        
-        const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'geocode',
-                address: address
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('🌍 Geocoding result:', data);
-        
-        if (data.success) {
-            const { latitude, longitude } = data.coordinates;
-            deliveryMap.setView([latitude, longitude], 15);
-            setDeliveryLocation(latitude, longitude);
-            showToast('Address Found', 'Location set on map', 'success');
-        } else {
-            showDeliveryError('Address not found. Please try a different address or use the map.');
-        }
-    } catch (error) {
-        console.error('❌ Geocoding error:', error);
-        showDeliveryError('Failed to find address. Please try again or use the map.');
-    }
-}
 
-async function calculateDeliveryCharges() {
-    if (!selectedDeliveryLocation || !shopData) {
-        console.log('⚠️ Missing location or shop data');
-        return;
-    }
-    
-    showDeliveryCalculationLoading(true);
-    hideDeliveryError();
-    
-    try {
-        console.log('🚚 Starting delivery charge calculation...');
-        
-        // First calculate distance
-        const distanceData = await calculateDistance();
-        
-        if (!distanceData.success) {
-            throw new Error(distanceData.error);
-        }
-        
-        const distanceKm = distanceData.distance_km;
-        console.log('📏 Distance calculated:', distanceKm, 'km');
-        
-        // Check if within delivery range
-        if (distanceKm > shopSettings.max_delivery_distance_km) {
-            throw new Error(`Delivery location is outside our delivery range (${shopSettings.max_delivery_distance_km.toFixed(1)} km). Your location is ${distanceKm.toFixed(1)} km away.`);
-        }
-        
-        // Calculate all charges
-        const itemsTotal = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        console.log('💰 Items total:', itemsTotal);
-        
-        // Calculate delivery charge using same logic as backend
-        let deliveryCharge = 0;
-        
-        if (distanceKm > 0.1) { // Only charge if distance > 100 meters
-            if (distanceKm <= 2.0) {
-                deliveryCharge = deliverySettings.base_price_under_2km + (distanceKm * deliverySettings.price_per_km_under_2km);
-            } else {
-                deliveryCharge = deliverySettings.base_price_over_2km + (distanceKm * deliverySettings.price_per_km_over_2km);
-            }
-            
-            if (deliverySettings.is_round_trip) {
-                deliveryCharge *= 2;
-            }
-            
-            // Apply free delivery threshold
-            if (itemsTotal >= shopSettings.delivery_free_threshold) {
-                console.log('🎁 Free delivery applied!');
-                deliveryCharge = 0;
+        async function geocodeAddress(address) {
+            try {
+                const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'geocode',
+                        address: address
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const { latitude, longitude } = data.coordinates;
+                    deliveryMap.setView([latitude, longitude], 15);
+                    setDeliveryLocation(latitude, longitude);
+                    showToast('Address Found', 'Location set on map', 'success');
+                } else {
+                    showDeliveryError('Address not found. Please try a different address or use the map.');
+                }
+            } catch (error) {
+                showDeliveryError('Failed to find address. Please try again or use the map.');
             }
         }
-        
-        deliveryCharge = Math.round(deliveryCharge * 100) / 100;
-        console.log('🚚 Final delivery charge:', deliveryCharge);
-        
-        // Calculate tax
-        const taxAmount = Math.round((itemsTotal + deliveryCharge) * shopSettings.tax_percentage / 100 * 100) / 100;
-        const totalAmount = itemsTotal + deliveryCharge + taxAmount;
-        
-        console.log('📊 Final totals:', { itemsTotal, deliveryCharge, taxAmount, totalAmount });
-        
-        // Update UI
-        updateDeliverySummary({
-            distance: distanceKm,
-            itemsTotal,
-            deliveryCharge,
-            taxAmount,
-            totalAmount
-        });
-        
-        showDeliveryCalculationLoading(false);
-        
-    } catch (error) {
-        console.error('❌ Delivery calculation error:', error);
-        showDeliveryError(error.message);
-        showDeliveryCalculationLoading(false);
-    }
-}
 
-async function calculateDistance() {
-    try {
-        console.log('🔍 Starting distance calculation...')
-        console.log('📍 Shop coordinates:', shopData.shop.latitude, shopData.shop.longitude)
-        console.log('📍 Customer coordinates:', selectedDeliveryLocation.lat, selectedDeliveryLocation.lng)
-        
-        const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'calculate-distance',
-                shopId: shopData.shop.id,
-                shopLatitude: shopData.shop.latitude,
-                shopLongitude: shopData.shop.longitude,
-                customerLatitude: selectedDeliveryLocation.lat,
-                customerLongitude: selectedDeliveryLocation.lng
-            })
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ Distance API HTTP error:', response.status, errorText);
-            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        async function calculateDeliveryCharges() {
+            if (!selectedDeliveryLocation || !shopData) {
+                return;
+            }
+            
+            showDeliveryCalculationLoading(true);
+            hideDeliveryError();
+            
+            try {
+                // First calculate distance
+                const distanceData = await calculateDistance();
+                
+                if (!distanceData.success) {
+                    throw new Error(distanceData.error);
+                }
+                
+                const distanceKm = distanceData.distance_km;
+                
+                // Check if within delivery range
+                if (distanceKm > shopSettings.max_delivery_distance_km) {
+                    throw new Error(`Delivery location is outside our delivery range (${shopSettings.max_delivery_distance_km.toFixed(1)} km). Your location is ${distanceKm.toFixed(1)} km away.`);
+                }
+                
+                // Calculate all charges
+                const itemsTotal = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                // Calculate delivery charge using same logic as backend
+                let deliveryCharge = 0;
+                
+                if (distanceKm > 0.1) { // Only charge if distance > 100 meters
+                    if (distanceKm <= 2.0) {
+                        deliveryCharge = deliverySettings.base_price_under_2km + (distanceKm * deliverySettings.price_per_km_under_2km);
+                    } else {
+                        deliveryCharge = deliverySettings.base_price_over_2km + (distanceKm * deliverySettings.price_per_km_over_2km);
+                    }
+                    
+                    if (deliverySettings.is_round_trip) {
+                        deliveryCharge *= 2;
+                    }
+                    
+// Apply free delivery threshold
+                    if (itemsTotal >= shopSettings.delivery_free_threshold) {
+                        deliveryCharge = 0.0;
+                    }
+                }
+                
+                deliveryCharge = Math.round(deliveryCharge * 100) / 100;
+                
+                // Calculate tax
+                const taxAmount = Math.round((itemsTotal + deliveryCharge) * shopSettings.tax_percentage / 100 * 100) / 100;
+                const totalAmount = itemsTotal + deliveryCharge + taxAmount;
+                
+                // Update UI
+                updateDeliverySummary({
+                    distance: distanceKm,
+                    itemsTotal,
+                    deliveryCharge,
+                    taxAmount,
+                    totalAmount
+                });
+                
+                showDeliveryCalculationLoading(false);
+                
+            } catch (error) {
+                showDeliveryError(error.message);
+                showDeliveryCalculationLoading(false);
+            }
         }
-        
-        const result = await response.json();
-        console.log('📊 Distance calculation result:', result);
-        
-        if (!result.success) {
-            console.error('❌ Distance calculation failed:', result.error);
-            throw new Error(result.error || 'Distance calculation failed');
-        }
-        
-        return result;
-    } catch (error) {
-        console.error('❌ Distance calculation error:', error);
-        return { 
-            success: false, 
-            error: error.message || 'Failed to calculate distance',
-            distance_km: 0,
-            fallback: true
-        };
-    }
-}
-        function calculateDeliveryCharge(distanceKm, itemsTotal) {
-            console.log('🚚 Calculating delivery charge for distance:', distanceKm, 'km');
-            
-            // If distance is very small (< 0.1km), return 0
-            if (distanceKm <= 0.1) {
-                console.log('🚚 Distance too small, returning ₹0');
-                return 0.0;
+
+        async function calculateDistance() {
+            try {
+                const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'calculate-distance',
+                        shopId: shopData.shop.id,
+                        shopLatitude: shopData.shop.latitude,
+                        shopLongitude: shopData.shop.longitude,
+                        customerLatitude: selectedDeliveryLocation.lat,
+                        customerLongitude: selectedDeliveryLocation.lng
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Distance calculation failed');
+                }
+                
+                return result;
+            } catch (error) {
+                return { 
+                    success: false, 
+                    error: error.message || 'Failed to calculate distance',
+                    distance_km: 0,
+                    fallback: true
+                };
             }
-            
-            const { base_price_under_2km, price_per_km_under_2km, base_price_over_2km, price_per_km_over_2km, is_round_trip } = deliverySettings;
-            
-            let deliveryCharge;
-            
-            if (distanceKm <= 2.0) {
-                deliveryCharge = base_price_under_2km + (distanceKm * price_per_km_under_2km);
-                console.log('🚚 Under 2km calculation:', base_price_under_2km, '+', distanceKm, '*', price_per_km_under_2km, '=', deliveryCharge);
-            } else {
-                deliveryCharge = base_price_over_2km + (distanceKm * price_per_km_over_2km);
-                console.log('🚚 Over 2km calculation:', base_price_over_2km, '+', distanceKm, '*', price_per_km_over_2km, '=', deliveryCharge);
-            }
-            
-            if (is_round_trip) {
-                deliveryCharge *= 2;
-                console.log('🚚 Round trip applied, delivery charge:', deliveryCharge);
-            }
-            
-            // Apply free delivery threshold
-            if (itemsTotal >= shopSettings.delivery_free_threshold) {
-                console.log('🎁 Free delivery applied! Items total:', itemsTotal, 'Threshold:', shopSettings.delivery_free_threshold);
-                deliveryCharge = 0;
-            }
-            
-            return Math.round(deliveryCharge * 100) / 100;
         }
 
         function calculateTax(amount) {
@@ -2180,10 +2068,7 @@ async function calculateDistance() {
             document.getElementById('delivery-error-message').classList.add('hidden');
         }
 
-        // ====================================
-        // ORDER PROCESSING
-        // ====================================
-        
+        // Order Processing
         async function confirmDineInOrder() {
             if (isProcessingOrder) return;
             
@@ -2244,7 +2129,6 @@ async function calculateDistance() {
                     showToast('Order Failed', result.error || 'Failed to place order. Please try again.', 'error');
                 }
             } catch (error) {
-                console.error('Error placing order:', error);
                 hideLoadingOverlay();
                 showToast('Network Error', 'Failed to place order. Please check your connection and try again.', 'error');
             } finally {
@@ -2253,180 +2137,169 @@ async function calculateDistance() {
             }
         }
 
-async function confirmDeliveryOrder() {
-    if (isProcessingOrder) return;
-    
-    const address = document.getElementById('delivery-address').value.trim();
-    const phone = document.getElementById('customer-phone').value.trim();
-    const notes = document.getElementById('delivery-notes').value.trim();
-    
-    // Enhanced validation
-    if (!address) {
-        showToast('Missing Information', 'Please enter a delivery address', 'error');
-        document.getElementById('delivery-address').focus();
-        return;
-    }
-
-    if (!selectedDeliveryLocation) {
-        showToast('Missing Location', 'Please select a location on the map', 'error');
-        return;
-    }
-
-    if (!phone) {
-        showToast('Missing Information', 'Please enter your phone number', 'error');
-        document.getElementById('customer-phone').focus();
-        return;
-    }
-
-    // Validate phone number format
-    const phoneRegex = /^[6-9]\d{9}$/;
-    const cleanPhone = phone.replace(/[^\d]/g, '');
-    if (!phoneRegex.test(cleanPhone)) {
-        showToast('Invalid Phone', 'Please enter a valid 10-digit mobile number', 'error');
-        document.getElementById('customer-phone').focus();
-        return;
-    }
-
-    isProcessingOrder = true;
-    setButtonLoading('confirm-delivery-btn', true);
-    showLoadingOverlay();
-
-    try {
-        console.log('🚚 Processing delivery order...');
-        
-        // ✅ Use enhanced order totals calculation API
-        const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'calculate-order-totals',
-                shopId: shopData.shop.id,
-                orderItems: orderList.map(item => ({
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity
-                })),
-                customerAddress: address,
-                customerLatitude: selectedDeliveryLocation.lat,
-                customerLongitude: selectedDeliveryLocation.lng
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-        }
-
-        const totalsResult = await response.json();
-        console.log('📊 Order totals result:', totalsResult);
-
-        if (!totalsResult.success) {
-            throw new Error(totalsResult.error || 'Failed to calculate order totals');
-        }
-
-        const {
-            subtotal,
-            delivery_charge,
-            tax_amount,
-            total_amount,
-            distance_km
-        } = totalsResult;
-
-        // Prepare order data for backend
-        const orderData = {
-            shop_id: shopData.shop.id,
-            order_type: 'delivery',
-            customer_address: address,
-            customer_phone: cleanPhone,
-            customer_latitude: selectedDeliveryLocation.lat,
-            customer_longitude: selectedDeliveryLocation.lng,
-            order_items: orderList.map(item => ({
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity
-            })),
-            subtotal: subtotal,
-            delivery_charge: delivery_charge,
-            tax_amount: tax_amount,
-            total_amount: total_amount,
-            delivery_distance_km: distance_km,
-            notes: notes || null
-        };
-
-        console.log('💾 Sending order to backend:', orderData);
-
-        // Save order to database (background operation)
-        fetch(`${CONFIG.SUPABASE_URL}${CONFIG.FOOD_ORDER_FUNCTION}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(orderData)
-        }).then(response => {
-            if (response.ok) {
-                console.log('✅ Order saved to database successfully');
-            } else {
-                console.error('❌ Failed to save order to database:', response.status);
-            }
-        }).catch(error => {
-            console.error('❌ Database save error:', error);
-        });
-        
-        // Generate WhatsApp message
-        const message = generateDeliveryOrderMessage({
-            ...orderData,
-            subtotal,
-            delivery_charge,
-            tax_amount,
-            total_amount,
-            delivery_distance_km: distance_km
-        });
-
-        const shopContact = shopData.shop.contact?.phone || shopData.shop.phone;
-        
-        if (shopContact) {
-            const whatsappUrl = generateWhatsAppLink(shopContact, message);
+        async function confirmDeliveryOrder() {
+            if (isProcessingOrder) return;
             
-            setTimeout(() => {
-                openWhatsApp(whatsappUrl, message);
-                
-                hideLoadingOverlay();
-                showToast('Order Sent!', 'Your delivery order has been sent via WhatsApp with exact location and payment details.', 'success');
-                
-                // Clear order and close modal
-                orderList = [];
-                updateOrderUI();
-                closeAddressModal();
-                
-                // Reset form
-                document.getElementById('delivery-address').value = '';
-                document.getElementById('customer-phone').value = '';
-                document.getElementById('delivery-notes').value = '';
-                selectedDeliveryLocation = null;
-                selectedDeliveryAddress = null;
-                
-                // Remove map marker
-                if (deliveryLocationMarker) {
-                    deliveryMap.removeLayer(deliveryLocationMarker);
-                    deliveryLocationMarker = null;
+            const address = document.getElementById('delivery-address').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const notes = document.getElementById('delivery-notes').value.trim();
+            
+            // Enhanced validation
+            if (!address) {
+                showToast('Missing Information', 'Please enter a delivery address', 'error');
+                document.getElementById('delivery-address').focus();
+                return;
+            }
+
+            if (!selectedDeliveryLocation) {
+                showToast('Missing Location', 'Please select a location on the map', 'error');
+                return;
+            }
+
+            if (!phone) {
+                showToast('Missing Information', 'Please enter your phone number', 'error');
+                document.getElementById('customer-phone').focus();
+                return;
+            }
+
+            // Validate phone number format
+            const phoneRegex = /^[6-9]\d{9}$/;
+            const cleanPhone = phone.replace(/[^\d]/g, '');
+            if (!phoneRegex.test(cleanPhone)) {
+                showToast('Invalid Phone', 'Please enter a valid 10-digit mobile number', 'error');
+                document.getElementById('customer-phone').focus();
+                return;
+            }
+
+            isProcessingOrder = true;
+            setButtonLoading('confirm-delivery-btn', true);
+            showLoadingOverlay();
+
+            try {
+                // Use enhanced order totals calculation API
+                const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'calculate-order-totals',
+                        shopId: shopData.shop.id,
+                        orderItems: orderList.map(item => ({
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity
+                        })),
+                        customerAddress: address,
+                        customerLatitude: selectedDeliveryLocation.lat,
+                        customerLongitude: selectedDeliveryLocation.lng
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
                 }
+
+                const totalsResult = await response.json();
+
+                if (!totalsResult.success) {
+                    throw new Error(totalsResult.error || 'Failed to calculate order totals');
+                }
+
+                const {
+                    subtotal,
+                    delivery_charge,
+                    tax_amount,
+                    total_amount,
+                    distance_km
+                } = totalsResult;
+
+                // Prepare order data for backend
+                const orderData = {
+                    shop_id: shopData.shop.id,
+                    order_type: 'delivery',
+                    customer_address: address,
+                    customer_phone: cleanPhone,
+                    customer_latitude: selectedDeliveryLocation.lat,
+                    customer_longitude: selectedDeliveryLocation.lng,
+                    order_items: orderList.map(item => ({
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity
+                    })),
+                    subtotal: subtotal,
+                    delivery_charge: delivery_charge,
+                    tax_amount: tax_amount,
+                    total_amount: total_amount,
+                    delivery_distance_km: distance_km,
+                    notes: notes || null
+                };
+
+                // Save order to database (background operation)
+                fetch(`${CONFIG.SUPABASE_URL}${CONFIG.FOOD_ORDER_FUNCTION}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData)
+                }).catch(() => {
+                    // Ignore database save errors for now
+                });
                 
+                // Generate WhatsApp message
+                const message = generateDeliveryOrderMessage({
+                    ...orderData,
+                    subtotal,
+                    delivery_charge,
+                    tax_amount,
+                    total_amount,
+                    delivery_distance_km: distance_km
+                });
+
+                const shopContact = shopData.shop.contact?.phone || shopData.shop.phone;
+                
+                if (shopContact) {
+                    const whatsappUrl = generateWhatsAppLink(shopContact, message);
+                    
+                    setTimeout(() => {
+                        openWhatsApp(whatsappUrl, message);
+                        
+                        hideLoadingOverlay();
+                        showToast('Order Sent!', 'Your delivery order has been sent via WhatsApp with exact location and payment details.', 'success');
+                        
+                        // Clear order and close modal
+                        orderList = [];
+                        updateOrderUI();
+                        closeAddressModal();
+                        
+                        // Reset form
+                        document.getElementById('delivery-address').value = '';
+                        document.getElementById('customer-phone').value = '';
+                        document.getElementById('delivery-notes').value = '';
+                        selectedDeliveryLocation = null;
+                        selectedDeliveryAddress = null;
+                        
+                        // Remove map marker
+                        if (deliveryLocationMarker) {
+                            deliveryMap.removeLayer(deliveryLocationMarker);
+                            deliveryLocationMarker = null;
+                        }
+                        
+                        isProcessingOrder = false;
+                        setButtonLoading('confirm-delivery-btn', false);
+                    }, 500);
+                } else {
+                    hideLoadingOverlay();
+                    showToast('Missing Contact', 'Restaurant contact information is not available. Please try again later.', 'error');
+                    isProcessingOrder = false;
+                    setButtonLoading('confirm-delivery-btn', false);
+                }
+            } catch (error) {
+                hideLoadingOverlay();
+                showToast('Order Failed', error.message || 'Failed to process delivery order. Please try again.', 'error');
                 isProcessingOrder = false;
                 setButtonLoading('confirm-delivery-btn', false);
-            }, 500);
-        } else {
-            hideLoadingOverlay();
-            showToast('Missing Contact', 'Restaurant contact information is not available. Please try again later.', 'error');
-            isProcessingOrder = false;
-            setButtonLoading('confirm-delivery-btn', false);
+            }
         }
-    } catch (error) {
-        console.error('❌ Error in delivery order process:', error);
-        hideLoadingOverlay();
-        showToast('Order Failed', error.message || 'Failed to process delivery order. Please try again.', 'error');
-        isProcessingOrder = false;
-        setButtonLoading('confirm-delivery-btn', false);
-    }
-}
+
         function generateDeliveryOrderMessage(orderData) {
             const shopName = shopData.shop.name;
             
@@ -2545,16 +2418,12 @@ async function confirmDeliveryOrder() {
                     }
                 }
             } catch (error) {
-                console.error('Error opening WhatsApp:', error);
                 copyToClipboard(fallbackMessage);
                 showToast('Error', 'Unable to open WhatsApp. Message copied to clipboard.', 'error');
             }
         }
 
-        // ====================================
-        // UTILITY FUNCTIONS
-        // ====================================
-        
+        // Utility Functions
         function filterProducts(categoryId) {
             currentCategory = categoryId;
             
@@ -2721,25 +2590,15 @@ async function confirmDeliveryOrder() {
             return uuidPattern.test(uuid);
         }
 
-        // ====================================
-        // CLEANUP AND FINAL INITIALIZATION
-        // ====================================
-
-        // Cleanup on page unload
+        // Cleanup and Final Initialization
         window.addEventListener('beforeunload', () => {
             if (imageObserver) {
                 imageObserver.disconnect();
             }
         });
 
-        // Performance monitoring
         window.addEventListener('load', () => {
-            console.log('✅ Enhanced Delivery System loaded successfully');
-            console.log('📊 Stats:', {
-                loaded: loadedImages.size,
-                failed: failedImages.size,
-                isMobile: isMobile
-            });
+            // Performance monitoring complete
         });
 
         // Touch event handling for mobile
@@ -2748,10 +2607,6 @@ async function confirmDeliveryOrder() {
                 document.body.classList.add('touch-device');
             });
         }
-
-        console.log('🚀 Enhanced Delivery System with Maps initialized!');
-        console.log('📱 Mobile device detected:', isMobile);
-        console.log('🎯 Features: Map integration, delivery calculations, tax handling, payment links');
     </script>
 </body>
 </html>
