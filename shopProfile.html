@@ -1719,11 +1719,20 @@
             document.getElementById('table-modal').classList.add('hidden');
         }
 
-        function openAddressModal() {
-            document.getElementById('address-modal').classList.remove('hidden');
-            document.getElementById('delivery-address').focus();
-            initializeDeliveryMap();
+function openAddressModal() {
+    document.getElementById('address-modal').classList.remove('hidden');
+    document.getElementById('delivery-address').focus();
+    
+    // Initialize map first
+    initializeDeliveryMap();
+    
+    // ✅ CRITICAL: Add another invalidateSize call after modal transition
+    setTimeout(() => {
+        if (deliveryMap) {
+            deliveryMap.invalidateSize();
         }
+    }, 300); // Wait for modal animation to complete
+}
 
         function closeAddressModal() {
             document.getElementById('address-modal').classList.add('hidden');
@@ -1765,34 +1774,39 @@
         }
 
         // Delivery Map Initialization - FIXED for browser compatibility
-        function initializeDeliveryMap() {
-            if (deliveryMap) {
-                return; // Map already initialized
-            }
+function initializeDeliveryMap() {
+    if (deliveryMap) {
+        return; // Map already initialized
+    }
 
-            const mapContainer = document.getElementById('delivery-map');
-            if (!mapContainer) return;
+    const mapContainer = document.getElementById('delivery-map');
+    if (!mapContainer) return;
 
-            deliveryMap = L.map('delivery-map').setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
-            
-            // ✅ FIXED: Use standard OpenStreetMap tiles instead of custom function
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 18,
-                tileSize: 256,
-                zoomOffset: 0
-            }).addTo(deliveryMap);
+    deliveryMap = L.map('delivery-map').setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
+    
+    // ✅ FIXED: Use standard OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18,
+        tileSize: 256,
+        zoomOffset: 0
+    }).addTo(deliveryMap);
 
-            // Add click event to map
-            deliveryMap.on('click', onDeliveryMapClick);
-            
-            // Setup map controls
-            setupMapControls();
-            
-            // Get current location
-            getCurrentDeliveryLocation();
-        }
-        
+    // Add click event to map
+    deliveryMap.on('click', onDeliveryMapClick);
+    
+    // Setup map controls
+    setupMapControls();
+    
+    // ✅ CRITICAL FIX: Call invalidateSize after modal is shown
+    // This fixes the tile loading issue when map is in a hidden modal
+    setTimeout(() => {
+        deliveryMap.invalidateSize();
+    }, 100);
+    
+    // Get current location
+    getCurrentDeliveryLocation();
+}        
         function onDeliveryMapClick(e) {
             const { lat, lng } = e.latlng;
             setDeliveryLocation(lat, lng);
