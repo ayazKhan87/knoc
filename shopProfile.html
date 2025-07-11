@@ -1720,18 +1720,24 @@
         }
 
 function openAddressModal() {
-    document.getElementById('address-modal').classList.remove('hidden');
+    const modal = document.getElementById('address-modal');
+    modal.classList.remove('hidden');
     document.getElementById('delivery-address').focus();
     
-    // Initialize map first
+    // Initialize map immediately
     initializeDeliveryMap();
     
-    // ✅ CRITICAL: Add another invalidateSize call after modal transition
-    setTimeout(() => {
-        if (deliveryMap) {
-            deliveryMap.invalidateSize();
-        }
-    }, 300); // Wait for modal animation to complete
+    // CRITICAL: Multiple invalidateSize calls with increasing delays
+    // to handle different browser rendering speeds
+    const invalidateSizes = [100, 300, 500, 1000];
+    invalidateSizes.forEach(delay => {
+        setTimeout(() => {
+            if (deliveryMap) {
+                deliveryMap.invalidateSize();
+                console.log(`Map invalidated at ${delay}ms`);
+            }
+        }, delay);
+    });
 }
 
         function closeAddressModal() {
@@ -1780,33 +1786,79 @@ function initializeDeliveryMap() {
     }
 
     const mapContainer = document.getElementById('delivery-map');
-    if (!mapContainer) return;
+    if (!mapContainer) {
+        console.error('Map container not found');
+        return;
+    }
 
-    deliveryMap = L.map('delivery-map').setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
-    
-    // ✅ FIXED: Use standard OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 18,
-        tileSize: 256,
-        zoomOffset: 0
-    }).addTo(deliveryMap);
+    // Ensure container has explicit dimensions BEFORE map creation
+    if (!mapContainer.style.height) {
+        mapContainer.style.height = '400px';
+        mapContainer.style.width = '100%';
+    }
 
-    // Add click event to map
-    deliveryMap.on('click', onDeliveryMapClick);
+    try {
+        deliveryMap = L.map('delivery-map', {
+            // Force immediate tile loading
+            preferCanvas: false,
+            zoomControl: true,
+            // Better for modal contexts
+            trackResize: true
+        }).setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
+        
+        // ✅ FIXED: Use OpenStreetMap tiles (more reliable than Mapbox for debugging)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18,
+            // Force tile loading
+            crossOrigin: true,
+            // Better error handling
+            errorTileUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UaWxlIEVycm9yPC90ZXh0Pjwvc3ZnPg=='
+        }).addTo(deliveryMap);
+
+        // Add click event
+        deliveryMap.on('click', onDeliveryMapClick);
+        
+        // Setup map controls
+        setupMapControls();
+        
+        // CRITICAL: Force immediate size calculation
+        deliveryMap.invalidateSize(true);
+        
+        console.log('Delivery map initialized successfully');
+        
+    } catch (error) {
+        console.error('Failed to initialize delivery map:', error);
+    }
+}
+
+
+
+
+function addMapResizeObserver() {
+    if (!window.ResizeObserver || !deliveryMap) return;
     
-    // Setup map controls
-    setupMapControls();
+    const mapContainer = document.getElementById('delivery-map');
+    const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            if (entry.target === mapContainer) {
+                // Debounce the resize to avoid too many calls
+                clearTimeout(window.mapResizeTimeout);
+                window.mapResizeTimeout = setTimeout(() => {
+                    if (deliveryMap) {
+                        deliveryMap.invalidateSize();
+                        console.log('Map resized via ResizeObserver');
+                    }
+                }, 100);
+            }
+        }
+    });
     
-    // ✅ CRITICAL FIX: Call invalidateSize after modal is shown
-    // This fixes the tile loading issue when map is in a hidden modal
-    setTimeout(() => {
-        deliveryMap.invalidateSize();
-    }, 100);
-    
-    // Get current location
-    getCurrentDeliveryLocation();
-}        
+    resizeObserver.observe(mapContainer);
+}
+
+        
+        
         function onDeliveryMapClick(e) {
             const { lat, lng } = e.latlng;
             setDeliveryLocation(lat, lng);
