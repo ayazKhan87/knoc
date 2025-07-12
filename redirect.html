@@ -586,15 +586,15 @@
       console.log('Device detection:', { isAndroid, isMobile, userAgent });
       
       if (!isMobile) {
-        // Desktop/Laptop handling
+        // Desktop/Laptop handling - immediate redirect for shop links
         if (linkType === 'shop') {
-          // For shop links on desktop, redirect to web profile after 2 seconds
+          // For shop links on desktop, redirect to web profile immediately
           updateStatus('Redirecting to web...');
           setTimeout(() => {
             const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
             console.log('Desktop shop link - redirecting to web profile:', webProfileUrl);
             window.location.href = webProfileUrl;
-          }, 2000);
+          }, 1500);
         } else if (linkType === 'post') {
           // For post links on desktop, show desktop message with options
           showDesktopMessage();
@@ -792,7 +792,7 @@
       const isAndroid = /android/.test(navigator.userAgent.toLowerCase());
       
       if (linkType === 'shop') {
-        // AUTO REDIRECT: For shop links, automatically redirect to web profile (all devices)
+        // AUTO REDIRECT: For shop links, automatically redirect to web profile
         console.log('Shop link - auto redirecting to web profile');
         updateStatus('Opening web profile...');
         
@@ -801,10 +801,9 @@
         document.getElementById('subMessage').textContent = 'Redirecting to web version';
         
         // Immediate redirect for shop links - no buttons shown
-        setTimeout(() => {
-          const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
-          window.location.href = webProfileUrl;
-        }, 1000);
+        const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
+        console.log('Redirecting to web profile:', webProfileUrl);
+        window.location.href = webProfileUrl;
         
       } else if (linkType === 'post') {
         // For post links, redirect directly to Play Store
