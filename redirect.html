@@ -5,73 +5,27 @@
   <title>Opening Knoc App...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      background: linear-gradient(135deg, #1e1e2e 0%, #2d1b38 25%, #3d1a3d 50%, #4a1942 75%, #ef4444 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding: 20px;
-      position: relative;
-      overflow: hidden;
     }
-    
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: 
-        radial-gradient(circle at 20% 20%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 60%, rgba(220, 38, 38, 0.05) 0%, transparent 50%);
-      pointer-events: none;
-    }
-    
     .container {
       text-align: center;
-      padding: 40px 35px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 32px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 
-        0 32px 64px rgba(0, 0, 0, 0.2),
-        0 16px 32px rgba(239, 68, 68, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      max-width: 420px;
+      padding: 30px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      max-width: 450px;
       width: 100%;
       position: relative;
       overflow: hidden;
-      transition: all 0.3s ease;
     }
-    
-    .container:hover {
-      transform: translateY(-2px);
-      box-shadow: 
-        0 40px 80px rgba(0, 0, 0, 0.25),
-        0 20px 40px rgba(239, 68, 68, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    
     .container::before {
       content: '';
       position: absolute;
@@ -79,392 +33,149 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c, #ef4444);
-      background-size: 200% 100%;
-      animation: shimmer 2s linear infinite;
+      background: linear-gradient(90deg, #ef4444, #dc2626);
     }
-    
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    
     .logo {
-      width: 96px;
-      height: 96px;
-      margin: 0 auto 24px;
-      background: linear-gradient(135deg, #ef4444, #dc2626, #b91c1c);
-      border-radius: 28px;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      box-shadow: 
-        0 16px 32px rgba(239, 68, 68, 0.4),
-        0 8px 16px rgba(239, 68, 68, 0.2),
-        inset 0 2px 4px rgba(255, 255, 255, 0.1);
-      position: relative;
-      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
     }
-    
-    .logo:hover {
-      transform: scale(1.05);
-      box-shadow: 
-        0 20px 40px rgba(239, 68, 68, 0.5),
-        0 10px 20px rgba(239, 68, 68, 0.3),
-        inset 0 2px 4px rgba(255, 255, 255, 0.2);
-    }
-    
-    .logo::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      animation: logoSweep 3s linear infinite;
-    }
-    
-    @keyframes logoSweep {
-      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-    }
-    
     .logo img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      z-index: 1;
-      position: relative;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      object-fit: cover;
     }
-    
     .logo-text {
       color: white;
-      font-size: 36px;
-      font-weight: 800;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      z-index: 1;
-      position: relative;
+      font-size: 28px;
+      font-weight: bold;
     }
-    
     .spinner {
-      width: 48px;
-      height: 48px;
-      margin: 24px auto;
-      position: relative;
-    }
-    
-    .spinner::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 3px solid rgba(239, 68, 68, 0.1);
+      border: 3px solid #f3f3f3;
       border-top: 3px solid #ef4444;
       border-radius: 50%;
+      width: 40px;
+      height: 40px;
       animation: spin 1s linear infinite;
+      margin: 20px auto;
     }
-    
-    .spinner::after {
-      content: '';
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      width: calc(100% - 12px);
-      height: calc(100% - 12px);
-      border: 2px solid rgba(220, 38, 38, 0.1);
-      border-bottom: 2px solid #dc2626;
-      border-radius: 50%;
-      animation: spin 1.5s linear infinite reverse;
-    }
-    
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
     .message {
-      color: #1f2937;
-      margin: 20px 0 12px;
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1.3;
-      letter-spacing: -0.025em;
-    }
-    
-    .sub-message {
-      color: #6b7280;
-      font-size: 15px;
-      margin-bottom: 24px;
+      color: #2e2e2e;
+      margin: 20px 0;
+      font-size: 18px;
       font-weight: 500;
-      line-height: 1.4;
     }
-    
-    .shop-preview {
-      background: linear-gradient(135deg, #ef4444, #dc2626, #b91c1c);
-      color: white;
-      padding: 24px;
-      border-radius: 20px;
-      margin: 24px 0;
-      box-shadow: 
-        0 16px 32px rgba(239, 68, 68, 0.25),
-        0 8px 16px rgba(239, 68, 68, 0.15);
-      position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .shop-preview::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-      animation: previewShimmer 4s linear infinite;
-    }
-    
-    @keyframes previewShimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-    
-    .shop-preview h3 {
-      margin: 0 0 8px 0;
-      font-size: 20px;
-      font-weight: 700;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .shop-preview p {
-      margin: 0;
-      opacity: 0.9;
-      font-size: 15px;
-      line-height: 1.4;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .preview-icon {
-      font-size: 28px;
-      margin-bottom: 12px;
-      display: block;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .fallback {
-      margin-top: 32px;
-      font-size: 15px;
-      color: #374151;
-    }
-    
-    .fallback p {
+    .sub-message {
+      color: #666;
+      font-size: 14px;
       margin-bottom: 20px;
-      font-weight: 600;
     }
-    
+    .fallback {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #2e2e2e;
+    }
     .btn {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
+      background-color: #ef4444;
       color: white;
-      padding: 14px 28px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 16px;
+      border-radius: 8px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 500;
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      display: inline-block;
       margin: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 
-        0 8px 16px rgba(239, 68, 68, 0.3),
-        0 4px 8px rgba(239, 68, 68, 0.2);
-      position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
-    
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .btn:hover::before {
-      left: 100%;
-    }
-    
     .btn:hover {
+      background-color: #dc2626;
       transform: translateY(-2px);
-      box-shadow: 
-        0 12px 24px rgba(239, 68, 68, 0.4),
-        0 6px 12px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
     }
-    
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 
-        0 4px 8px rgba(239, 68, 68, 0.3),
-        0 2px 4px rgba(239, 68, 68, 0.2);
-    }
-    
     .btn-secondary {
-      background: linear-gradient(135deg, #6b7280, #4b5563);
-      box-shadow: 
-        0 8px 16px rgba(107, 114, 128, 0.3),
-        0 4px 8px rgba(107, 114, 128, 0.2);
+      background-color: #6b7280;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
     }
-    
     .btn-secondary:hover {
-      box-shadow: 
-        0 12px 24px rgba(107, 114, 128, 0.4),
-        0 6px 12px rgba(107, 114, 128, 0.3);
+      background-color: #4b5563;
+      box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
     }
-    
-    .btn-web {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      box-shadow: 
-        0 8px 16px rgba(59, 130, 246, 0.3),
-        0 4px 8px rgba(59, 130, 246, 0.2);
-    }
-    
-    .btn-web:hover {
-      box-shadow: 
-        0 12px 24px rgba(59, 130, 246, 0.4),
-        0 6px 12px rgba(59, 130, 246, 0.3);
-    }
-    
     .hidden {
-      display: none !important;
+      display: none;
     }
-    
     .desktop-message {
-      color: #1f2937;
+      color: #2e2e2e;
       line-height: 1.6;
     }
-    
     .desktop-message p {
       margin: 15px 0;
     }
-    
+    .shop-preview {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+    }
+    .shop-preview h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+    .shop-preview p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .preview-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 24px;
+      gap: 12px;
+      margin-top: 20px;
     }
-    
-    .web-profile-option {
-      margin-bottom: 20px;
-    }
-    
-    .web-profile-option p {
-      font-size: 13px;
-      color: #6b7280;
-      margin: 8px 0;
-      font-weight: 500;
-    }
-    
-    .pulse {
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-    
-    .status-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      border-radius: 12px;
-      font-size: 14px;
-      color: #dc2626;
-      margin: 12px 0;
-    }
-    
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #ef4444;
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
     @media (max-width: 480px) {
       .options-grid {
         grid-template-columns: 1fr;
       }
-      
       .container {
-        padding: 32px 24px;
-        margin: 16px;
-        border-radius: 28px;
-      }
-      
-      .logo {
-        width: 80px;
-        height: 80px;
-        border-radius: 24px;
-      }
-      
-      .message {
-        font-size: 20px;
-      }
-      
-      .btn {
-        padding: 12px 24px;
-        font-size: 15px;
+        padding: 20px;
+        margin: 10px;
       }
     }
-    
-    /* Smooth transitions for state changes */
-    .container, .spinner, .message, .sub-message, .shop-preview, .fallback {
-      transition: all 0.3s ease;
+    .pulse {
+      animation: pulse 2s infinite;
     }
-    
-    /* Loading state animations */
-    .loading .container {
-      animation: breathe 3s ease-in-out infinite;
-    }
-    
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
     }
   </style>
 </head>
-<body class="loading">
+<body>
   <div class="container">
     <div class="logo">
       <img src="https://www.knoc.in/knoc_logo.png" alt="Knoc Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-text\'>K</div>';">
     </div>
-    
     <div class="spinner pulse" id="spinner"></div>
-    
-    <div class="status-indicator" id="statusIndicator">
-      <div class="status-dot"></div>
-      <span id="statusText">Connecting...</span>
-    </div>
-    
     <div class="message" id="message">Opening Knoc App...</div>
     <div class="sub-message" id="subMessage">Please wait while we redirect you</div>
     
@@ -478,14 +189,6 @@
     <!-- Enhanced Fallback Options -->
     <div class="fallback hidden" id="fallback">
       <p><strong>Choose how you'd like to continue:</strong></p>
-      
-      <!-- Web Profile Button for Shop Links -->
-      <div id="webProfileOption" class="web-profile-option hidden">
-        <a href="#" class="btn btn-web" id="webProfileBtn">
-          🌐 View Shop Profile
-        </a>
-        <p>Browse products without downloading the app</p>
-      </div>
       
       <div class="options-grid">
         <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn" id="playStoreBtn">
@@ -504,37 +207,6 @@
     let linkType = 'unknown';
     let shopId = null;
     let postId = null;
-    let statusUpdateInterval = null;
-    
-    // Status messages for better UX
-    const statusMessages = [
-      'Connecting...',
-      'Checking app...',
-      'Opening content...',
-      'Almost there...'
-    ];
-    
-    function updateStatus(message) {
-      const statusText = document.getElementById('statusText');
-      if (statusText) {
-        statusText.textContent = message;
-      }
-    }
-    
-    function startStatusUpdates() {
-      let index = 0;
-      statusUpdateInterval = setInterval(() => {
-        updateStatus(statusMessages[index]);
-        index = (index + 1) % statusMessages.length;
-      }, 1000);
-    }
-    
-    function stopStatusUpdates() {
-      if (statusUpdateInterval) {
-        clearInterval(statusUpdateInterval);
-        statusUpdateInterval = null;
-      }
-    }
     
     function openAppOrRedirect() {
       console.log('Starting app redirect process...');
@@ -546,12 +218,10 @@
       
       console.log('URL Parameters:', { type, shopId, postId });
       
-      startStatusUpdates();
-      
       // Validate the link format
       if (!type || !shopId) {
         console.log('No valid deep link data, redirecting to main website');
-        updateStatus('Redirecting...');
+        // No valid deep link data, redirect to main website
         setTimeout(() => {
           window.location.href = "https://www.knoc.in";
         }, 2000);
@@ -561,7 +231,6 @@
       // Validate UUID format
       if (!isValidUUID(shopId) || (postId && !isValidUUID(postId))) {
         console.log('Invalid UUID format, redirecting to main website');
-        updateStatus('Redirecting...');
         setTimeout(() => {
           window.location.href = "https://www.knoc.in";
         }, 2000);
@@ -586,25 +255,15 @@
       console.log('Device detection:', { isAndroid, isMobile, userAgent });
       
       if (!isMobile) {
-        // Desktop/Laptop handling - immediate redirect for shop links
-        if (linkType === 'shop') {
-          // For shop links on desktop, redirect to web profile immediately
-          updateStatus('Redirecting to web...');
-          setTimeout(() => {
-            const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
-            console.log('Desktop shop link - redirecting to web profile:', webProfileUrl);
-            window.location.href = webProfileUrl;
-          }, 1500);
-        } else if (linkType === 'post') {
-          // For post links on desktop, show desktop message with options
-          showDesktopMessage();
-        }
+        // Desktop/Laptop handling - redirect to web profile directly
+        setTimeout(() => {
+          redirectToWebProfile();
+        }, 2000);
         return;
       }
 
       if (isAndroid) {
         // Try to open the app immediately for Android
-        updateStatus('Opening app...');
         attemptAppOpen();
       } else {
         // For iOS users, show not available message
@@ -656,6 +315,24 @@
       console.log('Showing post preview');
     }
     
+    // Direct redirect to web profile
+    function redirectToWebProfile() {
+      let webProfileUrl;
+      
+      if (linkType === 'shop' && shopId) {
+        webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
+        console.log('Redirecting to shop web profile:', webProfileUrl);
+      } else if (linkType === 'post' && postId && shopId) {
+        webProfileUrl = `https://www.knoc.in/shopProfile.html?type=post&postId=${encodeURIComponent(postId)}&shopId=${encodeURIComponent(shopId)}`;
+        console.log('Redirecting to post web profile:', webProfileUrl);
+      } else {
+        webProfileUrl = 'https://www.knoc.in';
+        console.log('Redirecting to main website');
+      }
+      
+      window.location.href = webProfileUrl;
+    }
+    
     async function attemptAppOpen() {
       console.log('Attempting to open app with type:', linkType, 'shopId:', shopId, 'postId:', postId);
       
@@ -671,7 +348,7 @@
         intentUrl = `intent://post?postId=${postId}&shopId=${shopId}#Intent;scheme=knoc;package=com.knoc.app;end`;
       } else {
         console.log('Unknown link type:', linkType);
-        showFallbackOptions();
+        redirectToWebProfile();
         return;
       }
       
@@ -685,7 +362,6 @@
         if (document.hidden) {
           appOpened = true;
           console.log('Page became hidden - app likely opened');
-          stopStatusUpdates();
           clearTimeout(redirectTimer);
         } else {
           isPageVisible = true;
@@ -700,7 +376,6 @@
       const handleBlur = () => {
         appOpened = true;
         console.log('Page lost focus - app likely opened');
-        stopStatusUpdates();
       };
       
       const handleFocus = () => {
@@ -709,8 +384,8 @@
           // If we get focus back quickly, app probably didn't open
           setTimeout(() => {
             if (!appOpened && isPageVisible) {
-              console.log('App did not open - handling fallback');
-              handleAppNotInstalled();
+              console.log('App did not open - redirecting to web profile');
+              redirectToWebProfile();
             }
           }, 1500);
         }
@@ -722,8 +397,8 @@
       // Set a timer to handle fallback if app doesn't open
       redirectTimer = setTimeout(() => {
         if (!appOpened && !document.hidden) {
-          console.log('Timer expired - app did not open');
-          handleAppNotInstalled();
+          console.log('Timer expired - app did not open, redirecting to web profile');
+          redirectToWebProfile();
         }
       }, 3000);
       
@@ -774,183 +449,42 @@
         
       } catch (error) {
         console.error('Error opening app:', error);
-        handleAppNotInstalled();
+        redirectToWebProfile();
       }
-    }
-    
-    // Handle when app is not installed - AUTO REDIRECT FOR SHOP LINKS ON ANDROID
-    function handleAppNotInstalled() {
-      if (appOpened) {
-        console.log('App already opened, not handling not installed');
-        return;
-      }
-      
-      console.log('App not installed, handling based on link type');
-      stopStatusUpdates();
-      
-      // Check if we're on Android
-      const isAndroid = /android/.test(navigator.userAgent.toLowerCase());
-      
-      if (linkType === 'shop') {
-        // AUTO REDIRECT: For shop links, automatically redirect to web profile
-        console.log('Shop link - auto redirecting to web profile');
-        updateStatus('Opening web profile...');
-        
-        // Show a brief message before redirecting
-        document.getElementById('message').textContent = 'Opening shop profile...';
-        document.getElementById('subMessage').textContent = 'Redirecting to web version';
-        
-        // Immediate redirect for shop links - no buttons shown
-        const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
-        console.log('Redirecting to web profile:', webProfileUrl);
-        window.location.href = webProfileUrl;
-        
-      } else if (linkType === 'post') {
-        // For post links, redirect directly to Play Store
-        console.log('Post link - redirecting to Play Store');
-        updateStatus('Opening Play Store...');
-        window.location.href = 'https://play.google.com/store/apps/details?id=com.knoc.app';
-        
-      } else {
-        // Default fallback - show options
-        showFallbackOptions();
-      }
-    }
-    
-    function showDesktopMessage() {
-      console.log('Showing desktop message');
-      stopStatusUpdates();
-      document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('statusIndicator').classList.add('hidden');
-      document.body.classList.remove('loading');
-      
-      const messageEl = document.getElementById('message');
-      const subMessageEl = document.getElementById('subMessage');
-      messageEl.classList.add('desktop-message');
-      
-      if (linkType === 'shop') {
-        messageEl.innerHTML = '<strong>Shop Profile Link Detected</strong>';
-        subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
-      } else {
-        messageEl.innerHTML = '<strong>Product Link Detected</strong>';
-        subMessageEl.textContent = 'This link is best viewed on a mobile device with the Knoc app';
-      }
-      
-      showFallbackOptions();
     }
     
     function showIOSMessage() {
       console.log('Showing iOS message');
-      stopStatusUpdates();
       document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('statusIndicator').classList.add('hidden');
-      document.body.classList.remove('loading');
-      
       const messageEl = document.getElementById('message');
       const subMessageEl = document.getElementById('subMessage');
       messageEl.classList.add('desktop-message');
       messageEl.innerHTML = '<strong>Knoc app is not yet available for iOS</strong>';
-      subMessageEl.textContent = "We're working on bringing Knoc to iOS devices soon!";
+      subMessageEl.textContent = "Redirecting to web profile...";
       
-      showFallbackOptions();
-    }
-    
-    function showFallbackOptions() {
-      if (appOpened) {
-        console.log('App already opened, not showing fallback');
-        return;
-      }
-      
-      console.log('Showing fallback options');
-      stopStatusUpdates();
-      document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('statusIndicator').classList.add('hidden');
-      document.body.classList.remove('loading');
-      
-      // Update main message - only for post links or other cases
-      if (linkType === 'post') {
-        document.getElementById('message').textContent = 'Unable to open product in app?';
-        document.getElementById('subMessage').textContent = 'Download the app to see the full product details';
-      } else {
-        document.getElementById('message').textContent = 'Unable to open content in app?';
-        document.getElementById('subMessage').textContent = 'Choose an option below to continue';
-      }
-      
-      document.getElementById('fallback').classList.remove('hidden');
-    }
-    
-    // Setup web profile button for simple deep links
-    function setupWebProfileButton() {
-      const webProfileBtn = document.getElementById('webProfileBtn');
-      
-      if (linkType === 'shop' && shopId) {
-        // Create web profile URL with simple query parameters
-        const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
-        
-        webProfileBtn.href = webProfileUrl;
-        webProfileBtn.onclick = (e) => {
-          console.log('User chose web profile view for shop:', shopId);
-        };
-        
-        console.log('Web profile URL:', webProfileUrl);
-      } else if (linkType === 'post' && postId && shopId) {
-        // For posts, redirect to shop profile for now (or create a post-specific web view)
-        const webProfileUrl = `https://www.knoc.in/shopProfile.html?type=post&postId=${encodeURIComponent(postId)}&shopId=${encodeURIComponent(shopId)}`;
-        
-        webProfileBtn.href = webProfileUrl;
-        webProfileBtn.innerHTML = '🌐 View Product';
-        webProfileBtn.onclick = (e) => {
-          console.log('User chose web profile view for post:', postId, 'shop:', shopId);
-        };
-        
-        console.log('Web profile URL:', webProfileUrl);
-      } else {
-        webProfileBtn.href = 'https://www.knoc.in';
-      }
+      // Redirect to web profile after showing message
+      setTimeout(() => {
+        redirectToWebProfile();
+      }, 2000);
     }
     
     // Initialize the app when DOM is ready
     function initializeApp() {
       console.log('Initializing app...');
       
-      // Add enhanced button interactions
+      // Add some visual feedback for button interactions
       const buttons = document.querySelectorAll('.btn');
       buttons.forEach(button => {
         button.addEventListener('mouseenter', function() {
-          this.style.transform = 'translateY(-2px) scale(1.02)';
+          this.style.transform = 'translateY(-2px)';
         });
         button.addEventListener('mouseleave', function() {
-          this.style.transform = 'translateY(0) scale(1)';
+          this.style.transform = 'translateY(0)';
         });
-        button.addEventListener('mousedown', function() {
-          this.style.transform = 'translateY(0) scale(0.98)';
-        });
-        button.addEventListener('mouseup', function() {
-          this.style.transform = 'translateY(-2px) scale(1.02)';
-        });
-      });
-      
-      // Add click tracking for analytics
-      document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btn')) {
-          console.log('Button clicked:', e.target.textContent.trim(), e.target.href);
-        }
       });
       
       // Start the main process
       openAppOrRedirect();
-    }
-    
-    // Enhanced error handling
-    function handleError(error, context) {
-      console.error(`Error in ${context}:`, error);
-      stopStatusUpdates();
-      updateStatus('Error occurred');
-      
-      // Show fallback after error
-      setTimeout(() => {
-        showFallbackOptions();
-      }, 1000);
     }
     
     // Start the process when page loads
@@ -970,59 +504,15 @@
       }
     });
     
-    // Enhanced error handling for any uncaught errors
+    // Add error handling for any uncaught errors
     window.addEventListener('error', function(e) {
-      handleError(e, `JavaScript error at line ${e.lineno}`);
+      console.error('JavaScript error:', e.message, 'at line', e.lineno);
     });
     
     // Add unhandled promise rejection handling
     window.addEventListener('unhandledrejection', function(e) {
-      handleError(e.reason, 'Unhandled promise rejection');
+      console.error('Unhandled promise rejection:', e.reason);
     });
-    
-    // Clean up function for when leaving the page
-    window.addEventListener('beforeunload', function() {
-      stopStatusUpdates();
-      if (redirectTimer) {
-        clearTimeout(redirectTimer);
-      }
-    });
-    
-    // Add performance monitoring
-    window.addEventListener('load', function() {
-      // Log performance metrics for optimization
-      setTimeout(() => {
-        if (window.performance && window.performance.timing) {
-          const timing = window.performance.timing;
-          const loadTime = timing.loadEventEnd - timing.navigationStart;
-          console.log('Page load time:', loadTime + 'ms');
-        }
-      }, 0);
-    });
-    
-    // Add connection status monitoring
-    function updateConnectionStatus() {
-      const isOnline = navigator.onLine;
-      if (!isOnline) {
-        updateStatus('No internet connection');
-        document.getElementById('message').textContent = 'Connection lost';
-        document.getElementById('subMessage').textContent = 'Please check your internet connection';
-      }
-    }
-    
-    window.addEventListener('online', function() {
-      console.log('Connection restored');
-      if (!appOpened) {
-        updateStatus('Reconnected');
-        // Retry the process if we're still trying
-        setTimeout(openAppOrRedirect, 500);
-      }
-    });
-    
-    window.addEventListener('offline', updateConnectionStatus);
-    
-    // Initial connection check
-    updateConnectionStatus();
   </script>
 </body>
 </html>
