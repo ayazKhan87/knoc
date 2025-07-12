@@ -17,7 +17,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Custom CSS -->
+    <!-- Custom CSS for animations and gradients -->
     <style>
         .loading-shimmer {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -34,10 +34,6 @@
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         }
         
-        .gradient-bg.offline {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-        }
-        
         .product-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -47,166 +43,29 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
-        .product-card.offline {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        
-        .offline-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-        
-        .offline-badge {
-            background: #6b7280;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .search-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 12px 16px 12px 48px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
-        }
-        
-        .search-clear {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 50%;
+        .category-chip {
             transition: all 0.2s ease;
         }
         
-        .search-clear:hover {
-            background: #f3f4f6;
-            color: #6b7280;
+        .category-chip:hover {
+            transform: scale(1.05);
         }
-        
-        .no-results {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6b7280;
+
+        .order-item {
+            animation: slideIn 0.3s ease-out;
         }
-        
-        .highlight {
-            background: rgba(239, 68, 68, 0.2);
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        
-        .modal-overlay {
-            backdrop-filter: blur(4px);
-            background: rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal-content {
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        @keyframes slideUp {
+
+        @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateX(100px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(0);
             }
         }
-        
-        .location-method-btn {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            background: white;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-        
-        .location-method-btn:hover {
-            border-color: #3b82f6;
-            background: #f0f9ff;
-        }
-        
-        .location-method-btn.active {
-            border-color: #3b82f6;
-            background: #dbeafe;
-        }
-        
-        .map-container {
-            height: 400px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        
-        .map-crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            pointer-events: none;
-            color: #ef4444;
-            font-size: 24px;
-            text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
-        }
-        
-        .map-instructions {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            z-index: 1000;
-        }
-        
+
         .floating-cart {
             position: fixed;
             bottom: 20px;
@@ -215,21 +74,21 @@
             transition: all 0.3s ease;
             transform: scale(1);
         }
-        
+
         .floating-cart:hover {
             transform: scale(1.1);
         }
-        
+
         .floating-cart.pulse {
             animation: pulse 0.6s ease-in-out;
         }
-        
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
-        
+
         .cart-count {
             position: absolute;
             top: -8px;
@@ -247,58 +106,86 @@
             border: 2px solid white;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
-        
-        .category-chip {
-            transition: all 0.2s ease;
+
+        .category-section {
+            animation: fadeInUp 0.4s ease-out;
         }
-        
-        .category-chip:hover {
-            transform: scale(1.05);
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .delivery-summary {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+
+        .view-toggle {
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle.active {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
         }
-        
-        .dine-in-summary {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
+
+        .modal-overlay {
+            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.5);
         }
-        
-        .offline-notice {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            margin: 16px;
-            text-align: center;
+
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
         }
-        
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .toast.show {
-            transform: translateX(0);
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .success-checkmark {
+            animation: checkmark 0.6s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
         .ripple {
             position: relative;
             overflow: hidden;
         }
-        
+
         .ripple::before {
             content: '';
             position: absolute;
@@ -311,68 +198,443 @@
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
-        
+
         .ripple:active::before {
             width: 300px;
             height: 300px;
         }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-dots {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .loading-dots div {
+            position: absolute;
+            top: 33px;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .loading-dots div:nth-child(1) {
+            left: 8px;
+            animation: loading-dots1 0.6s infinite;
+        }
+
+        .loading-dots div:nth-child(2) {
+            left: 8px;
+            animation: loading-dots2 0.6s infinite;
+        }
+
+        .loading-dots div:nth-child(3) {
+            left: 32px;
+            animation: loading-dots2 0.6s infinite;
+        }
+
+        .loading-dots div:nth-child(4) {
+            left: 56px;
+            animation: loading-dots3 0.6s infinite;
+        }
+
+        @keyframes loading-dots1 {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes loading-dots3 {
+            0% { transform: scale(1); }
+            100% { transform: scale(0); }
+        }
+
+        @keyframes loading-dots2 {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(24px, 0); }
+        }
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            background-color: #f9fafb;
+            border-radius: inherit;
+        }
+
+        .image-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 2;
+        }
+
+        .lazy-image.loaded {
+            opacity: 1;
+        }
+
+        .lazy-image.error {
+            opacity: 0;
+        }
+
+        .critical-image {
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 3 !important;
+        }
+
+        .map-container {
+            height: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
         
-        .form-group {
+        .delivery-summary {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .calculation-loading {
+            display: none;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+        }
+        
+        .calculation-loading.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .price-row.total {
+            font-size: 18px;
+            font-weight: bold;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .map-control-btn {
+            background: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .map-control-btn:hover {
+            background: #f3f4f6;
+        }
+        
+        .address-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
             margin-bottom: 16px;
         }
         
-        .form-label {
-            display: block;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus {
+        .address-input:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        
-        .form-input.error {
+
+        .dine-in-summary {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        /* Offline Mode Styles */
+        .shop-offline {
+            opacity: 0.6;
+            filter: grayscale(50%);
+        }
+
+        .offline-banner {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .maintenance-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 16px;
+            border-radius: 8px;
+        }
+
+        .btn-disabled {
+            background: #d1d5db !important;
+            color: #6b7280 !important;
+            cursor: not-allowed !important;
+            opacity: 0.5 !important;
+        }
+
+        .btn-disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Search Styles */
+        .search-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
             border-color: #ef4444;
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
         }
-        
-        .form-error {
-            color: #ef4444;
-            font-size: 12px;
-            margin-top: 4px;
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            z-index: 10;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
             display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            z-index: 10;
         }
-        
-        .form-error.show {
-            display: block;
+
+        .search-clear.show {
+            display: flex;
         }
-        
+
+        .search-results-info {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+        .no-results svg {
+            margin: 0 auto 16px;
+            opacity: 0.5;
+        }
+
+        /* Map center marker */
+        .map-center-marker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            pointer-events: none;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Location selection styles */
+        .location-method-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .location-method-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .location-method-btn:hover {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .location-method-btn.active {
+            border-color: #ef4444;
+            background: #ef4444;
+            color: white;
+        }
+
+        .location-method-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f9fafb;
+        }
+
+        .city-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .city-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
         @media (max-width: 640px) {
-            .search-input {
-                font-size: 16px; /* Prevents zoom on iOS */
+            .image-container {
+                background-color: #f3f4f6;
             }
             
-            .modal-content {
-                margin: 10px;
-                max-height: 90vh;
-                overflow-y: auto;
+            .lazy-image {
+                transition: opacity 0.2s ease;
             }
-            
+
+            .product-card {
+                transform: none;
+            }
+
+            .product-card:hover {
+                transform: none;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
             .map-container {
                 height: 300px;
+            }
+
+            .location-method-selector {
+                flex-direction: column;
             }
         }
     </style>
@@ -394,11 +656,27 @@
         </div>
     </div>
 
+    <!-- Cool Loading Overlay -->
+    <div id="order-loading" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-dots">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <p class="mt-4 text-lg font-semibold">Processing your order...</p>
+            <p class="text-sm text-gray-300 mt-2">Please wait while we confirm your order</p>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="toast hidden">
         <div class="bg-white shadow-lg rounded-lg p-4 max-w-sm">
             <div class="flex items-center">
-                <div id="toast-icon" class="flex-shrink-0 w-8 h-8 mr-3"></div>
+                <div id="toast-icon" class="flex-shrink-0 w-8 h-8 mr-3">
+                    <!-- Icon will be inserted here -->
+                </div>
                 <div>
                     <p id="toast-title" class="text-sm font-medium text-gray-900"></p>
                     <p id="toast-message" class="text-sm text-gray-500"></p>
@@ -417,10 +695,23 @@
 
     <!-- Main Content -->
     <div id="content" class="hidden min-h-screen">
+        <!-- Shop Status Banner -->
+        <div id="shop-status-banner" class="hidden">
+            <!-- Will be populated based on shop status -->
+        </div>
+
         <!-- Header Section -->
         <div class="relative">
             <!-- Cover Image -->
             <div id="cover-section" class="h-48 gradient-bg relative overflow-hidden">
+                <div class="image-container w-full h-full">
+                    <div class="image-placeholder">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
+                        </svg>
+                    </div>
+                    <img id="cover-image" class="lazy-image" alt="Shop Cover">
+                </div>
                 <div class="absolute inset-0 bg-black bg-opacity-30"></div>
                 
                 <!-- Back Button -->
@@ -430,9 +721,9 @@
                     </svg>
                 </button>
 
-                <!-- Offline Indicator -->
-                <div id="offline-indicator" class="hidden absolute top-4 right-4 bg-gray-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    📵 Offline
+                <!-- Shop Status Indicator -->
+                <div id="shop-status-indicator" class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold">
+                    <!-- Will be populated based on status -->
                 </div>
             </div>
             
@@ -441,9 +732,18 @@
                 <!-- Profile Image -->
                 <div class="flex justify-center -mt-10 mb-4">
                     <div class="w-20 h-20 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg relative">
-                        <img id="profile-image" class="w-full h-full object-cover" alt="Shop Logo">
+                        <div class="image-container w-full h-full">
+                            <div class="image-placeholder">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <img id="profile-image" class="lazy-image" alt="Shop Logo">
+                        </div>
                         <!-- Online/Offline indicator -->
-                        <div id="status-indicator" class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                        <div id="shop-online-indicator" class="absolute bottom-1 right-1 w-4 h-4 border-2 border-white rounded-full">
+                            <!-- Will be populated based on status -->
+                        </div>
                     </div>
                 </div>
                 
@@ -492,17 +792,6 @@
             </div>
         </div>
 
-        <!-- Offline Notice -->
-        <div id="offline-notice" class="hidden offline-notice">
-            <div class="flex items-center justify-center mb-2">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
-                </svg>
-                <span class="font-semibold">Shop Currently Offline</span>
-            </div>
-            <p class="text-sm opacity-90">Delivery is currently unavailable. You can browse our menu but cannot place orders right now.</p>
-        </div>
-
         <!-- AI Disclaimer Banner -->
         <div class="mx-4 mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div class="flex items-start space-x-3">
@@ -522,30 +811,26 @@
             </div>
         </div>
 
-        <!-- Search and Filters Section -->
+        <!-- Search Bar -->
         <div class="px-4 mb-6">
-            <!-- Search Bar -->
             <div class="search-container">
-                <div class="relative">
-                    <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="search-icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        class="search-input" 
-                        placeholder="Search products, categories, or ingredients..."
-                        autocomplete="off"
-                    >
-                    <div id="search-clear" class="search-clear hidden">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </div>
                 </div>
+                <input type="text" id="search-input" class="search-input" placeholder="Search products, categories..." autocomplete="off">
+                <button id="search-clear" class="search-clear">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
+            <div id="search-results-info" class="search-results-info hidden"></div>
+        </div>
 
-            <!-- View Toggle and Category Filter -->
+        <!-- Products Section Header -->
+        <div class="px-4 mb-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold text-gray-900">Products</h2>
                 <div class="flex items-center space-x-2">
@@ -581,18 +866,6 @@
                 <!-- Products will be loaded here -->
             </div>
             
-            <!-- No Search Results -->
-            <div id="no-search-results" class="hidden no-results">
-                <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">No products found</h3>
-                <p class="text-gray-600 mb-4">Try different keywords or check the spelling</p>
-                <button onclick="clearSearch()" class="text-red-500 hover:text-red-600 font-medium">Clear search</button>
-            </div>
-            
             <!-- Empty State -->
             <div id="empty-state" class="hidden text-center py-12">
                 <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -602,6 +875,15 @@
                 </div>
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">No Products Available</h3>
                 <p class="text-gray-600">This shop hasn't added any products yet.</p>
+            </div>
+
+            <!-- No Search Results -->
+            <div id="no-search-results" class="hidden no-results">
+                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">No products found</h3>
+                <p class="text-gray-600" id="no-results-message">Try searching with different keywords</p>
             </div>
         </div>
     </div>
@@ -622,7 +904,7 @@
         </div>
     </div>
 
-<!-- Order List Modal -->
+    <!-- Order List Modal -->
     <div id="order-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 modal-overlay transition-opacity" onclick="closeOrderModal()"></div>
@@ -658,7 +940,7 @@
                             <span class="text-lg font-bold">Total:</span>
                             <span id="order-total" class="text-lg font-bold text-red-600">₹0</span>
                         </div>
-                        <button onclick="proceedToOrder()" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors ripple">
+                        <button id="proceed-order-btn" onclick="proceedToOrder()" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors ripple">
                             Proceed to Order
                         </button>
                     </div>
@@ -698,7 +980,7 @@
                             </div>
                         </button>
                         
-                        <button id="delivery-option" onclick="selectOrderType('delivery')" class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-red-500 hover:bg-red-50 transition-all text-left ripple">
+                        <button id="delivery-option-btn" onclick="selectOrderType('delivery')" class="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-red-500 hover:bg-red-50 transition-all text-left ripple">
                             <div class="flex items-center">
                                 <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-3">
                                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -733,39 +1015,47 @@
                         </button>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="table-number" class="form-label">Table Number*</label>
-                        <input type="text" id="table-number" class="form-input" placeholder="e.g., 5, A3, Table 12">
-                        <div id="table-number-error" class="form-error">Please enter a table number</div>
+                    <div class="mb-4">
+                        <label for="table-number" class="block text-sm font-medium text-gray-700 mb-2">Table Number</label>
+                        <input type="text" id="table-number" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="e.g., 5, A3, Table 12">
                     </div>
                     
-                    <div class="form-group">
-                        <label for="order-notes" class="form-label">Special Instructions (Optional)</label>
-                        <textarea id="order-notes" rows="3" class="form-input" placeholder="Any special requests or notes..."></textarea>
+                    <div class="mb-4">
+                        <label for="order-notes" class="block text-sm font-medium text-gray-700 mb-2">Special Instructions (Optional)</label>
+                        <textarea id="order-notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Any special requests or notes..."></textarea>
+                    </div>
+                    
+                    <!-- Calculation Loading for Dine In -->
+                    <div id="dine-calculation-loading" class="calculation-loading">
+                        <div class="flex items-center">
+                            <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent mr-2"></div>
+                            <span class="text-sm text-blue-600">Calculating total with tax...</span>
+                        </div>
                     </div>
                     
                     <!-- Dine In Summary -->
                     <div id="dine-in-summary" class="dine-in-summary hidden">
                         <h4 class="font-bold text-lg mb-3">🍽️ Dine In Summary</h4>
                         
-                        <div class="flex justify-between mb-2">
+                        <div class="price-row">
                             <span>🛍️ Items Total:</span>
                             <span id="dine-items-total">₹0</span>
                         </div>
                         
-                        <div class="flex justify-between mb-2" id="dine-tax-row">
+                        <div class="price-row" id="dine-tax-row">
                             <span>📊 Tax:</span>
                             <span id="dine-tax-amount">₹0</span>
                         </div>
                         
-                        <div class="flex justify-between font-bold text-lg border-t border-white/20 pt-2 mt-2">
+                        <div class="price-row total">
                             <span>💰 Total Amount:</span>
                             <span id="dine-total-amount">₹0</span>
                         </div>
                     </div>
                     
-                    <button id="confirm-dine-btn" onclick="confirmDineInOrder()" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg transition-colors ripple mt-4 font-medium">
-                        Confirm Order
+                    <button id="confirm-dine-btn" onclick="confirmDineInOrder()" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors ripple mt-4">
+                        <span class="btn-text">Confirm Order</span>
+                        <div class="loading-spinner hidden mx-auto"></div>
                     </button>
                 </div>
             </div>
@@ -788,70 +1078,89 @@
                         </button>
                     </div>
                     
-                    <!-- Location Method Selection -->
-                    <div class="mb-6">
-                        <h4 class="font-medium text-gray-700 mb-3">Choose Location Method:</h4>
-                        <div class="space-y-2">
-                            <button id="current-location-method" class="location-method-btn" onclick="selectLocationMethod('current')">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="text-left">
-                                        <div class="font-medium text-gray-900">Use Current Location</div>
-                                        <div class="text-sm text-gray-600">Get your current GPS location</div>
-                                    </div>
-                                </div>
-                            </button>
-                            
-                            <button id="map-location-method" class="location-method-btn" onclick="selectLocationMethod('map')">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="text-left">
-                                        <div class="font-medium text-gray-900">Select on Map</div>
-                                        <div class="text-sm text-gray-600">Choose location by moving the map</div>
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                    
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Left Column: Address Form -->
                         <div>
-                            <div class="form-group">
-                                <label for="delivery-address" class="form-label">Delivery Address*</label>
-                                <input type="text" id="delivery-address" class="form-input" placeholder="Enter delivery address or select on map" autocomplete="off">
-                                <div id="delivery-address-error" class="form-error">Please enter a delivery address</div>
+                            <!-- Location Method Selector -->
+                            <div class="location-method-selector" id="location-method-selector">
+                                <button id="current-location-method" class="location-method-btn active" onclick="selectLocationMethod('current')">
+                                    📍 Current Location
+                                </button>
+                                <button id="map-location-method" class="location-method-btn" onclick="selectLocationMethod('map')">
+                                    🗺️ Choose on Map
+                                </button>
+                            </div>
+
+                            <!-- City Input (Desktop Only) -->
+                            <div id="city-input-container" class="hidden mb-4">
+                                <label for="city-input" class="block text-sm font-medium text-gray-700 mb-2">Enter Your City</label>
+                                <input 
+                                    type="text" 
+                                    id="city-input" 
+                                    class="city-input" 
+                                    placeholder="e.g., Bhopal, Mumbai, Delhi"
+                                    autocomplete="off"
+                                >
                             </div>
                             
-                            <div class="form-group">
-                                <label for="customer-phone" class="form-label">Phone Number*</label>
-                                <input type="tel" id="customer-phone" class="form-input" placeholder="Your 10-digit mobile number" maxlength="10">
-                                <div id="customer-phone-error" class="form-error">Please enter a valid 10-digit mobile number</div>
+                            <div class="mb-4">
+                                <label for="delivery-address" class="block text-sm font-medium text-gray-700 mb-2">Delivery Address</label>
+                                <input 
+                                    type="text" 
+                                    id="delivery-address" 
+                                    class="address-input" 
+                                    placeholder="Enter delivery address or select on map"
+                                    autocomplete="off"
+                                >
                             </div>
                             
-                            <div class="form-group">
-                                <label for="delivery-notes" class="form-label">Special Instructions (Optional)</label>
-                                <textarea id="delivery-notes" rows="2" class="form-input" placeholder="Any special requests or notes..."></textarea>
+                            <div class="mb-4">
+                                <label for="customer-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                <input type="tel" id="customer-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Your phone number" maxlength="10">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="delivery-notes" class="block text-sm font-medium text-gray-700 mb-2">Special Instructions (Optional)</label>
+                                <textarea id="delivery-notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Any special requests or notes..."></textarea>
                             </div>
                         </div>
                         
                         <!-- Right Column: Map -->
-                        <div id="map-section" class="hidden">
-                            <div class="map-container">
+                        <div>
+                            <div class="map-container relative">
                                 <div id="delivery-map"></div>
-                                <div class="map-crosshair">📍</div>
-                                <div class="map-instructions">Move map to select delivery location</div>
+                                <!-- Center marker for map selection -->
+                                <div class="map-center-marker">📍</div>
+                                <div class="map-controls">
+                                    <button id="current-location-btn" class="map-control-btn hidden" title="Current Location">
+                                        📍
+                                    </button>
+                                    <button id="zoom-in-btn" class="map-control-btn" title="Zoom In">
+                                        ➕
+                                    </button>
+                                    <button id="zoom-out-btn" class="map-control-btn" title="Zoom Out">
+                                        ➖
+                                    </button>
+                                    <button id="confirm-location-btn" class="map-control-btn bg-green-500 text-white" title="Confirm Location">
+                                        ✓
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Calculation Loading -->
+                    <div id="delivery-calculation-loading" class="calculation-loading">
+                        <div class="flex items-center">
+                            <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent mr-2"></div>
+                            <span class="text-sm text-blue-600">Calculating delivery charges...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Error Message -->
+                    <div id="delivery-error-message" class="error-message hidden">
+                        <p class="text-sm font-medium">Delivery Error</p>
+                        <p id="delivery-error-text" class="text-xs mt-1"></p>
                     </div>
                     
                     <!-- Selected Address Display -->
@@ -866,37 +1175,40 @@
                     <div id="delivery-summary" class="delivery-summary hidden">
                         <h4 class="font-bold text-lg mb-3">📦 Delivery Summary</h4>
                         
-                        <div class="flex justify-between mb-2">
+                        <div class="price-row">
                             <span>📍 Distance:</span>
                             <span id="distance-display">0 km</span>
                         </div>
                         
-                        <div class="flex justify-between mb-2">
+                        <div class="price-row">
                             <span>🛍️ Items Total:</span>
                             <span id="delivery-items-total">₹0</span>
                         </div>
                         
-                        <div class="flex justify-between mb-2">
+                        <div class="price-row">
                             <span>🚚 Delivery Charge:</span>
                             <span id="delivery-charge">₹0</span>
                         </div>
                         
-                        <div class="flex justify-between mb-2" id="delivery-tax-row">
+                        <div class="price-row" id="delivery-tax-row">
                             <span>📊 Tax:</span>
                             <span id="delivery-tax-amount">₹0</span>
                         </div>
                         
-                        <div class="flex justify-between font-bold text-lg border-t border-white/20 pt-2 mt-2">
+                        <div class="price-row total">
                             <span>💰 Total Amount:</span>
                             <span id="delivery-total-amount">₹0</span>
                         </div>
                     </div>
                     
-                    <button id="confirm-delivery-btn" onclick="confirmDeliveryOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center ripple mt-4 font-medium">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.515"/>
-                        </svg>
-                        Order via WhatsApp
+                    <button id="confirm-delivery-btn" onclick="confirmDeliveryOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center ripple mt-4" disabled>
+                        <span class="btn-text flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.515"/>
+                            </svg>
+                            Order via WhatsApp
+                        </span>
+                        <div class="loading-spinner hidden mx-auto"></div>
                     </button>
                 </div>
             </div>
@@ -919,15 +1231,13 @@
 
         // Global variables
         let shopData = null;
-        let allProducts = [];
-        let filteredProducts = [];
         let currentCategory = 'all';
         let currentView = 'grouped';
-        let currentSearchTerm = '';
         let orderList = [];
         let selectedOrderType = null;
         let isProcessingOrder = false;
-        let isShopOnline = true;
+        let originalProducts = []; // Store original product list
+        let isSearchActive = false;
         
         // Delivery specific variables
         let deliveryMap = null;
@@ -935,29 +1245,26 @@
         let selectedDeliveryAddress = null;
         let deliverySettings = null;
         let shopSettings = null;
-        let selectedLocationMethod = null;
         let debounceTimer = null;
+        let currentLocationMethod = 'current'; // 'current' or 'map'
+        
+        // Image loading variables
+        let imageObserver = null;
+        let loadedImages = new Set();
+        let failedImages = new Set();
+        let loadingImageCount = 0;
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        let isDesktop = !isMobile && window.innerWidth >= 1024;
 
         // Initialization
         document.addEventListener('DOMContentLoaded', () => {
+            initImageLoading();
             loadShopData();
             setupEventListeners();
+            setupSearchFunctionality();
         });
 
         function setupEventListeners() {
-            // Search functionality
-            const searchInput = document.getElementById('search-input');
-            const searchClear = document.getElementById('search-clear');
-            
-            searchInput.addEventListener('input', handleSearch);
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    clearSearch();
-                }
-            });
-            
-            searchClear.addEventListener('click', clearSearch);
-
             // Share functionality
             document.getElementById('share-btn').addEventListener('click', async () => {
                 if (navigator.share && shopData) {
@@ -1015,145 +1322,209 @@
                 }
             });
 
-            // Form validation
-            document.getElementById('table-number').addEventListener('input', validateTableNumber);
-            document.getElementById('delivery-address').addEventListener('input', validateDeliveryAddress);
-            document.getElementById('customer-phone').addEventListener('input', validatePhoneNumber);
+            // Address input with debounced geocoding
+            document.getElementById('delivery-address').addEventListener('input', (e) => {
+                const address = e.target.value.trim();
+                
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (address.length > 3 && currentLocationMethod === 'current') {
+                        geocodeAddress(address);
+                    }
+                }, 1000);
+            });
+
+            // City input for desktop
+            document.getElementById('city-input').addEventListener('input', (e) => {
+                const city = e.target.value.trim();
+                
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (city.length > 2) {
+                        geocodeCity(city);
+                    }
+                }, 1000);
+            });
+
+            // Phone number validation
+            document.getElementById('customer-phone').addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                if (value.length > 10) {
+                    value = value.slice(0, 10);
+                }
+                e.target.value = value;
+                validateDeliveryForm();
+            });
+
+            // Table number input change - calculate dine-in total
+            document.getElementById('table-number').addEventListener('input', () => {
+                calculateDineInTotal();
+            });
         }
 
         // Search Functionality
-        function handleSearch(e) {
-            const searchTerm = e.target.value.trim();
-            currentSearchTerm = searchTerm;
-            
+        function setupSearchFunctionality() {
+            const searchInput = document.getElementById('search-input');
             const searchClear = document.getElementById('search-clear');
             
-            if (searchTerm.length > 0) {
-                searchClear.classList.remove('hidden');
-            } else {
-                searchClear.classList.add('hidden');
-            }
-
-            // Debounce search
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                performSearch(searchTerm);
-            }, 300);
-        }
-
-        function performSearch(searchTerm) {
-            if (!searchTerm) {
-                filteredProducts = allProducts;
-                renderProducts(filteredProducts);
-                return;
-            }
-
-            const searchResults = fuzzySearch(allProducts, searchTerm);
-            filteredProducts = searchResults;
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                if (query.length > 0) {
+                    searchClear.classList.add('show');
+                    performSearch(query);
+                } else {
+                    searchClear.classList.remove('show');
+                    clearSearch();
+                }
+            });
             
-            if (searchResults.length === 0) {
-                showNoSearchResults();
+            searchClear.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClear.classList.remove('show');
+                clearSearch();
+                searchInput.focus();
+            });
+        }
+
+        function performSearch(query) {
+            if (!originalProducts.length) return;
+            
+            isSearchActive = true;
+            const filteredProducts = fuzzySearchProducts(query, originalProducts);
+            
+            // Update search results info
+            const resultsInfo = document.getElementById('search-results-info');
+            const noResults = document.getElementById('no-search-results');
+            const noResultsMessage = document.getElementById('no-results-message');
+            
+            if (filteredProducts.length > 0) {
+                resultsInfo.textContent = `Found ${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''} for "${query}"`;
+                resultsInfo.classList.remove('hidden');
+                noResults.classList.add('hidden');
+                renderProducts(filteredProducts);
             } else {
-                renderProducts(searchResults);
+                resultsInfo.classList.add('hidden');
+                noResultsMessage.textContent = `No products found for "${query}". Try different keywords.`;
+                noResults.classList.remove('hidden');
+                document.getElementById('products-container').innerHTML = '';
             }
         }
 
-        function fuzzySearch(products, searchTerm) {
-            const term = searchTerm.toLowerCase();
+        function fuzzySearchProducts(query, products) {
+            const normalizedQuery = query.toLowerCase().trim();
             const results = [];
-
+            
             products.forEach(product => {
-                const { metadata = {} } = product;
+                const metadata = product.metadata || {};
                 const productName = (metadata.product_name || product.content || '').toLowerCase();
                 const categoryName = (product.subcategoryName || '').toLowerCase();
                 const description = (metadata.description || '').toLowerCase();
                 
-                // Create searchable text
-                const searchableText = `${productName} ${categoryName} ${description}`;
-                
                 let score = 0;
                 
-                // Exact match gets highest score
-                if (searchableText.includes(term)) {
+                // Exact match (highest priority)
+                if (productName.includes(normalizedQuery)) {
                     score += 100;
                 }
                 
-                // Word boundary matches get high score
-                const words = term.split(' ');
+                // Category match
+                if (categoryName.includes(normalizedQuery)) {
+                    score += 80;
+                }
+                
+                // Description match
+                if (description.includes(normalizedQuery)) {
+                    score += 60;
+                }
+                
+                // Fuzzy match for spelling mistakes
+                if (score === 0) {
+                    const fuzzyScore = calculateFuzzyScore(normalizedQuery, productName);
+                    if (fuzzyScore > 0.6) {
+                        score += fuzzyScore * 40;
+                    }
+                }
+                
+                // Word boundary matches
+                const words = normalizedQuery.split(' ');
                 words.forEach(word => {
                     if (word.length > 2) {
-                        const regex = new RegExp(`\\b${word}`, 'i');
-                        if (regex.test(searchableText)) {
-                            score += 50;
-                        }
+                        if (productName.includes(word)) score += 30;
+                        if (categoryName.includes(word)) score += 20;
                     }
                 });
                 
-                // Fuzzy matching for typos
-                const fuzzyScore = calculateFuzzyScore(searchableText, term);
-                score += fuzzyScore;
-                
-                if (score > 20) {
-                    results.push({
-                        ...product,
-                        searchScore: score,
-                        highlightedName: highlightText(productName, term)
-                    });
+                if (score > 0) {
+                    results.push({ ...product, searchScore: score });
                 }
             });
-
-            // Sort by relevance score
+            
+            // Sort by score and return
             return results.sort((a, b) => b.searchScore - a.searchScore);
         }
 
-        function calculateFuzzyScore(text, term) {
-            let score = 0;
-            const textChars = text.split('');
-            const termChars = term.split('');
+        function calculateFuzzyScore(query, target) {
+            if (query === target) return 1;
+            if (query.length === 0 || target.length === 0) return 0;
             
-            let termIndex = 0;
-            for (let i = 0; i < textChars.length && termIndex < termChars.length; i++) {
-                if (textChars[i] === termChars[termIndex]) {
-                    score += 2;
-                    termIndex++;
-                } else if (textChars[i].toLowerCase() === termChars[termIndex].toLowerCase()) {
-                    score += 1;
-                    termIndex++;
+            const distance = levenshteinDistance(query, target);
+            const maxLength = Math.max(query.length, target.length);
+            return 1 - (distance / maxLength);
+        }
+
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
                 }
             }
             
-            return score;
-        }
-
-        function highlightText(text, searchTerm) {
-            if (!searchTerm) return text;
-            
-            const regex = new RegExp(`(${searchTerm})`, 'gi');
-            return text.replace(regex, '<span class="highlight">$1</span>');
+            return matrix[str2.length][str1.length];
         }
 
         function clearSearch() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('search-clear').classList.add('hidden');
-            currentSearchTerm = '';
-            filteredProducts = allProducts;
+            isSearchActive = false;
+            document.getElementById('search-results-info').classList.add('hidden');
+            document.getElementById('no-search-results').classList.add('hidden');
             
-            // Reset category filter
-            filterProducts(currentCategory);
-        }
-
-        function showNoSearchResults() {
-            document.getElementById('products-container').classList.add('hidden');
-            document.getElementById('no-search-results').classList.remove('hidden');
-            document.getElementById('empty-state').classList.add('hidden');
+            // Reset to current category filter
+            let filteredProducts;
+            if (currentCategory === 'all') {
+                filteredProducts = originalProducts;
+            } else if (currentCategory === 'uncategorized') {
+                filteredProducts = originalProducts.filter(p => !p.subcategoryId);
+            } else {
+                filteredProducts = originalProducts.filter(p => p.subcategoryId === currentCategory);
+            }
+            
+            renderProducts(filteredProducts);
         }
 
         // Shop Data Loading
         async function loadShopData() {
             const urlParams = new URLSearchParams(window.location.search);
             
-            try { 
-            const type = urlParams.get('type');
+            try {
+                const type = urlParams.get('type');
                 const shopId = urlParams.get('shopId');
                 const postId = urlParams.get('postId');
                 
@@ -1185,15 +1556,29 @@
                     return;
                 }
                 
-                // Load delivery settings
-                await loadDeliverySettings();
+                // Store original products for search
+                originalProducts = shopData.products || [];
                 
-                // Set products
-                allProducts = shopData.products || [];
-                filteredProducts = allProducts;
+                // Set delivery settings from API response
+                deliverySettings = {
+                    base_price_under_2km: 35.00,
+                    price_per_km_under_2km: 3.00,
+                    base_price_over_2km: 15.00,
+                    price_per_km_over_2km: 3.00,
+                    is_round_trip: true
+                };
+                
+                shopSettings = shopData.shop.deliverySettings || {
+                    enabled: true,
+                    taxPercentage: 5.0,
+                    freeThreshold: 500.0,
+                    maxDistance: 10.0,
+                    upiId: null
+                };
                 
                 // Render shop profile
                 renderShopProfile();
+                setupShopStatusUI();
                 hideLoading();
                 
             } catch (error) {
@@ -1202,72 +1587,76 @@
             }
         }
 
-        // Delivery Settings Loading
-        async function loadDeliverySettings() {
-            try {
-                // Try to load shop-specific delivery settings
-                const response = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/shop_delivery_settings?shop_id=eq.${shopData.shop.id}`, {
-                    headers: {
-                        'apikey': 'your-anon-key',
-                        'Authorization': 'Bearer your-anon-key'
-                    }
-                });
+        // Shop Status UI Setup
+        function setupShopStatusUI() {
+            const deliveryStatus = shopData.shop.deliveryStatus;
+            const statusIndicator = document.getElementById('shop-status-indicator');
+            const onlineIndicator = document.getElementById('shop-online-indicator');
+            const statusBanner = document.getElementById('shop-status-banner');
+            const deliveryOptionBtn = document.getElementById('delivery-option-btn');
+            const proceedOrderBtn = document.getElementById('proceed-order-btn');
+            
+            // Update status indicators
+            if (deliveryStatus === 'online') {
+                statusIndicator.className = 'absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white';
+                statusIndicator.textContent = '🟢 Online';
+                onlineIndicator.className = 'absolute bottom-1 right-1 w-4 h-4 border-2 border-white rounded-full bg-green-500';
+                statusBanner.classList.add('hidden');
                 
-                if (response.ok) {
-                    const settings = await response.json();
-                    if (settings && settings.length > 0) {
-                        const setting = settings[0];
-                        shopSettings = {
-                            tax_percentage: setting.tax_percentage || 5.0,
-                            delivery_free_threshold: setting.delivery_free_threshold || 500.00,
-                            delivery_enabled: setting.delivery_enabled !== false,
-                            max_delivery_distance_km: setting.max_delivery_distance_km || 10.00,
-                            upi_id: setting.upi_id || 'shop@paytm'
-                        };
-                        isShopOnline = setting.delivery_enabled !== false;
-                    } else {
-                        // No settings found, use defaults
-                        shopSettings = getDefaultShopSettings();
-                        isShopOnline = true;
-                    }
-                } else {
-                    // API error, use defaults
-                    shopSettings = getDefaultShopSettings();
-                    isShopOnline = true;
+                // Enable ordering
+                if (deliveryOptionBtn) {
+                    deliveryOptionBtn.classList.remove('btn-disabled');
+                    deliveryOptionBtn.style.pointerEvents = 'auto';
                 }
                 
-                // Load default delivery calculation settings
-                deliverySettings = {
-                    base_price_under_2km: 35.00,
-                    price_per_km_under_2km: 3.00,
-                    base_price_over_2km: 15.00,
-                    price_per_km_over_2km: 3.00,
-                    is_round_trip: true
-                };
+            } else if (deliveryStatus === 'offline') {
+                statusIndicator.className = 'absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white';
+                statusIndicator.textContent = '🔴 Offline';
+                onlineIndicator.className = 'absolute bottom-1 right-1 w-4 h-4 border-2 border-white rounded-full bg-red-500';
                 
-            } catch (error) {
-                console.error('Error loading delivery settings:', error);
-                // Fallback to defaults
-                shopSettings = getDefaultShopSettings();
-                isShopOnline = true;
-                deliverySettings = {
-                    base_price_under_2km: 35.00,
-                    price_per_km_under_2km: 3.00,
-                    base_price_over_2km: 15.00,
-                    price_per_km_over_2km: 3.00,
-                    is_round_trip: true
-                };
+                // Show offline banner
+                statusBanner.className = 'offline-banner';
+                statusBanner.innerHTML = '🔴 Shop Currently Offline - Browse Menu Only (Delivery Not Available)';
+                statusBanner.classList.remove('hidden');
+                
+                // Disable delivery option
+                if (deliveryOptionBtn) {
+                    deliveryOptionBtn.classList.add('btn-disabled');
+                    deliveryOptionBtn.style.pointerEvents = 'none';
+                    
+                    // Update button text
+                    const buttonText = deliveryOptionBtn.querySelector('h4');
+                    const buttonSubtext = deliveryOptionBtn.querySelector('p');
+                    if (buttonText) buttonText.textContent = 'Delivery (Offline)';
+                    if (buttonSubtext) buttonSubtext.textContent = 'Not available right now';
+                }
+                
+            } else if (deliveryStatus === 'maintenance') {
+                statusIndicator.className = 'absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-yellow-500 text-white';
+                statusIndicator.textContent = '🟡 Maintenance';
+                onlineIndicator.className = 'absolute bottom-1 right-1 w-4 h-4 border-2 border-white rounded-full bg-yellow-500';
+                
+                // Show maintenance banner
+                statusBanner.className = 'maintenance-banner';
+                statusBanner.innerHTML = '🟡 Shop Under Maintenance - Limited Services Available';
+                statusBanner.classList.remove('hidden');
             }
-        }
-
-        function getDefaultShopSettings() {
-            return {
-                tax_percentage: 5.0,
-                delivery_free_threshold: 500.00,
-                delivery_enabled: true,
-                max_delivery_distance_km: 10.00,
-                upi_id: 'shop@paytm'
-            };
+            
+            // Update floating cart and proceed button for offline mode
+            if (deliveryStatus === 'offline') {
+                // Disable cart functionality
+                const floatingCart = document.getElementById('floating-cart');
+                if (floatingCart) {
+                    floatingCart.style.display = 'none';
+                }
+                
+                // Update proceed button
+                if (proceedOrderBtn) {
+                    proceedOrderBtn.classList.add('btn-disabled');
+                    proceedOrderBtn.textContent = 'Shop Offline - Cannot Order';
+                    proceedOrderBtn.style.pointerEvents = 'none';
+                }
+            }
         }
 
         // Shop Profile Rendering
@@ -1278,13 +1667,18 @@
             const metaDesc = document.querySelector('meta[name="description"]');
             metaDesc.content = `Shop ${shop.name} on Knoc. ${shop.description}`;
 
-            // Update offline status
-            updateShopStatus();
+            // Set cover image
+            if (shop.coverImage) {
+                const coverImg = document.getElementById('cover-image');
+                coverImg.dataset.src = shop.coverImage;
+                loadImage(coverImg);
+            }
 
             // Set profile image
             const profileImg = document.getElementById('profile-image');
             const profileImageUrl = shop.profileImage || 'https://www.knoc.in/knoc_logo.png';
-            profileImg.src = profileImageUrl;
+            profileImg.dataset.src = profileImageUrl;
+            loadImage(profileImg);
 
             // Update shop info
             document.getElementById('shop-name').textContent = shop.name;
@@ -1300,41 +1694,128 @@
             // Render categories and products
             renderCategories(subcategories);
             renderProducts(products);
+
+            // Check for immediately visible images
+            setTimeout(() => {
+                checkForImmediatelyVisibleImages();
+            }, 100);
         }
 
-        function updateShopStatus() {
-            const coverSection = document.getElementById('cover-section');
-            const statusIndicator = document.getElementById('status-indicator');
-            const offlineIndicator = document.getElementById('offline-indicator');
-            const offlineNotice = document.getElementById('offline-notice');
-            const deliveryOption = document.getElementById('delivery-option');
-            
-            if (!isShopOnline) {
-                // Shop is offline
-                coverSection.classList.add('offline');
-                statusIndicator.classList.remove('bg-green-500');
-                statusIndicator.classList.add('bg-gray-500');
-                offlineIndicator.classList.remove('hidden');
-                offlineNotice.classList.remove('hidden');
-                
-                // Disable delivery option
-                deliveryOption.style.opacity = '0.5';
-                deliveryOption.style.pointerEvents = 'none';
-                
-                const deliveryText = deliveryOption.querySelector('p');
-                deliveryText.textContent = 'Currently unavailable';
-            } else {
-                // Shop is online
-                coverSection.classList.remove('offline');
-                statusIndicator.classList.add('bg-green-500');
-                statusIndicator.classList.remove('bg-gray-500');
-                offlineIndicator.classList.add('hidden');
-                offlineNotice.classList.add('hidden');
-                
-                // Enable delivery option
-                deliveryOption.style.opacity = '1';
-                deliveryOption.style.pointerEvents = 'auto';
+        // Image Loading System
+        function initImageLoading() {
+            const observerOptions = {
+                root: null,
+                rootMargin: isMobile ? '100px' : '200px',
+                threshold: 0.1
+            };
+
+            imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        loadImage(entry.target);
+                        imageObserver.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            window.addEventListener('online', handleOnline);
+            window.addEventListener('offline', handleOffline);
+        }
+
+        function loadImage(img) {
+            const imageUrl = img.dataset.src;
+            if (!imageUrl || loadedImages.has(imageUrl) || failedImages.has(imageUrl)) {
+                return;
             }
+
+            loadingImageCount++;
+            
+            const tempImage = new Image();
+            
+            tempImage.onload = function() {
+                img.src = imageUrl;
+                img.classList.add('loaded');
+                loadedImages.add(imageUrl);
+                
+                const placeholder = img.closest('.image-container')?.querySelector('.image-placeholder');
+                if (placeholder) {
+                    placeholder.style.opacity = '0';
+                    setTimeout(() => placeholder?.remove(), 300);
+                }
+                
+                loadingImageCount--;
+            };
+            
+            tempImage.onerror = function() {
+                failedImages.add(imageUrl);
+                img.classList.add('error');
+                img.src = createFallbackImage();
+                loadingImageCount--;
+            };
+            
+            setTimeout(() => {
+                if (!tempImage.complete) {
+                    tempImage.src = '';
+                    tempImage.onerror();
+                }
+            }, isMobile ? 10000 : 8000);
+            
+            tempImage.src = imageUrl;
+        }
+
+        function createFallbackImage() {
+            const svg = `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" fill="#f3f4f6"/>
+                <path d="M30 35h40v30H30z" fill="#e5e7eb"/>
+                <circle cx="40" cy="45" r="3" fill="#9ca3af"/>
+                <path d="M30 55l8-8 4 4 8-8 20 16v6H30z" fill="#9ca3af"/>
+            </svg>`;
+            return `data:image/svg+xml;base64,${btoa(svg)}`;
+        }
+
+        function handleOnline() {
+            setTimeout(() => {
+                retryFailedImages();
+            }, 1000);
+            showToast('Connection Restored', 'You are back online', 'success');
+        }
+
+        function handleOffline() {
+            showToast('Connection Lost', 'Please check your internet connection', 'error');
+        }
+
+        function retryFailedImages() {
+            const failedUrls = Array.from(failedImages);
+            failedImages.clear();
+            
+            failedUrls.forEach(url => {
+                const images = document.querySelectorAll(`img[data-src="${url}"]`);
+                images.forEach(img => {
+                    if (img.classList.contains('error')) {
+                        img.classList.remove('error');
+                        loadImage(img);
+                    }
+                });
+            });
+        }
+
+        function checkForImmediatelyVisibleImages() {
+            const unloadedImages = document.querySelectorAll('.lazy-image:not(.loaded):not(.error)');
+            
+            unloadedImages.forEach(img => {
+                const rect = img.getBoundingClientRect();
+                const isInViewport = rect.top >= 0 && rect.left >= 0 && 
+                               rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                               rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+                
+                const isNearViewport = rect.top < window.innerHeight + 100;
+                
+                if (isInViewport || isNearViewport) {
+                    loadImage(img);
+                } else if (imageObserver && img.dataset.src) {
+                    imageObserver.observe(img);
+                }
+            });
         }
 
         // Product Rendering
@@ -1345,7 +1826,7 @@
             container.appendChild(allButton);
             
             subcategories.forEach(sub => {
-                const productCount = allProducts.filter(p => p.subcategoryId === sub.id).length;
+                const productCount = originalProducts.filter(p => p.subcategoryId === sub.id).length;
                 if (productCount > 0) {
                     const button = document.createElement('button');
                     button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
@@ -1356,7 +1837,7 @@
                 }
             });
             
-            const uncategorizedCount = allProducts.filter(p => !p.subcategoryId).length;
+            const uncategorizedCount = originalProducts.filter(p => !p.subcategoryId).length;
             if (uncategorizedCount > 0) {
                 const button = document.createElement('button');
                 button.className = 'category-chip bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm whitespace-nowrap';
@@ -1366,37 +1847,33 @@
                 container.appendChild(button);
             }
             
-            allButton.textContent = `All Products (${allProducts.length})`;
+            allButton.textContent = `All Products (${originalProducts.length})`;
         }
 
         function renderProducts(products) {
             const container = document.getElementById('products-container');
             const emptyState = document.getElementById('empty-state');
-            const noSearchResults = document.getElementById('no-search-results');
             
             container.innerHTML = '';
             
-            if (products.length === 0) {
+            if (products.length === 0 && !isSearchActive) {
                 container.classList.add('hidden');
-                if (currentSearchTerm) {
-                    noSearchResults.classList.remove('hidden');
-                    emptyState.classList.add('hidden');
-                } else {
-                    emptyState.classList.remove('hidden');
-                    noSearchResults.classList.add('hidden');
-                }
+                emptyState.classList.remove('hidden');
                 return;
             }
             
             container.classList.remove('hidden');
             emptyState.classList.add('hidden');
-            noSearchResults.classList.add('hidden');
 
-            if (currentView === 'grouped' && currentCategory === 'all' && !currentSearchTerm) {
+            if (currentView === 'grouped' && currentCategory === 'all' && !isSearchActive) {
                 renderGroupedProducts(products, container);
             } else {
                 renderGridProducts(products, container);
             }
+
+            setTimeout(() => {
+                checkForImmediatelyVisibleImages();
+            }, 50);
         }
 
         function groupProductsBySubcategory(products) {
@@ -1481,23 +1958,35 @@
             const media = product.media && product.media.length > 0 ? product.media[0] : null;
             const imageUrl = media ? (media.thumbnailUrl || media.url) : null;
             
-            const productName = product.highlightedName || metadata.product_name || product.content || '';
+            const productName = metadata.product_name || product.content || '';
             const originalPrice = metadata.price;
             const discountedPrice = metadata.discounted_price;
             const displayPrice = discountedPrice || originalPrice;
             
-            const isOrderable = canOrderProduct(product) && isShopOnline;
+            const isOrderable = canOrderProduct(product);
             const hasDiscount = discountedPrice && originalPrice && discountedPrice < originalPrice;
             const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
+            
+            // Check if shop is offline
+            const isShopOffline = shopData?.shop?.deliveryStatus === 'offline';
 
             const card = document.createElement('div');
-            card.className = `product-card bg-white rounded-xl shadow-sm overflow-hidden relative ${!isShopOnline ? 'offline' : ''}`;
+            card.className = `product-card bg-white rounded-xl shadow-sm overflow-hidden relative ${isShopOffline ? 'shop-offline' : ''}`;
             
             let imageHTML = '';
             if (imageUrl) {
+                const isPreloaded = loadedImages.has(imageUrl);
+                
                 imageHTML = `
-                    <div class="relative aspect-square bg-gray-100">
-                        <img src="${imageUrl}" alt="${productName}" class="w-full h-full object-cover">
+                    <div class="image-container relative aspect-square bg-gray-100">
+                        <div class="image-placeholder ${isPreloaded ? 'hidden' : ''}">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 16 4.586-4.586a2 2 0 0 1 2.828 0L16 18m-2-5V9a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v.01"></path>
+                            </svg>
+                        </div>
+                        <img ${isPreloaded ? `src="${imageUrl}" class="lazy-image loaded"` : `data-src="${imageUrl}" class="lazy-image"`}
+                             alt="${productName}" 
+                             loading="lazy">
                         ${hasDiscount ? `
                             <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10">
                                 ${discountPercent}% OFF
@@ -1533,7 +2022,7 @@
                     
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
-                            ${canOrderProduct(product) ? `
+                            ${isOrderable ? `
                                 <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
                                 ${hasDiscount ? `
                                     <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
@@ -1542,23 +2031,17 @@
                                 <span class="text-gray-400 text-sm">Price not available</span>
                             `}
                         </div>
-                        ${isOrderable ? `
+                        ${isOrderable && !isShopOffline ? `
                             <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium ripple">
                                 Add
                             </button>
                         ` : `
-                            <button disabled class="bg-gray-300 text-gray-500 px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed">
-                                ${!isShopOnline ? 'Offline' : 'Unavailable'}
+                            <button disabled class="btn-disabled px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed">
+                                ${isShopOffline ? 'Offline' : 'Unavailable'}
                             </button>
                         `}
                     </div>
                 </div>
-                
-                ${!isShopOnline ? `
-                    <div class="offline-overlay">
-                        <div class="offline-badge">Offline</div>
-                    </div>
-                ` : ''}
             `;
             
             return card;
@@ -1572,12 +2055,9 @@
             return productName && productName.trim() !== '' && price && price > 0;
         }
 
-        // Order Management (same as before but with offline checks)
+        // Order Management
         function addToOrder(product) {
-            if (!canOrderProduct(product) || !isShopOnline) {
-                if (!isShopOnline) {
-                    showToast('Shop Offline', 'This shop is currently offline. Orders are not available.', 'error');
-                }
+            if (!canOrderProduct(product) || shopData?.shop?.deliveryStatus === 'offline') {
                 return;
             }
 
@@ -1606,12 +2086,32 @@
             showToast('Added to Cart', `${productName} added to your order`, 'success');
         }
 
+        function removeFromOrder(productId) {
+            const index = orderList.findIndex(item => item.id === productId);
+            if (index !== -1) {
+                const itemName = orderList[index].name;
+                if (orderList[index].quantity > 1) {
+                    orderList[index].quantity--;
+                } else {
+                    orderList.splice(index, 1);
+                }
+                updateOrderUI();
+                showToast('Removed from Cart', `${itemName} removed from your order`, 'info');
+            }
+        }
+
         function updateOrderUI() {
             const orderCount = orderList.reduce((total, item) => total + item.quantity, 0);
             const floatingCart = document.getElementById('floating-cart');
             const floatingCartCount = document.getElementById('floating-cart-count');
             
-            if (orderCount > 0 && isShopOnline) {
+            // Don't show cart if shop is offline
+            if (shopData?.shop?.deliveryStatus === 'offline') {
+                floatingCart.classList.add('hidden');
+                return;
+            }
+            
+            if (orderCount > 0) {
                 floatingCart.classList.remove('hidden');
                 floatingCartCount.textContent = orderCount;
                 floatingCart.classList.add('pulse');
@@ -1645,7 +2145,7 @@
             orderTotal.textContent = `₹${Math.round(total)}`;
 
             orderListEl.innerHTML = orderList.map(item => `
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="order-item flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div class="flex-1">
                         <h4 class="font-medium text-gray-900 text-sm">${item.name}</h4>
                         <p class="text-red-600 font-bold">₹${Math.round(item.price)}</p>
@@ -1669,33 +2169,21 @@
             `).join('');
         }
 
-        function removeFromOrder(productId) {
-            const index = orderList.findIndex(item => item.id === productId);
-            if (index !== -1) {
-                const itemName = orderList[index].name;
-                if (orderList[index].quantity > 1) {
-                    orderList[index].quantity--;
-                } else {
-                    orderList.splice(index, 1);
-                }
-                updateOrderUI();
-                showToast('Removed from Cart', `${itemName} removed from your order`, 'info');
-            }
-        }
-
         function addToOrderFromModal(productId) {
-            const product = allProducts.find(p => p.id === productId);
+            const product = originalProducts.find(p => p.id === productId);
             if (product) {
                 addToOrder(product);
             }
         }
 
-        // Modal Management (same as before)
+        // Modal Management
         function openOrderModal() {
-            if (!isShopOnline) {
-                showToast('Shop Offline', 'This shop is currently offline. Orders are not available.', 'error');
+            // Don't open if shop is offline
+            if (shopData?.shop?.deliveryStatus === 'offline') {
+                showToast('Shop Offline', 'Cannot place orders when shop is offline', 'error');
                 return;
             }
+            
             document.getElementById('order-modal').classList.remove('hidden');
             updateOrderModal();
         }
@@ -1705,7 +2193,7 @@
         }
 
         function proceedToOrder() {
-            if (orderList.length === 0 || !isShopOnline) return;
+            if (orderList.length === 0 || shopData?.shop?.deliveryStatus === 'offline') return;
             closeOrderModal();
             openOrderTypeModal();
         }
@@ -1719,7 +2207,8 @@
         }
 
         function selectOrderType(type) {
-            if (type === 'delivery' && !isShopOnline) {
+            // Check if delivery is disabled
+            if (type === 'delivery' && shopData?.shop?.deliveryStatus === 'offline') {
                 showToast('Delivery Unavailable', 'Delivery is currently not available. Please try dine-in.', 'error');
                 return;
             }
@@ -1742,120 +2231,243 @@
 
         function closeTableModal() {
             document.getElementById('table-modal').classList.add('hidden');
-            clearValidationErrors();
-        }
-
-        function openAddressModal() {
-            document.getElementById('address-modal').classList.remove('hidden');
-            document.getElementById('delivery-address').focus();
-        }
-
-        function closeAddressModal() {
-            document.getElementById('address-modal').classList.add('hidden');
-            clearValidationErrors();
         }
 
         // Location Method Selection
         function selectLocationMethod(method) {
-            selectedLocationMethod = method;
+            currentLocationMethod = method;
             
-            // Update UI
-            document.querySelectorAll('.location-method-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            const currentBtn = document.getElementById('current-location-method');
+            const mapBtn = document.getElementById('map-location-method');
+            const cityContainer = document.getElementById('city-input-container');
+            const currentLocationMapBtn = document.getElementById('current-location-btn');
             
-            const selectedBtn = document.getElementById(`${method}-location-method`);
-            selectedBtn.classList.add('active');
+            // Update button states
+            currentBtn.classList.remove('active');
+            mapBtn.classList.remove('active');
             
-            const mapSection = document.getElementById('map-section');
-            
-            if (method === 'map') {
-                mapSection.classList.remove('hidden');
-                setTimeout(() => {
-                    initializeDeliveryMap();
-                    // Force map resize
-                    if (deliveryMap) {
-                        deliveryMap.invalidateSize();
-                    }
-                }, 100);
-            } else if (method === 'current') {
-                mapSection.classList.add('hidden');
-                getCurrentLocation();
+            if (method === 'current') {
+                currentBtn.classList.add('active');
+                cityContainer.classList.add('hidden');
+                currentLocationMapBtn.classList.remove('hidden');
+                
+                // Enable address input for typing
+                document.getElementById('delivery-address').disabled = false;
+                document.getElementById('delivery-address').placeholder = 'Enter delivery address or use current location';
+                
+            } else if (method === 'map') {
+                mapBtn.classList.add('active');
+                currentLocationMapBtn.classList.add('hidden');
+                
+                // Show city input for desktop
+                if (isDesktop) {
+                    cityContainer.classList.remove('hidden');
+                    document.getElementById('city-input').focus();
+                }
+                
+                // Disable address input - will be filled by map
+                document.getElementById('delivery-address').disabled = true;
+                document.getElementById('delivery-address').placeholder = 'Select location on map';
             }
         }
 
-        function getCurrentLocation() {
-            if (!navigator.geolocation) {
-                showToast('Location Error', 'Geolocation is not supported by this browser', 'error');
+        function openAddressModal() {
+            const modal = document.getElementById('address-modal');
+            modal.classList.remove('hidden');
+            
+            // Setup location method based on device
+            if (isDesktop) {
+                selectLocationMethod('map');
+            } else {
+                selectLocationMethod('current');
+            }
+            
+            // Initialize map immediately
+            setTimeout(() => {
+                initializeDeliveryMap();
+            }, 100);
+        }
+
+        function closeAddressModal() {
+            document.getElementById('address-modal').classList.add('hidden');
+        }
+
+        // Dine-in Calculations
+        function calculateDineInTotal() {
+            const tableNumber = document.getElementById('table-number').value.trim();
+            
+            if (!tableNumber) {
+                document.getElementById('dine-in-summary').classList.add('hidden');
                 return;
             }
 
-            showToast('Getting Location', 'Getting your current location...', 'info');
+            showDineCalculationLoading(true);
             
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    selectedDeliveryLocation = { lat: latitude, lng: longitude };
-                    
-                    // Reverse geocode to get address
-                    reverseGeocodeDelivery(latitude, longitude);
-                },
-                (error) => {
-                    let errorMessage = 'Unable to get your location. ';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage += 'Location access denied. Please enable location access and try again.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage += 'Location information unavailable.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage += 'Location request timed out.';
-                            break;
-                        default:
-                            errorMessage += 'An unknown error occurred.';
-                            break;
-                    }
-                    showToast('Location Error', errorMessage, 'error');
-                },
-                { 
-                    enableHighAccuracy: true, 
-                    timeout: 10000, 
-                    maximumAge: 300000 
+            setTimeout(() => {
+                const itemsTotal = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const taxAmount = calculateTax(itemsTotal);
+                const totalAmount = itemsTotal + taxAmount;
+                
+                // Update dine-in summary
+                document.getElementById('dine-items-total').textContent = `₹${Math.round(itemsTotal)}`;
+                document.getElementById('dine-tax-amount').textContent = `₹${Math.round(taxAmount)}`;
+                document.getElementById('dine-total-amount').textContent = `₹${Math.round(totalAmount)}`;
+                
+                // Show/hide tax row
+                const taxRow = document.getElementById('dine-tax-row');
+                if (taxAmount > 0) {
+                    taxRow.style.display = 'flex';
+                } else {
+                    taxRow.style.display = 'none';
                 }
-            );
+                
+                document.getElementById('dine-in-summary').classList.remove('hidden');
+                showDineCalculationLoading(false);
+            }, 500);
         }
 
-        // Delivery Map Functions
+        function showDineCalculationLoading(show) {
+            const loadingEl = document.getElementById('dine-calculation-loading');
+            if (show) {
+                loadingEl.classList.add('show');
+            } else {
+                loadingEl.classList.remove('show');
+            }
+        }
+
+        // Delivery Map Initialization - Enhanced for cross-platform
         function initializeDeliveryMap() {
             if (deliveryMap) {
+                // Map already exists, just invalidate size
+                setTimeout(() => {
+                    deliveryMap.invalidateSize();
+                }, 200);
                 return;
+            }
+
+            const mapContainer = document.getElementById('delivery-map');
+            if (!mapContainer) {
+                console.error('Map container not found');
+                return;
+            }
+
+            // Ensure container has explicit dimensions
+            if (!mapContainer.style.height) {
+                mapContainer.style.height = '400px';
+                mapContainer.style.width = '100%';
             }
 
             try {
                 deliveryMap = L.map('delivery-map', {
-                    zoomControl: true,
+                    preferCanvas: false,
+                    zoomControl: false, // We'll use custom controls
                     trackResize: true
                 }).setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
                 
+                // Use OpenStreetMap tiles for better reliability
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
-                    maxZoom: 18
+                    maxZoom: 18,
+                    crossOrigin: true
                 }).addTo(deliveryMap);
 
-                // Map move event to update location
-                deliveryMap.on('moveend', () => {
-                    const center = deliveryMap.getCenter();
-                    selectedDeliveryLocation = { lat: center.lat, lng: center.lng };
-                    reverseGeocodeDelivery(center.lat, center.lng);
-                });
+                // Add map event listeners for center selection
+                deliveryMap.on('moveend', onMapMoveEnd);
+                
+                // Setup map controls
+                setupMapControls();
+                
+                // Force immediate size calculation
+                setTimeout(() => {
+                    deliveryMap.invalidateSize(true);
+                }, 100);
+                
+                console.log('Delivery map initialized successfully');
                 
             } catch (error) {
                 console.error('Failed to initialize delivery map:', error);
-                showToast('Map Error', 'Failed to load map. Please try the current location option.', 'error');
+                showDeliveryError('Failed to load map. Please try refreshing the page.');
             }
         }
 
+        function onMapMoveEnd() {
+            if (currentLocationMethod === 'map') {
+                const center = deliveryMap.getCenter();
+                selectedDeliveryLocation = { lat: center.lat, lng: center.lng };
+                
+                // Reverse geocode to get address
+                reverseGeocodeDelivery(center.lat, center.lng);
+                
+                // Enable confirm button
+                const confirmBtn = document.getElementById('confirm-location-btn');
+                confirmBtn.style.background = '#22c55e';
+                confirmBtn.style.color = 'white';
+            }
+        }
+
+        function setupMapControls() {
+            // Current location button (only for mobile)
+            const currentLocationBtn = document.getElementById('current-location-btn');
+            if (currentLocationBtn) {
+                currentLocationBtn.addEventListener('click', getCurrentDeliveryLocation);
+            }
+            
+            // Zoom controls
+            document.getElementById('zoom-in-btn').addEventListener('click', () => {
+                if (deliveryMap) {
+                    deliveryMap.setZoom(deliveryMap.getZoom() + 1);
+                }
+            });
+            
+            document.getElementById('zoom-out-btn').addEventListener('click', () => {
+                if (deliveryMap) {
+                    deliveryMap.setZoom(deliveryMap.getZoom() - 1);
+                }
+            });
+
+            // Confirm location button
+            document.getElementById('confirm-location-btn').addEventListener('click', () => {
+                if (selectedDeliveryLocation) {
+                    updateDeliveryAddressDisplay();
+                    calculateDeliveryCharges();
+                    showToast('Location Confirmed', 'Delivery location has been set', 'success');
+                } else {
+                    showToast('No Location Selected', 'Please select a location on the map', 'error');
+                }
+            });
+        }
+
+        function getCurrentDeliveryLocation() {
+            if (navigator.geolocation) {
+                showToast('Getting Location', 'Getting your current location...', 'info');
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        deliveryMap.setView([latitude, longitude], 15);
+                        selectedDeliveryLocation = { lat: latitude, lng: longitude };
+                        reverseGeocodeDelivery(latitude, longitude);
+                        showToast('Location Found', 'Current location set successfully', 'success');
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        showToast('Location Error', 'Could not get your location. Please select manually on map.', 'error');
+                        // Fall back to default location
+                        deliveryMap.setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
+                    },
+                    { 
+                        enableHighAccuracy: true, 
+                        timeout: 10000,
+                        maximumAge: 300000 // 5 minutes
+                    }
+                );
+            } else {
+                showToast('Location Not Supported', 'Geolocation is not supported by your browser. Please select location on map.', 'error');
+                deliveryMap.setView(CONFIG.DEFAULT_LOCATION, CONFIG.DEFAULT_ZOOM);
+            }
+        }
+
+        // Delivery Calculations
         async function reverseGeocodeDelivery(lat, lng) {
             try {
                 const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
@@ -1868,208 +2480,39 @@
                     })
                 });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        selectedDeliveryAddress = data.address;
-                        document.getElementById('delivery-address').value = selectedDeliveryAddress;
-                        updateDeliveryAddressDisplay();
-                        calculateDeliveryCharges();
-                        return;
-                    }
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
-                // Fallback to coordinates
-                selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-                document.getElementById('delivery-address').value = selectedDeliveryAddress;
-                updateDeliveryAddressDisplay();
-                calculateDeliveryCharges();
+                const data = await response.json();
+                
+                if (data.success) {
+                    selectedDeliveryAddress = data.address;
+                    document.getElementById('delivery-address').value = selectedDeliveryAddress;
+                } else {
+                    selectedDeliveryAddress = `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    document.getElementById('delivery-address').value = selectedDeliveryAddress;
+                }
+                
+                // Validate form after address is set
+                validateDeliveryForm();
                 
             } catch (error) {
-                selectedDeliveryAddress = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                console.error('Reverse geocoding error:', error);
+                selectedDeliveryAddress = `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                 document.getElementById('delivery-address').value = selectedDeliveryAddress;
-                updateDeliveryAddressDisplay();
-                calculateDeliveryCharges();
+                validateDeliveryForm();
             }
         }
 
-        // Form Validation
-        function validateTableNumber() {
-            const input = document.getElementById('table-number');
-            const error = document.getElementById('table-number-error');
-            const value = input.value.trim();
-            if (value.length === 0) {
-                showValidationError(input, error, 'Please enter a table number');
-                return false;
-            } else {
-                hideValidationError(input, error);
-                calculateDineInTotal();
-                return true;
-            }
-        }
-
-        function validateDeliveryAddress() {
-            const input = document.getElementById('delivery-address');
-            const error = document.getElementById('delivery-address-error');
-            const value = input.value.trim();
-
-            if (value.length === 0) {
-                showValidationError(input, error, 'Please enter a delivery address');
-                return false;
-            } else {
-                hideValidationError(input, error);
-                return true;
-            }
-        }
-
-        function validatePhoneNumber() {
-            const input = document.getElementById('customer-phone');
-            const error = document.getElementById('customer-phone-error');
-            const value = input.value.trim();
-
-            // Remove non-digit characters for validation
-            const cleanPhone = value.replace(/[^\d]/g, '');
-            
-            if (cleanPhone.length === 0) {
-                showValidationError(input, error, 'Please enter your phone number');
-                return false;
-            } else if (cleanPhone.length !== 10 || !cleanPhone.match(/^[6-9]\d{9}$/)) {
-                showValidationError(input, error, 'Please enter a valid 10-digit mobile number');
-                return false;
-            } else {
-                hideValidationError(input, error);
-                return true;
-            }
-        }
-
-        function showValidationError(input, errorElement, message) {
-            input.classList.add('error');
-            errorElement.textContent = message;
-            errorElement.classList.add('show');
-        }
-
-        function hideValidationError(input, errorElement) {
-            input.classList.remove('error');
-            errorElement.classList.remove('show');
-        }
-
-        function clearValidationErrors() {
-            document.querySelectorAll('.form-input').forEach(input => {
-                input.classList.remove('error');
-            });
-            document.querySelectorAll('.form-error').forEach(error => {
-                error.classList.remove('show');
-            });
-        }
-
-        // Dine-in Calculations
-        function calculateDineInTotal() {
-            const tableNumber = document.getElementById('table-number').value.trim();
-            
-            if (!tableNumber) {
-                document.getElementById('dine-in-summary').classList.add('hidden');
-                return;
-            }
-
-            const itemsTotal = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const taxAmount = calculateTax(itemsTotal);
-            const totalAmount = itemsTotal + taxAmount;
-            
-            // Update dine-in summary
-            document.getElementById('dine-items-total').textContent = `₹${Math.round(itemsTotal)}`;
-            document.getElementById('dine-tax-amount').textContent = `₹${Math.round(taxAmount)}`;
-            document.getElementById('dine-total-amount').textContent = `₹${Math.round(totalAmount)}`;
-            
-            // Show/hide tax row
-            const taxRow = document.getElementById('dine-tax-row');
-            if (taxAmount > 0) {
-                taxRow.style.display = 'flex';
-            } else {
-                taxRow.style.display = 'none';
-            }
-            
-            document.getElementById('dine-in-summary').classList.remove('hidden');
-        }
-
-        function calculateTax(amount) {
-            return Math.round((amount * shopSettings.tax_percentage / 100) * 100) / 100;
-        }
-
-        // Delivery Calculations
-        async function calculateDeliveryCharges() {
-            if (!selectedDeliveryLocation || !shopData) {
-                return;
-            }
-            
-            try {
-                const distanceData = await calculateDistance();
-                
-                if (!distanceData.success) {
-                    throw new Error(distanceData.error);
-                }
-                
-                const distanceKm = distanceData.distance_km;
-                
-                // Check if within delivery range
-                if (distanceKm > shopSettings.max_delivery_distance_km) {
-                    throw new Error(`Delivery location is outside our delivery range (${shopSettings.max_delivery_distance_km.toFixed(1)} km). Your location is ${distanceKm.toFixed(1)} km away.`);
-                }
-                
-                // Calculate all charges
-                const itemsTotal = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                
-                // Calculate delivery charge
-                let deliveryCharge = 0;
-                
-                if (distanceKm > 0.1) {
-                    if (distanceKm <= 2.0) {
-                        deliveryCharge = deliverySettings.base_price_under_2km + (distanceKm * deliverySettings.price_per_km_under_2km);
-                    } else {
-                        deliveryCharge = deliverySettings.base_price_over_2km + (distanceKm * deliverySettings.price_per_km_over_2km);
-                    }
-                    
-                    if (deliverySettings.is_round_trip) {
-                        deliveryCharge *= 2;
-                    }
-                    
-                    // Apply free delivery threshold
-                    if (itemsTotal >= shopSettings.delivery_free_threshold) {
-                        deliveryCharge = 0.0;
-                    }
-                }
-                
-                deliveryCharge = Math.round(deliveryCharge * 100) / 100;
-                
-                // Calculate tax
-                const taxAmount = Math.round((itemsTotal + deliveryCharge) * shopSettings.tax_percentage / 100 * 100) / 100;
-                const totalAmount = itemsTotal + deliveryCharge + taxAmount;
-                
-                // Update UI
-                updateDeliverySummary({
-                    distance: distanceKm,
-                    itemsTotal,
-                    deliveryCharge,
-                    taxAmount,
-                    totalAmount
-                });
-                
-            } catch (error) {
-                showToast('Calculation Error', error.message, 'error');
-            }
-        }
-
-        async function calculateDistance() {
+        async function geocodeAddress(address) {
             try {
                 const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        action: 'calculate-distance',
-                        shopId: shopData.shop.id,
-                        shopLatitude: shopData.shop.latitude || CONFIG.DEFAULT_LOCATION[0],
-                        shopLongitude: shopData.shop.longitude || CONFIG.DEFAULT_LOCATION[1],
-                        customerLatitude: selectedDeliveryLocation.lat,
-                        customerLongitude: selectedDeliveryLocation.lng
+                        action: 'geocode',
+                        address: address
                     })
                 });
                 
@@ -2077,34 +2520,144 @@
                     throw new Error(`HTTP ${response.status}`);
                 }
                 
-                const result = await response.json();
-                return result;
-            } catch (error) {
-                // Fallback calculation using straight-line distance
-                const shopLat = shopData.shop.latitude || CONFIG.DEFAULT_LOCATION[0];
-                const shopLng = shopData.shop.longitude || CONFIG.DEFAULT_LOCATION[1];
-                const distance = calculateStraightLineDistance(
-                    shopLat, shopLng,
-                    selectedDeliveryLocation.lat, selectedDeliveryLocation.lng
-                );
+                const data = await response.json();
                 
-                return {
-                    success: true,
-                    distance_km: distance,
-                    fallback: true
-                };
+                if (data.success) {
+                    const { latitude, longitude } = data.coordinates;
+                    deliveryMap.setView([latitude, longitude], 15);
+                    selectedDeliveryLocation = { lat: latitude, lng: longitude };
+                    selectedDeliveryAddress = data.name;
+                    showToast('Address Found', 'Location set on map', 'success');
+                    validateDeliveryForm();
+                } else {
+                    showDeliveryError('Address not found. Please try a different address or use the map.');
+                }
+            } catch (error) {
+                console.error('Geocoding error:', error);
+                showDeliveryError('Failed to find address. Please try again or use the map.');
             }
         }
 
-        function calculateStraightLineDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Earth's radius in kilometers
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                     Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+        async function geocodeCity(city) {
+            try {
+                const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'geocode',
+                        address: city
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const { latitude, longitude } = data.coordinates;
+                    deliveryMap.setView([latitude, longitude], 12);
+                    showToast('City Found', `Map centered on ${city}. Now select your exact location.`, 'success');
+                } else {
+                    showToast('City Not Found', 'Please try a different city name.', 'error');
+                }
+            } catch (error) {
+                console.error('City geocoding error:', error);
+                showToast('Search Error', 'Failed to search for city. Please try again.', 'error');
+            }
+        }
+
+        function validateDeliveryForm() {
+            const address = document.getElementById('delivery-address').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const confirmBtn = document.getElementById('confirm-delivery-btn');
+            
+            const hasValidAddress = address.length > 0 && selectedDeliveryLocation;
+            const hasValidPhone = /^[6-9]\d{9}$/.test(phone);
+            
+            if (hasValidAddress && hasValidPhone) {
+                confirmBtn.disabled = false;
+                confirmBtn.classList.remove('btn-disabled');
+                
+                // Auto-calculate if both are valid
+                if (!document.getElementById('delivery-summary').classList.contains('hidden')) {
+                    // Already calculated
+                } else {
+                    calculateDeliveryCharges();
+                }
+            } else {
+                confirmBtn.disabled = true;
+                confirmBtn.classList.add('btn-disabled');
+            }
+        }
+
+        async function calculateDeliveryCharges() {
+            if (!selectedDeliveryLocation || !shopData) {
+                return;
+            }
+            
+            showDeliveryCalculationLoading(true);
+            hideDeliveryError();
+            
+            try {
+                // Calculate order totals using the enhanced API
+                const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'calculate-order-totals',
+                        shopId: shopData.shop.id,
+                        orderItems: orderList.map(item => ({
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity
+                        })),
+                        customerAddress: selectedDeliveryAddress,
+                        customerLatitude: selectedDeliveryLocation.lat,
+                        customerLongitude: selectedDeliveryLocation.lng
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to calculate delivery charges');
+                }
+
+                const {
+                    subtotal,
+                    delivery_charge,
+                    tax_amount,
+                    total_amount,
+                    distance_km
+                } = result;
+
+                // Update delivery summary
+                updateDeliverySummary({
+                    distance: distance_km,
+                    itemsTotal: subtotal,
+                    deliveryCharge: delivery_charge,
+                    taxAmount: tax_amount,
+                    totalAmount: total_amount
+                });
+
+                showDeliveryCalculationLoading(false);
+
+            } catch (error) {
+                console.error('Delivery calculation error:', error);
+                showDeliveryError(error.message || 'Failed to calculate delivery charges. Please try again.');
+                showDeliveryCalculationLoading(false);
+            }
+        }
+
+        function calculateTax(amount) {
+            return Math.round((amount * shopSettings.taxPercentage / 100) * 100) / 100;
         }
 
         function updateDeliverySummary(data) {
@@ -2130,18 +2683,40 @@
             document.getElementById('selected-address').classList.remove('hidden');
         }
 
+        function showDeliveryCalculationLoading(show) {
+            const loadingEl = document.getElementById('delivery-calculation-loading');
+            if (show) {
+                loadingEl.classList.add('show');
+            } else {
+                loadingEl.classList.remove('show');
+            }
+        }
+
+        function showDeliveryError(message) {
+            document.getElementById('delivery-error-text').textContent = message;
+            document.getElementById('delivery-error-message').classList.remove('hidden');
+            document.getElementById('delivery-summary').classList.add('hidden');
+        }
+
+        function hideDeliveryError() {
+            document.getElementById('delivery-error-message').classList.add('hidden');
+        }
+
         // Order Processing
         async function confirmDineInOrder() {
             if (isProcessingOrder) return;
             
-            if (!validateTableNumber()) {
+            const tableNumber = document.getElementById('table-number').value.trim();
+            const notes = document.getElementById('order-notes').value.trim();
+            
+            if (!tableNumber) {
+                showToast('Missing Information', 'Please enter a table number', 'error');
                 return;
             }
 
-            const tableNumber = document.getElementById('table-number').value.trim();
-            const notes = document.getElementById('order-notes').value.trim();
-
             isProcessingOrder = true;
+            setButtonLoading('confirm-dine-btn', true);
+            showLoadingOverlay();
 
             const itemsTotal = orderList.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const taxAmount = calculateTax(itemsTotal);
@@ -2165,14 +2740,17 @@
             try {
                 const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.FOOD_ORDER_FUNCTION}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify(orderData)
                 });
 
                 const result = await response.json();
                 
                 if (result.success) {
-                    showToast('Order Confirmed!', 'Your dine-in order has been placed successfully.', 'success');
+                    hideLoadingOverlay();
+                    showToast('Order Confirmed!', 'Your dine-in order has been placed successfully. The restaurant will prepare your order.', 'success');
                     
                     orderList = [];
                     updateOrderUI();
@@ -2181,41 +2759,57 @@
                     document.getElementById('table-number').value = '';
                     document.getElementById('order-notes').value = '';
                 } else {
+                    hideLoadingOverlay();
                     showToast('Order Failed', result.error || 'Failed to place order. Please try again.', 'error');
                 }
             } catch (error) {
+                hideLoadingOverlay();
                 showToast('Network Error', 'Failed to place order. Please check your connection and try again.', 'error');
             } finally {
                 isProcessingOrder = false;
+                setButtonLoading('confirm-dine-btn', false);
             }
         }
 
         async function confirmDeliveryOrder() {
             if (isProcessingOrder) return;
             
-            // Validate all fields
-            const isAddressValid = validateDeliveryAddress();
-            const isPhoneValid = validatePhoneNumber();
-            
-            if (!isAddressValid || !isPhoneValid) {
-                return;
-            }
-
-            if (!selectedDeliveryLocation) {
-                showToast('Location Required', 'Please select a delivery location', 'error');
-                return;
-            }
-
             const address = document.getElementById('delivery-address').value.trim();
             const phone = document.getElementById('customer-phone').value.trim();
             const notes = document.getElementById('delivery-notes').value.trim();
             
-            const cleanPhone = phone.replace(/[^\d]/g, '');
+            // Enhanced validation
+            if (!address) {
+                showToast('Missing Information', 'Please enter a delivery address', 'error');
+                document.getElementById('delivery-address').focus();
+                return;
+            }
+
+            if (!selectedDeliveryLocation) {
+                showToast('Missing Location', 'Please select a location on the map', 'error');
+                return;
+            }
+
+            if (!phone) {
+                showToast('Missing Information', 'Please enter your phone number', 'error');
+                document.getElementById('customer-phone').focus();
+                return;
+            }
+
+            // Validate phone number format
+            const phoneRegex = /^[6-9]\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+                showToast('Invalid Phone', 'Please enter a valid 10-digit mobile number', 'error');
+                document.getElementById('customer-phone').focus();
+                return;
+            }
 
             isProcessingOrder = true;
+            setButtonLoading('confirm-delivery-btn', true);
+            showLoadingOverlay();
 
             try {
-                // Calculate order totals
+                // Use enhanced order totals calculation API
                 const response = await fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2234,7 +2828,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
                 }
 
                 const totalsResult = await response.json();
@@ -2251,12 +2845,12 @@
                     distance_km
                 } = totalsResult;
 
-                // Generate WhatsApp message
-                const message = generateDeliveryOrderMessage({
+                // Prepare order data for backend
+                const orderData = {
                     shop_id: shopData.shop.id,
                     order_type: 'delivery',
                     customer_address: address,
-                    customer_phone: cleanPhone,
+                    customer_phone: phone,
                     customer_latitude: selectedDeliveryLocation.lat,
                     customer_longitude: selectedDeliveryLocation.lng,
                     order_items: orderList.map(item => ({
@@ -2264,40 +2858,76 @@
                         price: item.price,
                         quantity: item.quantity
                     })),
+                    subtotal: subtotal,
+                    delivery_charge: delivery_charge,
+                    tax_amount: tax_amount,
+                    total_amount: total_amount,
+                    delivery_distance_km: distance_km,
+                    notes: notes || null
+                };
+
+                // Save order to database (background operation)
+                fetch(`${CONFIG.SUPABASE_URL}${CONFIG.FOOD_ORDER_FUNCTION}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData)
+                }).catch((error) => {
+                    console.error('Failed to save order to database:', error);
+                });
+                
+                // Generate WhatsApp message
+                const message = generateDeliveryOrderMessage({
+                    ...orderData,
                     subtotal,
                     delivery_charge,
                     tax_amount,
                     total_amount,
-                    delivery_distance_km: distance_km,
-                    notes: notes || null
+                    delivery_distance_km: distance_km
                 });
 
-                const shopContact = shopData.shop.contact?.phone || shopData.shop.phone;
+                const shopContact = shopData.shop.contact?.phone;
                 
                 if (shopContact) {
                     const whatsappUrl = generateWhatsAppLink(shopContact, message);
-                    openWhatsApp(whatsappUrl, message);
                     
-                    showToast('Order Sent!', 'Your delivery order has been sent via WhatsApp.', 'success');
-                    
-                    // Clear order and close modal
-                    orderList = [];
-                    updateOrderUI();
-                    closeAddressModal();
-                    
-                    // Reset form
-                    document.getElementById('delivery-address').value = '';
-                    document.getElementById('customer-phone').value = '';
-                    document.getElementById('delivery-notes').value = '';
-                    selectedDeliveryLocation = null;
-                    selectedDeliveryAddress = null;
+                    setTimeout(() => {
+                        openWhatsApp(whatsappUrl, message);
+                        
+                        hideLoadingOverlay();
+                        showToast('Order Sent!', 'Your delivery order has been sent via WhatsApp with exact location and payment details.', 'success');
+                        
+                        // Clear order and close modal
+                        orderList = [];
+                        updateOrderUI();
+                        closeAddressModal();
+                        
+                        // Reset form
+                        document.getElementById('delivery-address').value = '';
+                        document.getElementById('customer-phone').value = '';
+                        document.getElementById('delivery-notes').value = '';
+                        selectedDeliveryLocation = null;
+                        selectedDeliveryAddress = null;
+                        
+                        // Hide summaries
+                        document.getElementById('selected-address').classList.add('hidden');
+                        document.getElementById('delivery-summary').classList.add('hidden');
+                        
+                        isProcessingOrder = false;
+                        setButtonLoading('confirm-delivery-btn', false);
+                    }, 500);
                 } else {
-                    showToast('Missing Contact', 'Restaurant contact information is not available.', 'error');
+                    hideLoadingOverlay();
+                    showToast('Missing Contact', 'Restaurant contact information is not available. Please try again later.', 'error');
+                    isProcessingOrder = false;
+                    setButtonLoading('confirm-delivery-btn', false);
                 }
             } catch (error) {
-                showToast('Order Failed', error.message || 'Failed to process delivery order.', 'error');
-            } finally {
+                hideLoadingOverlay();
+                showToast('Order Failed', error.message || 'Failed to process delivery order. Please try again.', 'error');
                 isProcessingOrder = false;
+                setButtonLoading('confirm-delivery-btn', false);
             }
         }
 
@@ -2329,7 +2959,10 @@
             message += `📍 *Delivery Details:*\n`;
             message += `• Address: ${orderData.customer_address}\n`;
             message += `• Distance: ${orderData.delivery_distance_km.toFixed(1)} km\n`;
-            message += `• Phone: ${orderData.customer_phone}\n`;
+            
+            if (orderData.customer_phone) {
+                message += `• Phone: ${orderData.customer_phone}\n`;
+            }
             
             if (orderData.notes) {
                 message += `• Notes: ${orderData.notes}\n`;
@@ -2340,9 +2973,9 @@
             message += `• Location: ${googleMapsLink}\n`;
             
             // Add payment information
-            if (shopSettings.upi_id) {
+            if (shopSettings.upiId) {
                 const paymentLink = generateUPIPaymentLink(
-                    shopSettings.upi_id,
+                    shopSettings.upiId,
                     shopName,
                     orderData.total_amount,
                     `Payment for Order - ${shopName}`
@@ -2362,10 +2995,12 @@
         }
 
         function generateWhatsAppLink(phoneNumber, message) {
+            const deviceInfo = getDeviceInfo();
             const encodedMessage = encodeURIComponent(message);
-            const cleanPhone = phoneNumber.replace(/[^\d+]/g, '');
             
+            const cleanPhone = phoneNumber.replace(/[^\d+]/g, '');
             let formattedPhone;
+            
             if (cleanPhone.startsWith('+')) {
                 formattedPhone = cleanPhone.substring(1);
             } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
@@ -2376,33 +3011,57 @@
                 formattedPhone = cleanPhone;
             }
             
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            if (isMobile) {
+            if (deviceInfo.isIOS) {
                 return `whatsapp://send?phone=${formattedPhone}&text=${encodedMessage}`;
             } else {
                 return `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
             }
         }
 
+        function getDeviceInfo() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+            
+            return {
+                isIOS: /ipad|iphone|ipod/.test(userAgent) || (platform === 'macintel' && navigator.maxTouchPoints > 1),
+                isAndroid: /android/.test(userAgent),
+                isMobile: /mobile|tablet|ipad|iphone|ipod/.test(userAgent) || window.innerWidth < 768,
+                isDesktop: !/mobile|tablet|ipad|iphone|ipod/.test(userAgent) && window.innerWidth >= 768
+            };
+        }
+
         function openWhatsApp(url, fallbackMessage) {
+            const deviceInfo = getDeviceInfo();
+            
             try {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
-                if (isMobile) {
+                if (deviceInfo.isMobile) {
                     window.location.href = url;
+                    
+                    setTimeout(() => {
+                        showToast('WhatsApp Link', 'If WhatsApp didn\'t open, please install WhatsApp or try copying the message manually', 'info');
+                    }, 3000);
                 } else {
-                    window.open(url, '_blank');
+                    const whatsappWindow = window.open(url, '_blank');
+                    
+                    if (!whatsappWindow) {
+                        copyToClipboard(fallbackMessage);
+                        showToast('Link Copied', 'WhatsApp link copied to clipboard. Please paste it in WhatsApp Web or your WhatsApp app.', 'info');
+                    }
                 }
             } catch (error) {
                 copyToClipboard(fallbackMessage);
-                showToast('Message Copied', 'WhatsApp message copied to clipboard.', 'info');
+                showToast('Error', 'Unable to open WhatsApp. Message copied to clipboard.', 'error');
             }
         }
 
         // Utility Functions
         function filterProducts(categoryId) {
             currentCategory = categoryId;
+            
+            // Clear search when filtering by category
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-clear').classList.remove('show');
+            isSearchActive = false;
             
             document.querySelectorAll('.category-chip').forEach(chip => {
                 if (chip.dataset.category === categoryId) {
@@ -2412,21 +3071,15 @@
                 }
             });
 
-            let productsToShow;
+            let filteredProducts;
             if (categoryId === 'all') {
-                productsToShow = allProducts;
+                filteredProducts = originalProducts;
             } else if (categoryId === 'uncategorized') {
-                productsToShow = allProducts.filter(p => !p.subcategoryId);
+                filteredProducts = originalProducts.filter(p => !p.subcategoryId);
             } else {
-                productsToShow = allProducts.filter(p => p.subcategoryId === categoryId);
+                filteredProducts = originalProducts.filter(p => p.subcategoryId === categoryId);
             }
             
-            // Apply search filter if active
-            if (currentSearchTerm) {
-                productsToShow = fuzzySearch(productsToShow, currentSearchTerm);
-            }
-            
-            filteredProducts = productsToShow;
             renderProducts(filteredProducts);
         }
 
@@ -2441,6 +3094,18 @@
             const activeBtn = document.getElementById(`view-${viewType}`);
             activeBtn.classList.add('active');
             activeBtn.classList.remove('text-gray-600');
+            
+            let filteredProducts;
+            if (isSearchActive) {
+                // Don't change products if search is active
+                return;
+            } else if (currentCategory === 'all') {
+                filteredProducts = originalProducts;
+            } else if (currentCategory === 'uncategorized') {
+                filteredProducts = originalProducts.filter(p => !p.subcategoryId);
+            } else {
+                filteredProducts = originalProducts.filter(p => p.subcategoryId === currentCategory);
+            }
             
             renderProducts(filteredProducts);
         }
@@ -2473,10 +3138,34 @@
             }, 4000);
         }
 
-        function downloadApp() {
-            const userAgent = navigator.userAgent.toLowerCase();
+        function showLoadingOverlay() {
+            document.getElementById('order-loading').classList.remove('hidden');
+        }
+
+        function hideLoadingOverlay() {
+            document.getElementById('order-loading').classList.add('hidden');
+        }
+
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            const btnText = button.querySelector('.btn-text');
+            const spinner = button.querySelector('.loading-spinner');
             
-            if (userAgent.includes('android')) {
+            if (isLoading) {
+                button.classList.add('btn-loading');
+                if (btnText) btnText.classList.add('hidden');
+                if (spinner) spinner.classList.remove('hidden');
+            } else {
+                button.classList.remove('btn-loading');
+                if (btnText) btnText.classList.remove('hidden');
+                if (spinner) spinner.classList.add('hidden');
+            }
+        }
+
+        function downloadApp() {
+            const deviceInfo = getDeviceInfo();
+            
+            if (deviceInfo.isAndroid) {
                 window.open('https://play.google.com/store/apps/details?id=com.knoc.app', '_blank');
             } else {
                 showToast('Download App', 'Knoc app is currently available for Android. iOS version coming soon!', 'info');
@@ -2529,7 +3218,7 @@
                 document.execCommand('copy');
                 showToast('Copied!', 'Text copied to clipboard', 'success');
             } catch (err) {
-                showToast('Copy Failed', 'Unable to copy text.', 'error');
+                showToast('Copy Failed', 'Unable to copy text. Please copy manually.', 'error');
             }
             
             document.body.removeChild(textArea);
@@ -2539,6 +3228,160 @@
             const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
             return uuidPattern.test(uuid);
         }
+
+        // Cleanup and Final Initialization
+        window.addEventListener('beforeunload', () => {
+            if (imageObserver) {
+                imageObserver.disconnect();
+            }
+        });
+
+        window.addEventListener('load', () => {
+            // Performance monitoring complete
+        });
+
+        // Touch event handling for mobile
+        if (isMobile) {
+            document.addEventListener('touchstart', () => {
+                document.body.classList.add('touch-device');
+            });
+        }
+
+        // Handle window resize for responsive map
+        window.addEventListener('resize', () => {
+            if (deliveryMap) {
+                setTimeout(() => {
+                    deliveryMap.invalidateSize();
+                }, 200);
+            }
+            
+            // Update device detection
+            isDesktop = !isMobile && window.innerWidth >= 1024;
+        });
+
+        // Enhanced validation for better UX
+        function validateForm(formType) {
+            if (formType === 'delivery') {
+                validateDeliveryForm();
+            } else if (formType === 'dine-in') {
+                const tableNumber = document.getElementById('table-number').value.trim();
+                const confirmBtn = document.getElementById('confirm-dine-btn');
+                
+                if (tableNumber.length > 0) {
+                    confirmBtn.disabled = false;
+                    confirmBtn.classList.remove('btn-disabled');
+                } else {
+                    confirmBtn.disabled = true;
+                    confirmBtn.classList.add('btn-disabled');
+                }
+            }
+        }
+
+        // Auto-validate forms when inputs change
+        document.addEventListener('input', (e) => {
+            if (e.target.id === 'delivery-address' || e.target.id === 'customer-phone') {
+                validateForm('delivery');
+            } else if (e.target.id === 'table-number') {
+                validateForm('dine-in');
+            }
+        });
+
+        // Prevent form submission on Enter key if validation fails
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                
+                if (activeElement.id === 'customer-phone' || activeElement.id === 'delivery-address') {
+                    const confirmBtn = document.getElementById('confirm-delivery-btn');
+                    if (confirmBtn.disabled) {
+                        e.preventDefault();
+                        showToast('Form Incomplete', 'Please fill all required fields before proceeding', 'error');
+                    }
+                } else if (activeElement.id === 'table-number') {
+                    const confirmBtn = document.getElementById('confirm-dine-btn');
+                    if (confirmBtn.disabled) {
+                        e.preventDefault();
+                        showToast('Table Number Required', 'Please enter a table number', 'error');
+                    }
+                }
+            }
+        });
+
+        // Enhanced error handling for network issues
+        window.addEventListener('online', () => {
+            showToast('Connection Restored', 'You are back online', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            showToast('Connection Lost', 'Please check your internet connection', 'error');
+        });
+
+        // Initialize tooltips for better UX
+        function initializeTooltips() {
+            const tooltipElements = document.querySelectorAll('[title]');
+            tooltipElements.forEach(element => {
+                element.addEventListener('mouseenter', (e) => {
+                    // Simple tooltip implementation could be added here
+                });
+            });
+        }
+
+        // Call initialization after DOM is loaded
+        setTimeout(() => {
+            initializeTooltips();
+        }, 1000);
+
+        // Accessibility improvements
+        document.addEventListener('keydown', (e) => {
+            // ESC key handling
+            if (e.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal:not(.hidden)');
+                openModals.forEach(modal => {
+                    if (!modal.classList.contains('hidden')) {
+                        const closeBtn = modal.querySelector('[onclick*="close"]');
+                        if (closeBtn) closeBtn.click();
+                    }
+                });
+            }
+            
+            // Tab navigation improvements
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        // Remove keyboard navigation class on mouse use
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-navigation');
+        });
+
+        // Enhanced performance monitoring
+        function logPerformance() {
+            if (window.performance && window.performance.timing) {
+                const timing = window.performance.timing;
+                const loadTime = timing.loadEventEnd - timing.navigationStart;
+                console.log(`Page load time: ${loadTime}ms`);
+            }
+        }
+
+        // Call performance logging after page load
+        window.addEventListener('load', logPerformance);
+
+        // Debug mode for development
+        const isDebugMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        
+        if (isDebugMode) {
+            window.debugShop = {
+                shopData,
+                orderList,
+                selectedDeliveryLocation,
+                deliverySettings,
+                shopSettings,
+                originalProducts
+            };
+            console.log('Debug mode enabled. Use window.debugShop to inspect state.');
+        }
+
     </script>
 </body>
 </html>
