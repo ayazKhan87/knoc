@@ -882,6 +882,96 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        /* Location prompt styles */
+        .location-prompt {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .location-prompt-content {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .location-prompt-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .location-prompt-content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .location-prompt-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        /* Location toast styles */
+        .location-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            padding: 0 20px;
+            width: 100%;
+            max-width: 500px;
+            pointer-events: none;
+        }
+
+        .location-toast-content {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            font-size: 14px;
+            pointer-events: auto;
+        }
+
+        .location-toast-content button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 4px;
+            margin-left: 12px;
+        }
+
+        /* Global styles for smooth scrolling and transitions */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hide scrollbars for mobile */
+        @media (max-width: 768px) {
+            .category-filters {
+                -webkit-overflow-scrolling: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1061,7 +1151,7 @@
                         </a>
                         <a href="https://www.instagram.com/knocfind?igsh=dm5rZjloMjFjN2M4" target="_blank" class="social-link">
                             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
                             </svg>
                         </a>
                         <a href="mailto:contact@knoc.in" class="social-link">
@@ -1163,6 +1253,177 @@
         let featuredShops = [];
         let currentLocation = null;
         
+        // Location handling functions
+        const locationHandler = {
+            state: {
+                hasLocation: false,
+                locationDenied: false,
+                lastLocation: null,
+                permissionStatus: null
+            },
+
+            // Check if the browser supports geolocation
+            isSupported() {
+                return 'geolocation' in navigator;
+            },
+
+            // Check if permissions API is supported
+            hasPermissionsAPI() {
+                return 'permissions' in navigator;
+            },
+
+            // Get current permission status
+            async checkPermissionStatus() {
+                if (!this.hasPermissionsAPI()) return null;
+                
+                try {
+                    const result = await navigator.permissions.query({ name: 'geolocation' });
+                    this.state.permissionStatus = result.state;
+                    return result.state;
+                } catch (error) {
+                    console.warn('Permission check failed:', error);
+                    return null;
+                }
+            },
+
+            // Request location with custom UI
+            async requestLocation(showPrompt = true) {
+                if (!this.isSupported()) {
+                    console.warn('Geolocation is not supported');
+                    return null;
+                }
+
+                // Check if we already have location permission
+                const permissionStatus = await this.checkPermissionStatus();
+                
+                if (permissionStatus === 'denied') {
+                    this.state.locationDenied = true;
+                    this.showLocationError('blocked');
+                    return null;
+                }
+
+                // Show custom prompt if needed
+                if (showPrompt && permissionStatus !== 'granted') {
+                    const shouldProceed = await this.showLocationPrompt();
+                    if (!shouldProceed) {
+                        this.showLocationError('denied');
+                        return null;
+                    }
+                }
+
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(
+                            resolve,
+                            reject,
+                            {
+                                enableHighAccuracy: true,
+                                timeout: 5000,
+                                maximumAge: 300000 // 5 minutes
+                            }
+                        );
+                    });
+
+                    this.state.hasLocation = true;
+                    this.state.locationDenied = false;
+                    this.state.lastLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        accuracy: position.coords.accuracy,
+                        timestamp: position.timestamp
+                    };
+
+                    // Store in sessionStorage
+                    sessionStorage.setItem('userLocation', JSON.stringify(this.state.lastLocation));
+                    
+                    return this.state.lastLocation;
+
+                } catch (error) {
+                    this.handleLocationError(error);
+                    return null;
+                }
+            },
+
+            // Show custom location prompt
+            async showLocationPrompt() {
+                return new Promise(resolve => {
+                    const promptDiv = document.createElement('div');
+                    promptDiv.className = 'location-prompt';
+                    promptDiv.innerHTML = `
+                        <div class="location-prompt-content">
+                            <div style="font-size: 24px; margin-bottom: 16px;">📍</div>
+                            <h3>Enable Location Services?</h3>
+                            <p>This helps us show nearby shops and more accurate results.</p>
+                            <div class="location-prompt-buttons">
+                                <button class="btn-secondary" onclick="this.closest('.location-prompt').remove(); locationHandler.resolvePrompt(false);">
+                                    Not Now
+                                </button>
+                                <button class="btn-primary" onclick="this.closest('.location-prompt').remove(); locationHandler.resolvePrompt(true);">
+                                    Enable
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    document.body.appendChild(promptDiv);
+                    this.promptResolve = resolve;
+                });
+            },
+
+            // Resolve the prompt
+            resolvePrompt(value) {
+                if (this.promptResolve) {
+                    this.promptResolve(value);
+                    this.promptResolve = null;
+                }
+            },
+
+            // Handle location errors
+            handleLocationError(error) {
+                let errorType;
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorType = 'blocked';
+                        this.state.locationDenied = true;
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorType = 'unavailable';
+                        break;
+                    case error.TIMEOUT:
+                        errorType = 'timeout';
+                        break;
+                    default:
+                        errorType = 'error';
+                }
+                this.showLocationError(errorType);
+            },
+
+            // Show location error message
+            showLocationError(type) {
+                const messages = {
+                    blocked: 'Location access is blocked. Please enable it in your browser settings to see nearby shops.',
+                    denied: 'Location access was denied. You can still use the app, but results may be less accurate.',
+                    unavailable: 'Could not determine your location. Please try again later.',
+                    timeout: 'Location request timed out. Please try again.',
+                    error: 'An error occurred while getting your location.'
+                };
+
+                const message = messages[type] || messages.error;
+                
+                // Show error toast
+                const toast = document.createElement('div');
+                toast.className = 'location-toast';
+                toast.innerHTML = `
+                    <div class="location-toast-content">
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()">✕</button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 5000);
+            }
+        };
+
         // Enhanced categories with more keywords
         const categories = {
             food: {
@@ -1550,27 +1811,27 @@
         // Featured Shops Functionality
         async function loadFeaturedShops() {
             try {
-                // Try to get user's location
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            currentLocation = {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude
-                            };
-                            fetchFeaturedShops();
-                        },
-                        () => {
-                            // Location denied, load without location
-                            fetchFeaturedShops();
-                        }
-                    );
+                // Check for cached location in sessionStorage
+                const cachedLocation = sessionStorage.getItem('userLocation');
+                if (cachedLocation) {
+                    currentLocation = JSON.parse(cachedLocation);
+                    await fetchFeaturedShops();
+                    return;
+                }
+
+                // Request location with custom UI
+                const location = await locationHandler.requestLocation();
+                if (location) {
+                    currentLocation = location;
+                    await fetchFeaturedShops();
                 } else {
-                    fetchFeaturedShops();
+                    // Load without location if denied or error
+                    currentLocation = null;
+                    await fetchFeaturedShops();
                 }
             } catch (error) {
                 console.error('Error loading featured shops:', error);
-                fetchFeaturedShops();
+                await fetchFeaturedShops();
             }
         }
 
