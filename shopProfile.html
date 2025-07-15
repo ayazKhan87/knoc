@@ -1019,7 +1019,8 @@
             </div>
         </div>
 
-        <!-- Products Grid/Grouped View -->
+
+<!-- Products Grid/Grouped View -->
         <div class="px-4 pb-20">
             <div id="products-container">
                 <!-- Products will be loaded here -->
@@ -1522,19 +1523,29 @@
         }
 
         // Enhanced Location Method Selection
-        function selectLocationMethod(method) {
+        async function selectLocationMethod(method) {
             currentLocationMethod = method;
             
             const currentBtn = document.getElementById('current-location-method');
             const mapBtn = document.getElementById('map-location-method');
             
-            // Update button states
             currentBtn.classList.remove('active');
             mapBtn.classList.remove('active');
             
             if (method === 'current') {
                 currentBtn.classList.add('active');
-                getCurrentLocationForDelivery();
+                try {
+                    const location = await handleLocationRequest();
+                    if (location) {
+                        selectedDeliveryLocation = location;
+                        reverseGeocodeDelivery(location.lat, location.lng);
+                        showToast('Location Found', 'Current location set successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Failed to get location:', error);
+                    // Auto switch to map selection if location fails
+                    selectLocationMethod('map');
+                }
             } else if (method === 'map') {
                 mapBtn.classList.add('active');
                 openMapPopup();
@@ -1571,6 +1582,191 @@
             }
         }
 
+        // Location handling functions
+function getCurrentLocation() {
+    if (!navigator.geolocation) {
+        showLocationError("Your browser doesn't support geolocation");
+        switchToMapSelection();
+        return;
+    }
+
+    // Check if location services are enabled
+    checkLocationServices()
+        .then(enabled => {
+            if (!enabled) {
+                throw new Error('Location services are disabled');
+            }
+            return requestLocationPermission();
+        })
+        .then(() => {
+            showToast('Getting Location', 'Fetching your current location...', 'info');
+            
+            navigator.geolocation.getCurrentPosition(
+                handleLocationSuccess,
+                handleLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        })
+        .catch(error => {
+            handleLocationError(error);
+        });
+}
+
+function checkLocationServices() {
+    return new Promise((resolve) => {
+        if ('permissions' in navigator) {
+            navigator.permissions.query({ name: 'geolocation' })
+                .then(result => {
+                    if (result.state === 'denied') {
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
+                })
+                .catch(() => resolve(true));
+        } else {
+            resolve(true);
+        }
+    });
+}
+
+function requestLocationPermission() {
+    return new Promise((resolve, reject) => {
+        if ('permissions' in navigator) {
+            navigator.permissions.query({ name: 'geolocation' })
+                .then(result => {
+                    if (result.state === 'granted') {
+                        resolve();
+                    } else if (result.state === 'prompt') {
+                        showLocationPrompt()
+                            .then(() => resolve())
+                            .catch(reject);
+                    } else {
+                        reject(new Error('Location permission denied'));
+                    }
+                })
+                .catch(reject);
+        } else {
+            resolve();
+        }
+    });
+}
+
+function showLocationPrompt() {
+    return new Promise((resolve, reject) => {
+        const deviceInfo = getDeviceInfo();
+        
+        if (deviceInfo.isIOS) {
+            showToast('Location Access', 'Please allow location access in your device settings', 'info');
+        } else if (deviceInfo.isAndroid) {
+            showToast('Location Access', 'Please enable location services for accurate delivery', 'info');
+        } else {
+            showToast('Location Access', 'Please allow location access in your browser', 'info');
+        }
+
+        // Try getting position to trigger browser's permission prompt
+        navigator.geolocation.getCurrentPosition(
+            () => resolve(),
+            () => reject(new Error('Location permission denied')),
+            { enableHighAccuracy: true }
+        );
+    });
+}
+
+function handleLocationSuccess(position) {
+    const { latitude, longitude } = position.coords;
+    selectedDeliveryLocation = { lat: latitude, lng: longitude };
+    
+    // Update UI to show location is selected
+    document.getElementById('current-location-method').classList.add('active');
+    document.getElementById('map-location-method').classList.remove('active');
+    
+    // Reverse geocode the location
+    reverseGeocode(latitude, longitude);
+    showToast('Location Found', 'Your current location has been set', 'success');
+}
+
+function handleLocationError(error) {
+    let message = 'Could not get your location. ';
+    
+    switch (error.code) {
+        case 1: // PERMISSION_DENIED
+            message += 'Please enable location access in your settings.';
+            break;
+        case 2: // POSITION_UNAVAILABLE
+            message += 'Location information is unavailable.';
+            break;
+        case 3: // TIMEOUT
+            message += 'Request timed out. Please try again.';
+            break;
+        default:
+            message += 'Please try using map selection.';
+    }
+
+    showLocationError(message);
+    switchToMapSelection();
+}
+
+function showLocationError(message) {
+    showToast('Location Error', message, 'error');
+    
+    const deviceInfo = getDeviceInfo();
+    let helpText = '';
+    
+    if (deviceInfo.isAndroid) {
+        helpText = 'To enable location: Settings → Location → Turn On';
+    } else if (deviceInfo.isIOS) {
+        helpText = 'To enable location: Settings → Privacy → Location Services → Turn On';
+    } else {
+        helpText = 'Please enable location services in your browser settings';
+    }
+    
+    showToast('Help', helpText, 'info');
+}
+
+function switchToMapSelection() {
+    currentLocationMethod = 'map';
+    document.getElementById('current-location-method').classList.remove('active');
+    document.getElementById('map-location-method').classList.add('active');
+    openMapPopup();
+}
+
+function reverseGeocode(lat, lng) {
+    showDeliveryCalculationLoading(true);
+    
+    fetch(`${CONFIG.SUPABASE_URL}${CONFIG.DELIVERY_FUNCTION}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'reverse-geocode',
+            latitude: lat,
+            longitude: lng
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            selectedDeliveryAddress = data.address;
+        } else {
+            selectedDeliveryAddress = `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        }
+        updateAddressDisplay();
+        validateDeliveryForm();
+    })
+    .catch(error => {
+        console.error('Reverse geocoding error:', error);
+        selectedDeliveryAddress = `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        updateAddressDisplay();
+        validateDeliveryForm();
+    })
+    .finally(() => {
+        showDeliveryCalculationLoading(false);
+    });
+}
         // Map Popup Functions
         function openMapPopup() {
             document.getElementById('map-popup').classList.remove('hidden');
@@ -1599,17 +1795,13 @@
             }
 
             const mapContainer = document.getElementById('popup-map');
-            if (!mapContainer) {
-                console.error('Popup map container not found');
-                return;
-            }
+            if (!mapContainer) return;
 
             try {
                 // Start with default location
                 let initialLocation = CONFIG.DEFAULT_LOCATION;
                 let initialZoom = CONFIG.DEFAULT_ZOOM;
                 
-                // If we have a previously selected location, use that
                 if (selectedDeliveryLocation) {
                     initialLocation = [selectedDeliveryLocation.lat, selectedDeliveryLocation.lng];
                     initialZoom = 15;
@@ -1617,32 +1809,35 @@
 
                 popupMap = L.map('popup-map', {
                     preferCanvas: false,
-                    zoomControl: false,
-                    trackResize: true
+                    zoomControl: false
                 }).setView(initialLocation, initialZoom);
                 
-                // Add tile layer
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
-                    maxZoom: 18,
-                    crossOrigin: true
+                    maxZoom: 18
                 }).addTo(popupMap);
 
-                // Add event listeners
+                // Add current location control
+                const locationControl = document.getElementById('popup-current-location-btn');
+                locationControl.addEventListener('click', async () => {
+                    try {
+                        const location = await handleLocationRequest();
+                        if (location) {
+                            popupMap.setView([location.lat, location.lng], 15);
+                            showToast('Location Found', 'Map centered on your location', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Failed to center map on current location:', error);
+                    }
+                });
+
                 popupMap.on('moveend', onPopupMapMoveEnd);
-                
-                // Setup popup map controls
                 setupPopupMapControls();
                 
-                // Force size recalculation
-                setTimeout(() => {
-                    popupMap.invalidateSize(true);
-                }, 100);
-                
-                console.log('Popup map initialized successfully');
+                setTimeout(() => popupMap.invalidateSize(), 100);
                 
             } catch (error) {
-                console.error('Failed to initialize popup map:', error);
+                console.error('Failed to initialize map:', error);
                 showToast('Map Error', 'Failed to load map. Please try again.', 'error');
             }
         }
@@ -2322,6 +2517,117 @@
                 showError();
             }
         }
+
+        async function checkLocationPermission() {
+            try {
+                // Check if geolocation is supported
+                if (!navigator.geolocation) {
+                    throw new Error('Geolocation not supported');
+                }
+
+                // Check if location services are enabled (for supported browsers)
+                if ('permissions' in navigator) {
+                    const permission = await navigator.permissions.query({ name: 'geolocation' });
+                    
+                    if (permission.state === 'denied') {
+                        throw new Error('Location permission denied');
+                    }
+                    
+                    if (permission.state === 'prompt') {
+                        showLocationEnablePrompt();
+                        // Wait for permission result
+                        return new Promise((resolve) => {
+                            navigator.geolocation.getCurrentPosition(
+                                () => resolve(true),
+                                () => resolve(false)
+                            );
+                        });
+                    }
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Location permission check failed:', error);
+                return false;
+            }
+        }
+
+        function showLocationEnablePrompt() {
+            const deviceInfo = getDeviceInfo();
+            let message = '';
+            
+            if (deviceInfo.isAndroid) {
+                message = 'Please enable location services in your device settings:\n' +
+                        '1. Open Settings\n' +
+                        '2. Tap Location\n' +
+                        '3. Turn On "Use location"';
+            } else if (deviceInfo.isIOS) {
+                message = 'Please enable location services in your device settings:\n' +
+                        '1. Open Settings\n' +
+                        '2. Privacy & Security\n' +
+                        '3. Location Services\n' +
+                        '4. Turn On Location Services';
+            } else {
+                message = 'Please allow location access in your browser settings';
+            }
+
+            showToast('Enable Location', message, 'info');
+        }
+
+        async function handleLocationRequest() {
+            const hasPermission = await checkLocationPermission();
+            
+            if (!hasPermission) {
+                showLocationEnablePrompt();
+                return null;
+            }
+
+            return new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        resolve({
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        });
+                    },
+                    (error) => {
+                        handleLocationError(error);
+                        reject(error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        }
+
+        function handleLocationError(error) {
+            const deviceInfo = getDeviceInfo();
+            let message = '';
+
+            switch (error.code) {
+                case 1: // PERMISSION_DENIED
+                    message = deviceInfo.isAndroid ? 
+                        'Location access denied. Please enable location in your device settings.' :
+                        deviceInfo.isIOS ?
+                        'Location access denied. Please enable Location Services in Settings.' :
+                        'Location access denied. Please enable location in your browser settings.';
+                    break;
+                case 2: // POSITION_UNAVAILABLE
+                    message = 'Location service is not available. Please check if location is enabled on your device.';
+                    break;
+                case 3: // TIMEOUT
+                    message = 'Location request timed out. Please try again.';
+                    break;
+                default:
+                    message = 'Failed to get location. Please try again.';
+            }
+
+            showToast('Location Error', message, 'error');
+        }    
+
 
         // Shop Status UI Setup
         function setupShopStatusUI() {
