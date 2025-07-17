@@ -3009,6 +3009,9 @@ function reverseGeocode(lat, lng) {
             const hasDiscount = discountedPrice && originalPrice && discountedPrice < originalPrice;
             const discountPercent = hasDiscount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
             
+            // Get food emoji based on category/name
+            const foodEmoji = getFoodEmoji(product.subcategoryName, productName);
+            
             // Check if shop is offline
             const isShopOffline = shopData?.shop?.deliveryStatus === 'offline';
 
@@ -3027,28 +3030,26 @@ function reverseGeocode(lat, lng) {
                             </svg>
                         </div>
                         <img ${isPreloaded ? `src="${imageUrl}" class="lazy-image loaded"` : `data-src="${imageUrl}" class="lazy-image"`}
-                             alt="${productName}" 
-                             loading="lazy">
+                            alt="${productName}" 
+                            loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70"></div>
                         ${hasDiscount ? `
                             <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10">
                                 ${discountPercent}% OFF
                             </div>
                         ` : ''}
-                        <div class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center z-10">
-                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </div>
                     </div>
                 `;
             } else {
+                // No image - use gradient with emoji
                 imageHTML = `
-                    <div class="relative aspect-square bg-gray-100 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 18m-2-5V9a2 2 0 00-2-2H8a2 2 0 00-2 2v.01"></path>
-                        </svg>
+                    <div class="relative aspect-square overflow-hidden rounded-t-xl">
+                        <div class="absolute inset-0 bg-gradient-to-br from-red-400 via-red-500 to-red-600 flex items-center justify-center">
+                            <span class="text-5xl">${foodEmoji}</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70"></div>
                         ${hasDiscount ? `
-                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold z-10 shadow-lg">
                                 ${discountPercent}% OFF
                             </div>
                         ` : ''}
@@ -3065,7 +3066,7 @@ function reverseGeocode(lat, lng) {
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
                             ${isOrderable ? `
-                                <span class="text-red-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
+                                <span class="text-green-600 font-bold text-lg">₹${Math.round(displayPrice)}</span>
                                 ${hasDiscount ? `
                                     <span class="text-gray-400 text-sm line-through">₹${Math.round(originalPrice)}</span>
                                 ` : ''}
@@ -3074,12 +3075,13 @@ function reverseGeocode(lat, lng) {
                             `}
                         </div>
                         ${isOrderable && !isShopOffline ? `
-                            <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium ripple">
+                            <button onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" 
+                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium ripple">
                                 Add
                             </button>
                         ` : `
                             <button disabled class="btn-disabled px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed">
-                        ${isShopOffline ? 'Offline' : 'Unavailable'}
+                                ${isShopOffline ? 'Offline' : 'Unavailable'}
                             </button>
                         `}
                     </div>
@@ -3087,6 +3089,47 @@ function reverseGeocode(lat, lng) {
             `;
             
             return card;
+        }
+
+        // Helper function to get food emoji based on category/name
+        function getFoodEmoji(subcategoryName, productName) {
+            if (subcategoryName) {
+                const category = subcategoryName.toLowerCase();
+                const emojiMap = {
+                    'pizza': '🍕',
+                    'burger': '🍔',
+                    'burgers': '🍔',
+                    'chinese': '🍜',
+                    'noodles': '🍜',
+                    'rice': '🍚',
+                    'biryani': '🍚',
+                    'dessert': '🍰',
+                    'sweet': '🍰',
+                    'drinks': '🥤',
+                    'beverages': '🥤',
+                    'indian': '🍛',
+                    'curry': '🍛',
+                    'bread': '🫓',
+                    'roti': '🫓',
+                    'snacks': '🍿',
+                    'salad': '🥗',
+                    'soup': '🍲'
+                };
+                return emojiMap[category] || '🍽️';
+            }
+            
+            if (productName) {
+                const name = productName.toLowerCase();
+                if (name.includes('pizza')) return '🍕';
+                if (name.includes('burger')) return '🍔';
+                if (name.includes('biryani') || name.includes('rice')) return '🍚';
+                if (name.includes('noodles') || name.includes('chinese')) return '🍜';
+                if (name.includes('curry') || name.includes('dal')) return '🍛';
+                if (name.includes('sweet') || name.includes('dessert')) return '🍰';
+                if (name.includes('drink') || name.includes('juice')) return '🥤';
+            }
+            
+            return '🍽️'; // Default food emoji
         }
 
         function canOrderProduct(product) {
