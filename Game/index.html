@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Flappy Bird</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        /* Minimal styles to ensure canvas sizing */
+        html, body { height: 100%; margin: 0; background: #0a0a0a; }
+        #gameContainer { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+        #flappyCanvas { width: min(600px, 100vw); height: min(800px, 100vh); background: linear-gradient(#70c5ce, #ffffff); box-shadow: 0 0 40px rgba(0,0,0,0.4) inset; border-radius: 8px; }
+        .hud { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); color: #fff; font-family: Arial, Helvetica, sans-serif; text-shadow: 0 2px 0 rgba(0,0,0,0.3); display: flex; gap: 24px; align-items: center; }
+        .btn { background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        /* Overlays */
+        .overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); z-index: 50; font-family: Arial, Helvetica, sans-serif; }
+        .overlay.show { display: flex; }
+        .panel { width: min(640px, 92vw); background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .panel h2 { margin: 0 0 10px; }
+        .panel ol { margin: 10px 0 0 18px; }
+        .panel p { margin: 10px 0; }
+        .panel .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+        .muted { color: #ccc; font-size: 14px; }
+    </style>
+    <script defer src="js/flappy.js"></script>
+    </head>
+<body>
+    <div class="hud">
+        <div>Score: <span id="score">0</span></div>
+        <div>Best: <span id="best">0</span></div>
+        <div>Time: <span id="time">0.0</span>s</div>
+        <div>Discount: ₹<span id="discount">0</span></div>
+        <button id="restart" class="btn">Restart</button>
+    </div>
+    <div id="gameContainer">
+        <canvas id="flappyCanvas"></canvas>
+    </div>
+    <!-- Instruction / Practice Overlay -->
+    <div id="overlayMenu" class="overlay show">
+        <div class="panel">
+            <h2>Scan & Play – Win Instant Discount</h2>
+            <p>Play Flappy Bird and earn ₹1 every 3 seconds you survive, up to ₹40 (2 minutes).</p>
+            <h3>How to play</h3>
+            <ol>
+                <li>Tap, click, or press Space/Up to flap.</li>
+                <li>Avoid the pipes. Don’t hit the ground or sky.</li>
+                <li>Survive longer to increase your discount.</li>
+            </ol>
+            <p class="muted">Tip: Try the 10-second practice first. No deaths. No discount counted.</p>
+            <div class="actions">
+                <button id="btnPractice" class="btn">Practice (10s)</button>
+                <button id="btnStart" class="btn">Start Game</button>
+            </div>
+        </div>
+    </div>
+    <!-- Results Overlay -->
+    <div id="overlayResults" class="overlay">
+        <div class="panel">
+            <h2>Your Result</h2>
+            <p>Score: <strong><span id="finalScore">0</span></strong></p>
+            <p>Time Survived: <strong><span id="finalTime">0.0</span>s</strong></p>
+            <p>Your Discount: <strong>₹<span id="finalDiscount">0</span></strong></p>
+            <p class="muted">Show this screen at the counter to claim your discount.</p>
+            <div class="actions">
+                <button id="btnPlayAgain" class="btn">Play Again</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
