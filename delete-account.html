@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knoc - Account Deletion</title>
+    
+    <!-- Rubik Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-red-50 via-white to-red-50">
+    <div class="min-h-screen py-12 px-4 sm:px-6">
+        <div class="max-w-3xl mx-auto">
+            <!-- Header -->
+            <div class="flex items-center space-x-3 mb-12">
+                <div class="w-10 h-10 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center">
+                    <span class="text-white font-bold">K</span>
+                </div>
+                <span class="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-500 text-transparent bg-clip-text">
+                    Knoc
+                </span>
+            </div>
+
+            <!-- Content -->
+            <div class="bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl p-8">
+                <h1 class="text-3xl font-bold text-red-900 mb-6">Account Deletion Instructions</h1>
+                
+                <div class="space-y-6 text-red-700">
+                    <div class="bg-red-50 rounded-xl p-6 space-y-4">
+                        <h2 class="font-semibold text-red-900 text-xl">How to Delete Your Account:</h2>
+                        <ol class="list-decimal list-inside space-y-3">
+                            <li>Open the Knoc app</li>
+                            <li>Open the drawer menu in the home screen</li>
+                            <li>Navigate to Profile section</li>
+                            <li>Scroll down to find the "Delete Account/Delete Shop" option</li>
+                            <li>Confirm your decision when prompted</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h2 class="font-semibold text-red-900 text-xl">Data That Will Be Permanently Deleted:</h2>
+                        
+                        <div class="bg-white p-6 rounded-xl border-2 border-red-100">
+                            <h3 class="font-medium text-red-900 mb-3">For Users:</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>Name</li>
+                                <li>Contact number</li>
+                                <li>Profile pictures</li>
+                                <li>Device information</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border-2 border-red-100">
+                            <h3 class="font-medium text-red-900 mb-3">For Shops:</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>Contact number</li>
+                                <li>Shop verification photos</li>
+                                <li>Shop pictures</li>
+                                <li>Device information</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 rounded-xl p-6">
+                        <h2 class="font-semibold text-red-900 text-xl mb-4">Data We Retain:</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="font-medium text-red-900 mb-2">For Users:</h3>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>Email address</li>
+                                    <li>Product inquiry history with location data</li>
+                                    <li>Search location history</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h3 class="font-medium text-red-900 mb-2">For Shops:</h3>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>Email address</li>
+                                    <li>Shop category</li>
+                                    <li>Registration location</li>
+                                </ul>
+                            </div>
+
+                            <p class="text-sm italic">
+                                This data is retained for market analysis, improving local product discovery, and maintaining business category insights.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl p-6">
+                        <h2 class="font-semibold text-xl mb-4">Need Help?</h2>
+                        <p class="mb-4">
+                            If you're having trouble deleting your account or have questions about data retention, please contact us at:
+                        </p>
+                        <a 
+                            href="mailto:contact@knoc.in"
+                            class="text-white underline hover:text-red-100 transition-colors"
+                        >
+                            contact@knoc.in
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Opening Knoc App...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
+    }
+    .container {
+      text-align: center;
+      padding: 30px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      max-width: 450px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+    }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .logo-text {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #ef4444;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .message {
+      color: #2e2e2e;
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .sub-message {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .fallback {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #2e2e2e;
+    }
+    .btn {
+      background-color: #ef4444;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-block;
+      margin: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    .btn:hover {
+      background-color: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
+    .btn-secondary {
+      background-color: #6b7280;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+    .btn-secondary:hover {
+      background-color: #4b5563;
+      box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
+    }
+    .hidden {
+      display: none;
+    }
+    .desktop-message {
+      color: #2e2e2e;
+      line-height: 1.6;
+    }
+    .desktop-message p {
+      margin: 15px 0;
+    }
+    .shop-preview {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+    }
+    .shop-preview h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+    .shop-preview p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .preview-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    @media (max-width: 480px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+    }
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://www.knoc.in/knoc_logo.png" alt="Knoc Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-text\'>K</div>';">
+    </div>
+    <div class="spinner pulse" id="spinner"></div>
+    <div class="message" id="message">Opening Knoc App...</div>
+    <div class="sub-message" id="subMessage">Please wait while we redirect you</div>
+    
+    <!-- Enhanced Shop Preview -->
+    <div class="shop-preview hidden" id="shopPreview">
+      <div class="preview-icon">🏪</div>
+      <h3 id="shopName">Shop Profile</h3>
+      <p id="shopDescription">Discover amazing products and deals!</p>
+    </div>
+    
+    <!-- Enhanced Fallback Options -->
+    <div class="fallback hidden" id="fallback">
+      <p><strong>Choose how you'd like to continue:</strong></p>
+      
+      <div class="options-grid">
+        <a href="https://play.google.com/store/apps/details?id=com.knoc.app" class="btn" id="playStoreBtn">
+          📱 Download App
+        </a>
+        <a href="https://www.knoc.in" class="btn btn-secondary">
+          🌐 Visit Website
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    let appOpened = false;
+    let redirectTimer = null;
+    let linkType = 'unknown';
+    let shopId = null;
+    let postId = null;
+    
+    function openAppOrRedirect() {
+      console.log('Starting app redirect process...');
+      
+      const query = new URLSearchParams(window.location.search);
+      const type = query.get("type");
+      shopId = query.get("shopId");
+      postId = query.get("postId");
+      
+      console.log('URL Parameters:', { type, shopId, postId });
+      
+      // Validate the link format
+      if (!type || !shopId) {
+        console.log('No valid deep link data, redirecting to main website');
+        // No valid deep link data, redirect to main website
+        setTimeout(() => {
+          window.location.href = "https://www.knoc.in";
+        }, 2000);
+        return;
+      }
+
+      // Validate UUID format
+      if (!isValidUUID(shopId) || (postId && !isValidUUID(postId))) {
+        console.log('Invalid UUID format, redirecting to main website');
+        setTimeout(() => {
+          window.location.href = "https://www.knoc.in";
+        }, 2000);
+        return;
+      }
+
+      linkType = type;
+      
+      console.log('Link info:', { type: linkType, shopId, postId });
+      
+      if (linkType === 'shop') {
+        showShopPreview(shopId);
+      } else if (linkType === 'post') {
+        showPostPreview(postId, shopId);
+      }
+
+      // Detect device type
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isAndroid = /android/.test(userAgent);
+      const isMobile = /android|iphone|ipad|ipod|mobile/.test(userAgent);
+      
+      console.log('Device detection:', { isAndroid, isMobile, userAgent });
+      
+      if (!isMobile) {
+        // Desktop/Laptop handling - redirect to web profile directly
+        setTimeout(() => {
+          redirectToWebProfile();
+        }, 2000);
+        return;
+      }
+
+      if (isAndroid) {
+        // Try to open the app immediately for Android
+        attemptAppOpen();
+      } else {
+        // For iOS users, show not available message
+        showIOSMessage();
+      }
+    }
+    
+    // Validate UUID format
+    function isValidUUID(uuid) {
+      const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      return uuidPattern.test(uuid);
+    }
+    
+    // Enhanced shop preview
+    function showShopPreview(shopId) {
+      const previewEl = document.getElementById('shopPreview');
+      const nameEl = document.getElementById('shopName');
+      const descEl = document.getElementById('shopDescription');
+      
+      nameEl.textContent = 'Shop Profile';
+      descEl.textContent = 'View products, follow the shop, and discover amazing deals!';
+      
+      previewEl.classList.remove('hidden');
+      
+      // Update messages
+      document.getElementById('message').textContent = 'Opening shop profile...';
+      document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
+      
+      console.log('Showing shop preview');
+    }
+    
+    // Show post preview
+    function showPostPreview(postId, shopId) {
+      const previewEl = document.getElementById('shopPreview');
+      const nameEl = document.getElementById('shopName');
+      const descEl = document.getElementById('shopDescription');
+      
+      // Update preview for post
+      previewEl.querySelector('.preview-icon').textContent = '📦';
+      nameEl.textContent = 'Product Post';
+      descEl.textContent = 'Check out this amazing product!';
+      
+      previewEl.classList.remove('hidden');
+      
+      // Update messages
+      document.getElementById('message').textContent = 'Opening product...';
+      document.getElementById('subMessage').textContent = 'Redirecting to Knoc app';
+      
+      console.log('Showing post preview');
+    }
+    
+    // Direct redirect to web profile
+    function redirectToWebProfile() {
+      let webProfileUrl;
+      
+      if (linkType === 'shop' && shopId) {
+        webProfileUrl = `https://www.knoc.in/shopProfile.html?type=shop&shopId=${encodeURIComponent(shopId)}`;
+        console.log('Redirecting to shop web profile:', webProfileUrl);
+      } else if (linkType === 'post' && postId && shopId) {
+        webProfileUrl = `https://www.knoc.in/shopProfile.html?type=post&postId=${encodeURIComponent(postId)}&shopId=${encodeURIComponent(shopId)}`;
+        console.log('Redirecting to post web profile:', webProfileUrl);
+      } else {
+        webProfileUrl = 'https://www.knoc.in';
+        console.log('Redirecting to main website');
+      }
+      
+      window.location.href = webProfileUrl;
+    }
+    
+    async function attemptAppOpen() {
+      console.log('Attempting to open app with type:', linkType, 'shopId:', shopId, 'postId:', postId);
+      
+      // Create the app URL based on link type
+      let appUrl;
+      let intentUrl;
+      
+      if (linkType === 'shop') {
+        appUrl = `knoc://shop?shopId=${shopId}`;
+        intentUrl = `intent://shop?shopId=${shopId}#Intent;scheme=knoc;package=com.knoc.app;end`;
+      } else if (linkType === 'post') {
+        appUrl = `knoc://post?postId=${postId}&shopId=${shopId}`;
+        intentUrl = `intent://post?postId=${postId}&shopId=${shopId}#Intent;scheme=knoc;package=com.knoc.app;end`;
+      } else {
+        console.log('Unknown link type:', linkType);
+        redirectToWebProfile();
+        return;
+      }
+      
+      console.log('App URL:', appUrl);
+      console.log('Intent URL:', intentUrl);
+      
+      // Set up visibility change listener to detect if app opened
+      let isPageVisible = true;
+      
+      const handleVisibilityChange = () => {
+        if (document.hidden) {
+          appOpened = true;
+          console.log('Page became hidden - app likely opened');
+          clearTimeout(redirectTimer);
+        } else {
+          isPageVisible = true;
+          console.log('Page became visible');
+        }
+      };
+      
+      // Listen for page visibility changes
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Listen for page focus events (additional detection)
+      const handleBlur = () => {
+        appOpened = true;
+        console.log('Page lost focus - app likely opened');
+      };
+      
+      const handleFocus = () => {
+        console.log('Page gained focus');
+        if (!appOpened) {
+          // If we get focus back quickly, app probably didn't open
+          setTimeout(() => {
+            if (!appOpened && isPageVisible) {
+              console.log('App did not open - redirecting to web profile');
+              redirectToWebProfile();
+            }
+          }, 1500);
+        }
+      };
+      
+      window.addEventListener('blur', handleBlur);
+      window.addEventListener('focus', handleFocus);
+      
+      // Set a timer to handle fallback if app doesn't open
+      redirectTimer = setTimeout(() => {
+        if (!appOpened && !document.hidden) {
+          console.log('Timer expired - app did not open, redirecting to web profile');
+          redirectToWebProfile();
+        }
+      }, 3000);
+      
+      // Try to open the app using multiple methods
+      try {
+        console.log('Trying to open app...');
+        
+        // Method 1: Try direct URL change first
+        setTimeout(() => {
+          if (!appOpened) {
+            console.log('Trying direct URL change...');
+            window.location.href = appUrl;
+          }
+        }, 100);
+        
+        // Method 2: Create hidden iframe with intent URL
+        setTimeout(() => {
+          if (!appOpened) {
+            console.log('Trying iframe method...');
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
+            iframe.src = intentUrl;
+            document.body.appendChild(iframe);
+            
+            // Remove iframe after some time
+            setTimeout(() => {
+              if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+              }
+            }, 2000);
+          }
+        }, 500);
+        
+        // Method 3: Try creating a link and clicking it
+        setTimeout(() => {
+          if (!appOpened) {
+            console.log('Trying link click method...');
+            const link = document.createElement('a');
+            link.href = appUrl;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        }, 1000);
+        
+      } catch (error) {
+        console.error('Error opening app:', error);
+        redirectToWebProfile();
+      }
+    }
+    
+    function showIOSMessage() {
+      console.log('Showing iOS message');
+      document.getElementById('spinner').classList.add('hidden');
+      const messageEl = document.getElementById('message');
+      const subMessageEl = document.getElementById('subMessage');
+      messageEl.classList.add('desktop-message');
+      messageEl.innerHTML = '<strong>Knoc app is not yet available for iOS</strong>';
+      subMessageEl.textContent = "Redirecting to web profile...";
+      
+      // Redirect to web profile after showing message
+      setTimeout(() => {
+        redirectToWebProfile();
+      }, 2000);
+    }
+    
+    // Initialize the app when DOM is ready
+    function initializeApp() {
+      console.log('Initializing app...');
+      
+      // Add some visual feedback for button interactions
+      const buttons = document.querySelectorAll('.btn');
+      buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        button.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+      
+      // Start the main process
+      openAppOrRedirect();
+    }
+    
+    // Start the process when page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      // DOM is already ready
+      initializeApp();
+    }
+    
+    // Also listen for the load event as a fallback
+    window.addEventListener('load', () => {
+      console.log('Window loaded');
+      if (!appOpened) {
+        // If we haven't started the process yet, start it now
+        setTimeout(openAppOrRedirect, 100);
+      }
+    });
+    
+    // Add error handling for any uncaught errors
+    window.addEventListener('error', function(e) {
+      console.error('JavaScript error:', e.message, 'at line', e.lineno);
+    });
+    
+    // Add unhandled promise rejection handling
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Unhandled promise rejection:', e.reason);
+    });
+  </script>
+</body>
+</html>
